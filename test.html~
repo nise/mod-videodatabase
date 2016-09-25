@@ -1,0 +1,27 @@
+<html>
+<head>
+	<script src="js/jquery.min.js"></script>
+	<script src="js/select2.min.js"></script>
+	<link href="css/select2.min.css" type="text/css" rel="stylesheet" />
+	<script>
+
+var 
+	language = 'de'
+	;
+
+/*
+
+*/
+function videoManager(){
+	// get category schema
+	$.get('data/category-schema-'+language+'.js', function(data){
+		alert(data.version);
+	});
+}
+
+	</script>
+</head>
+<body>
+
+</body>
+</html>
