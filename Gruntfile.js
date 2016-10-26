@@ -42,7 +42,8 @@ module.exports = function (grunt) {
 				    files: {
 				      'amd/build/helloworld.min.js': [
 				      	'amd/src/helloworld.js',
-				      	'amd/src/select2.js'
+				      	'amd/src/select2.js',
+				      	'amd/src/bootstrap-table.js'
 				      	] 
 				    }
 				  }
@@ -50,9 +51,10 @@ module.exports = function (grunt) {
 				// css
 				concat_css: {
 					options: {},
-					files: {
-						'styles.css': ['css/select2.min.css','css/style.css'],
-					},
+					all: {
+      			src: ["css/*.css"],
+      			dest: "styles.css"
+					}
 				},
     });
     // The default task (running "grunt" in console).

@@ -1,16 +1,15 @@
 
+# General
+system path: ~/Documents/www/moodle/mod/videodatabase
+
 
 # todo
-- 20.09. technische Beschreibung Plugin + Screenshot von DB-Filtermaske
 
-- Upload
-	- read/parse csv & save to db
-	
 - Videomanager
  - display video records as table
  - select2 as filter: Mehrfachauswahl bei Lerngruppe/Klassen; Aktivitäten; Päd. Perspektiven;
 
- 
+- Upload
 - Videoplayer
 - Loging
 - Videoannotation 

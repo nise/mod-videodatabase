@@ -27,7 +27,7 @@
         <INDEX NAME="course" UNIQUE="false" FIELDS="course"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="vi_db_videos" COMMENT="Each record is one video and its meta data">
+    <TABLE NAME="videodatabase_videos" COMMENT="Each record is one video and its meta data">
       <FIELDS>
 				<!-- dublin core data	-->
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" COMMENT=""/>
@@ -41,7 +41,7 @@
 				<FIELD NAME="type" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
 				<FIELD NAME="mimetype" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="E.G. video/mp4, video/webm"/>
 				<FIELD NAME="format" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
-				<FIELD NAME="source	" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
+				<FIELD NAME="source" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
 				<FIELD NAME="language" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
 				<FIELD NAME="relation" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
 				<FIELD NAME="coverage" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT=""/>

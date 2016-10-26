@@ -5,7 +5,7 @@
 
 
 
-alert(88);
+alert(77);
 
 var 
 	language = 'de'

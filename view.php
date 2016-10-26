@@ -78,51 +78,20 @@ $completion->set_module_viewed($cm);
  **/
 function bulkVideoImport() {
 	global $CFG, $DB;
-	$DB->set_debug(true);
-	$table = 'vi_db_videos';
+	//$DB->set_debug(true);
+	$table = "videodatabase_videos";
 	$row = 1;
 	$video_arr = array();
-	if (($handle = fopen($CFG->dirroot.'/mod/videodatabase/data/testdata.csv', "r")) !== FALSE) {
+	if (($handle = fopen($CFG->dirroot.'/mod/videodatabase/data/testdata2.csv', "r")) !== FALSE) {
 		while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
 		  $num = count($data);
 		  echo "<p>imported $num fields in line $row: <br /></p>\n";
 		  $row++;
-			$record = array();//new stdClass();
-			$record['id'] = (int)$row;
-			//$record['video_db'] = $row;
-			$record['title'] = $data[2];
-			$record['creator'] = $data[3];
-			$record['subject'] = $data[4];
-			$record['description'] = $data[5];
-			$record['publisher'] = $data[6];
-			$record['contributor'] = $data[7];
-			//$record['date'] = (int)$data[8];
-			$record['type'] = $data[9];
-			$record['mimetype'] = $data[10];
-			$record['format'] = $data[11];
-			$record['source'] = $data[12];
-			$record['language'] = $data[13];
-			$record['relation'] = $data[14];
-			$record['coverage'] = $data[15];
-			$record['rights'] = $data[16];
-			$record['filename'] = $data[17];
-			$record['length'] = (int)$data[18];
-			$record['size'] = (int)$data[19];
-			$record['license'] = $data[20];
-			$record['institution'] = $data[21];
-			$record['tags'] = $data[22];
-		//	$record['timemodified'] = (int)$data[23];
-			$record['compentencies'] = $data[24];
-			$record['movements'] = $data[25];
-			$record['activities'] = $data[26];
-			$record['actors'] = $data[27];
-			$record['perspectives'] = $data[28];
-			$record['location'] = $data[29];
-			$record['group'] = $data[30];
-		/*	
+			$record = new stdClass();
+			
 			$record->id = (int)$row;
 			//$record->video_db = $row;
-			$record->title = $data[2];
+			$record->title = (string)$data[2];
 			$record->creator = $data[3];
 			$record->subject = $data[4];
 			$record->description = $data[5];
@@ -150,17 +119,17 @@ function bulkVideoImport() {
 			$record->actors = $data[27];
 			$record->perspectives = $data[28];
 			$record->location = $data[29];
-			$record->group = $data[30];*/
-			print_r($record);
-			echo $DB->insert_record($table, (object) $record);
-			//array_push($video_arr, $record);
+			//$record->group = (string)$data[30]; // xxx bug!!! it will not run with this line
+			
+			//$DB->insert_record_raw($table, $record);
+			array_push($video_arr, $record);
 		}
 		fclose($handle);
 	}
 	// insert into database
-//	$DB->insert_records($table, $video_arr);
+	$DB->insert_records($table, $video_arr);
 	// test
-//	return $DB->count_records($table); 
+	//return $DB->count_records($table); 
 }
 
 
@@ -210,33 +179,40 @@ $content = format_text($content, $videodatabase->contentformat, $formatoptions);
 //$PAGE->requires->js( new moodle_url($CFG->wwwroot . '/mod/videodatabase/js/jquery.min.js'), true);
 //$PAGE->requires->js( new moodle_url($CFG->wwwroot . '/mod/videodatabase/js/vi-db.js'));
 
-$PAGE->requires->js_call_amd("mod_videodatabase/helloworld", "test");
+
 //$PAGE->requires->css('/mod/videodatabase/css/style.css');
 
-echo "<h4 class='hhh'>hello dude</h4>";
+echo "<h4 class='hhh'>hello duden3</h4>";
 echo "<select class='js-example-basic-multiple' multiple='multiple'>
   <option value='AL'>Alabama</option>
   <option value='BL'>Blabama</option>
   <option value='WY'>Wyoming</option>
 </select>";
+echo "<div id='videofilter'></div>";
 
-echo bulkVideoImport();
+echo '<table id="videotable"></table>';
 
-   $js = 
-<<<EOS
-<script type="text/javascript">
-		
-</script>
-EOS;
-echo $js;
+$data = $DB->get_records_list("videodatabase_videos", 'title', array( 'video2'));
+$data =  json_decode(json_encode($data[2]),true);
+ 
+$PAGE->requires->js_call_amd("mod_videodatabase/helloworld", "test", $data);
+print_r($data);
+//echo bulkVideoImport();
+
+
 
 echo $OUTPUT->box($content, "generalbox center clearfix");
 
+/*********************************/
 $strlastmodified = get_string("lastmodified");
 echo "<div class=\"modified\">$strlastmodified: ".userdate($videodatabase->timemodified)."</div>";
-
 echo $OUTPUT->footer();
 
-
+/*********************************/
+   $js = 
+<<<EOS
+<script type="text/javascript"></script>
+EOS;
+echo $js;
 
 
