@@ -146,7 +146,7 @@ echo $OUTPUT->footer();
 //$PAGE->requires->js( new moodle_url($CFG->wwwroot . '/mod/videodatabase/js/test2.js') ); 
 //$PAGE->requires->js_call_amd('mod_videodatabase/test','test', array());
 //$PAGE->requires->js_call_amd('mod_videodatabase/video-js','f');
-$PAGE->requires->js( new moodle_url($CFG->wwwroot . '/mod/videodatabase/js/test2.js') ); 
+//$PAGE->requires->js( new moodle_url($CFG->wwwroot . '/mod/videodatabase/js/test2.js') ); 
 
 //$PAGE->requires->js( new moodle_url($CFG->wwwroot . '/mod/videodatabase/js/vi-two.js') );
 
