@@ -1,3 +1,18 @@
-h4.hhh{
-	color:red;
+label{
+color:red;
 }
+
+#filter select.single-filter:nth-child(4){
+	display:block;
+}
+
+#the_videotable_filter *{
+	display:block;
+	font-weight: bold;
+}
+
+#the_videotable_filter label input{
+	margin-left: 4px;
+}
+
+

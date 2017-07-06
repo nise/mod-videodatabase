@@ -1,32 +1,20 @@
 <?php
 
-// This file is part of Moodle - http://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
 /**
  * Page module version information
  *
  * @package    mod
  * @subpackage page
- * @copyright  2009 Petr Skoda (http://skodak.org)
+ * @copyright  2017 Niels Seidel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+
  */
 
 require('../../config.php');
 require_once($CFG->dirroot.'/mod/videodatabase/locallib.php');
 require_once($CFG->libdir.'/completionlib.php');
+
+
 
 $id      = optional_param('id', 0, PARAM_INT); // Course Module ID
 $p       = optional_param('p', 0, PARAM_INT);  // videodatabase instance ID
@@ -69,6 +57,7 @@ $event->trigger();
 require_once($CFG->libdir . '/completionlib.php');
 $completion = new completion_info($course);
 $completion->set_module_viewed($cm);
+
 
 
 /*
@@ -115,29 +104,28 @@ function bulkVideoImport() {
 		//	$record->timemodified = (int)$data[23];
 			$record->compentencies = $data[24];
 			$record->movements = $data[25];
-			$record->activities = $data[26];
+			$record->activities = $data[26]; 
 			$record->actors = $data[27];
 			$record->perspectives = $data[28];
 			$record->location = $data[29];
-			//$record->group = (string)$data[30]; // xxx bug!!! it will not run with this line
-			
+			$record->klasse = (int)$data[30]; echo "_$data[30]__"; // xxx bug!!! it will not run with this line
+			$record->klassenstufe = $data[31]; 
+			$record->sports = $data[32];
+//			echo print_r($record);
+
 			//$DB->insert_record_raw($table, $record);
 			array_push($video_arr, $record);
 		}
 		fclose($handle);
 	}
+	// delete all records
+	$DB->delete_records($table, array('subject'=>'sport'));
 	// insert into database
-	$DB->insert_records($table, $video_arr);
+	echo $DB->insert_records($table, $video_arr);
+	
 	// test
 	//return $DB->count_records($table); 
 }
-
-
-
-/**********/
-// Upload page
-//$PAGE->set_url('/mod/videodatabase/video-upload.php');
-
 
 
 /*********/
@@ -154,6 +142,10 @@ if ($inpopup and $videodatabase->display == RESOURCELIB_DISPLAY_POPUP) {
     $PAGE->set_heading($course->fullname);
     $PAGE->set_activity_record($videodatabase);
 }
+
+$PAGE->requires->css( '/mod/videodatabase/styles.css', true );
+
+
 echo $OUTPUT->header();
 echo $OUTPUT->heading(format_string($videodatabase->name), 2);
 
@@ -172,47 +164,146 @@ $formatoptions->overflowdiv = true;
 $formatoptions->context = $context;
 $content = format_text($content, $videodatabase->contentformat, $formatoptions);
 
+/***************************/
+
 //$context = {  title: "Cheese sandwich",  }
 //$context = json_encode(array("title" => "hello world"));
 //echo parent::render_from_template("test", array("title" => "hello world"));
 
-//$PAGE->requires->js( new moodle_url($CFG->wwwroot . '/mod/videodatabase/js/jquery.min.js'), true);
+$PAGE->requires->js( new moodle_url($CFG->wwwroot . '/mod/videodatabase/amd/src/videodatabase.js'), true);
 //$PAGE->requires->js( new moodle_url($CFG->wwwroot . '/mod/videodatabase/js/vi-db.js'));
 
+//$PAGE->requires->js_call_amd('videodatabase','init');//, $functionname, $params);
 
-//$PAGE->requires->css('/mod/videodatabase/css/style.css');
+/*echo "<label>Filter:</label>";
+echo "<div id='filter1'></div>";
+echo "<div id='filter2'></div>";
+*/
 
-echo "<h4 class='hhh'>hello duden3</h4>";
-echo "<select class='js-example-basic-multiple' multiple='multiple'>
-  <option value='AL'>Alabama</option>
-  <option value='BL'>Blabama</option>
-  <option value='WY'>Wyoming</option>
-</select>";
-echo "<div id='videofilter'></div>";
 
-echo '<table id="videotable"></table>';
+echo '<a href="vdb_video-manager.php?id='. $id .'">Video Manager</a>';
+echo '<br>';
 
-$data = $DB->get_records_list("videodatabase_videos", 'title', array( 'video2'));
-$data =  json_decode(json_encode($data[2]),true);
- 
-$PAGE->requires->js_call_amd("mod_videodatabase/helloworld", "test", $data);
-print_r($data);
+echo '<a href="vdb_video-list.php?id='. $id .'">List of Videos</a>';
+
+
+	$table = "videodatabase_videos";
+
+	$res = $DB->get_records($table, $conditions=null, $sort='', $fields='*', $limitfrom=0, $limitnum=0);
+
+
+	echo '<div id="videotable" class="table-responsive">
+			<table id="the_videotable" class="table display" cellspacing="0" width="100%">
+			<thead>
+		  <tr>
+		    <th>Titel</th>
+		    <th>Sportart</th>
+		    <th>Stufe</th>
+		    <th>Fachbezogene Kompetenzen</th>
+		    <th>Bewegungsfelder</th>
+		  	<th>Aktivitäten</th>
+		  	<th>Akteure</th>
+		  	<th>Pädagogische Perspektive</th>
+		  	<th>Ort</th>
+		  	<th>Lerngruppe</th>
+		  </tr>
+		</thead>
+		<tbody>';
+		$row = 0;
+	foreach($res as $video){ 
+	$row++;
+	// prep
+	$activities = '';
+	$act = preg_replace("/\ /", "", $video->activities);
+	$arr = explode(',',$act);
+	for($i=0; $i < sizeof($arr); $i++){
+		$activities .= 'activities-'.$arr[$i].' ';
+	}
+//print_r($video);
+	$competencies = '';
+	echo "<tr class='
+		actors-" . preg_replace("/\//", "", $video->actors ) . " 
+		compentencies-" . preg_replace("/\ /", "", $video->compentencies ) . "
+		movements-" . preg_replace("/,\s/", "", $video->movements ) . " 
+		sports-" . preg_replace("/,\s/", "", $video->sports ) . " 
+		location-" . $video->location . " 
+		". $activities . "
+		". $competencies . "  
+		table-hover accordion-toggle' data-toggle='collapse' data-target='#demo".$row."'>";
+	echo "<td><a href='vdb_player.php?id=" . $id ."&video_id=" . $video->id . "'>$video->title</a></td>";
+	echo "<td>$video->sports</td>";
+	echo "<td>$video->klassenstufe</td>";
+	echo "<td>$video->compentencies</td>";
+	echo "<td>$video->movements</td>";
+
+	echo "<td>$video->activities</td>";
+	echo "<td>$video->actors</td>";
+	echo "<td>$video->perspectives</td>";
+	echo "<td>$video->location</td>";
+	echo "<td>$video->klasse</td>";
+	echo "</tr>";
+
+	/*  echo "<tr>";
+	echo "<td colspan='8' class='hiddenRow'>";
+	echo "<div class='accordian-body collapse' id='demo".$row."'>demo".$row."</div>";
+	echo "</tr>";          */
+	/*
+	echo "<td>$video->creator</td>";
+	echo "<td>$video->subject</td>";
+	echo "<td>$video->description</td>";
+	echo "<td>$video->tags</td>";
+	echo "<td>$video->publisher</td>";
+	echo "<td>$video->institution</td>";
+	echo "<td>$video->contributer</td>";
+	echo "<td>$video->date</td>";
+	echo "<td>$video->type</td>";
+	echo "<td>$video->mimetype</td>";
+	echo "<td>$video->format</td>";
+	echo "<td>$video->creator</td>";
+	echo "<td>$video->source</td>";
+	echo "<td>$video->language</td>";
+	echo "<td>$video->relation</td>";
+	echo "<td>$video->coverage</td>";
+	echo "<td>$video->rights</td>";
+	echo "<td>$video->license</td>";
+	echo "<td>$video->filename</td>";
+	echo "<td>$video->length</td>";
+	echo "<td>$video->size</td>";
+	echo "<td>$video->timemodified</td>";
+	echo "<td>$video->creator</td>";
+	*/
+
+	}    
+	echo '</tbody>
+	</table></div>';
+
+
+
+//$data = $DB->get_records_list($table, 'title', array( 'video2'));
+
+//$data = json_encode($data);
+//$data = json_decode($data, true);
+//secho print_r($data);
+
 //echo bulkVideoImport();
 
+//$PAGE->requires->js( new moodle_url($CFG->wwwroot . '/mod/videodatabase/amd/jquery.select2.js') );
+$string = file_get_contents($CFG->wwwroot . '/mod/videodatabase/data/category-schema-de.json');
 
+$json = array($data); // $json['data']
+$PAGE->requires->js_call_amd('mod_videodatabase/videodatabase','init', 'table');
 
 echo $OUTPUT->box($content, "generalbox center clearfix");
 
 /*********************************/
 $strlastmodified = get_string("lastmodified");
-echo "<div class=\"modified\">$strlastmodified: ".userdate($videodatabase->timemodified)."</div>";
+//echo "<div class=\"modified\">$strlastmodified: ".userdate($videodatabase->timemodified)."</div>";
+
+
+
 echo $OUTPUT->footer();
 
 /*********************************/
-   $js = 
-<<<EOS
-<script type="text/javascript"></script>
-EOS;
-echo $js;
+
 
 

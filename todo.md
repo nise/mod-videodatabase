@@ -1,18 +1,60 @@
 
 # General
 system path: ~/Documents/www/moodle/mod/videodatabase
+MOODLE version 3.1.3 !!
 
 
-# todo
+#backlog
 
-- Videomanager
- - display video records as table
- - select2 as filter: Mehrfachauswahl bei Lerngruppe/Klassen; Aktivitäten; Päd. Perspektiven;
+- use bootstrap
+- video manager
+- upload: location, filetype restriction, poster 
+- load external 
+- form 
+ - save form data 
+ - validate data
+ - file upload
+- include js player
+- Startseite inkl. Erklärung der Anwendung, Link zum Lehrplan
+- video logging
+- video annotation 
 
-- Upload
-- Videoplayer
-- Loging
-- Videoannotation 
+# nth
+- Video mit Wasserzeichen versehen
+- Settings-Page: define category-schema-de/en
+- multi-language
+
+
+
+# Thomas todo
+- Nutzungsbedingungen
+- Einwilligungserklärung
+
+# LISIUM / HOST
+http://lisum.berlin-brandenburg.de/lisum/
+
+# Fragen zum Server
+- Auf was für einem Server ist moodle installiert (Linux / Windows, Version)?
+- Wie sieht die Server-Architektur aus (z.B. Load Balancing, Datenbankserver, Firewall)?
+- Wie leistungsstark sind die / ist der Server (RAM, CPU)?
+- Welche Datenvolumen werden aktuell übertragen bzw. können künftig aufkommen (Videostreaming)?
+
+# Fragen zu moodle
+- Welche moodle Version wird verwendet?
+- Welches theme ist derzeit installiert?
+- Wie intensiv wird das System aktuell genutzt (Anzahl Kurse, Anzahl Nutzer, Logins pro Monat)
+
+# Fragen zur Integration des plugins 'videodatabase'
+- Gibt es bereits Erfahrungen mit der Inbetriebnahme von moodle-plugins?
+- Besteht derzeit ein Testsystem auf dem Updates, neue themes und plugins vor dem Produktiveinsatz getestet werden können?
+- Wie sieht das Verfahren aus, um ein neues plugin zum Einsatz im Produktivsystem zu überführen (Tests, Anforderungen, ...)?
+- Wer ist Ansprechpartner für technische Fragen (Administration, Server, Updates) zum moodle-System? 
+
+
+
+
+# bugs
+* data-load: $record->group = (string)$data[30]; // xxx bug!!! it will not run with this line
 
 # tech
 - templates, see https://docs.moodle.org/dev/Templates#Blocks_.28Moodle_3.0_onwards.29
@@ -21,7 +63,7 @@ system path: ~/Documents/www/moodle/mod/videodatabase
 - xmldb, see https://docs.moodle.org/dev/XMLDB_editor 
 
 
-# how toupdate the plugin on the server
+# how to update the plugin on the server
 1. increase the version number @ version.php
 2. open http://localhost/moodle/admin/index.php and select upgrade
 
@@ -39,6 +81,65 @@ Qwertz12*
 
 thomas
 Sp0rtpl4tz*
+
+
+#Kommentarfunktion
+
+
+1. Zeitlicher Bezug
+**done**	- Zeitpunkt
+	- Zeitabschnitt
+
+2. Repräsentation im Videobild
+**done**	- nicht sichtbar (nur auf der Zeitachse abgetragen —> z.B. mit einem kleinen gelben Strich auf einer roten Zeitleiste; ähnlich YouTube?)
+**done**	- Punkt (x,y), i.d.R. mit Icon
+**done(Rechteck)** 	- Fläche beliebiger Form und Farbe (z.B. Rechtecke, Pfeile, Rahmen, …) —> hier sind Pfeile ausreichend
+
+3. Zeitleiste im Player
+	- keine Darstellung der Kommentare (nicht zu empfehlen)
+	- Darstellung je Klassifikation
+**done**	- allgemeine Darstellung ohne Klassifikation
+
+4. Klassifikation der Kommentare
+**done, sofern Klassifizierung vorliegt**	- nach Kommentartypen (z.B. Bemerkung, Frage, …)
+	- Titel des Kommentars (z.B. Störung des Unterrichts)
+	- nach Relevanz / Dringlichkeit / …
+
+5. Kommentardarstellung
+**done**	- im Videobild an der betreffenden Position, falls vorhanden
+**done**	- neben dem Videobild ohne Referenz auf die Position im Videobild mit teilweisen Inhalt
+**done**- auf der Zeitleiste als Tooltip mit vollständigen oder teilweisen Inhalt
+
+6. Kommentarinhalte
+**done**	- reiner Text
+**nth:**	- Hypertext (inkl. Links, Bilder, Formatierung) als WYSIWYG-Editor
+	- reiner Text + Links + minimale Formatierungen (z.B. mit Markdown)
+**nth:**	- weitere Medien
+**nth:**	- Promts ~ Vorgabe von Satzanfängen, um die Diskussion zu lenken
+
+7. Kommentarfunktion
+**done**	- Verknüpfung des Kommentars mit Zeitpunkt im Video und Möglichkeit, über das Kommentar direkt in die Stelle im Video springen zu können
+
+8. Berechtigung
+	- persönlicher Kommentar
+**nth:**	- Gruppen-interner Kommentar
+**done**	- Kommentar für alle registrierten Nutzer
+
+9. Diskussion
+**done**	- Antwortkommentare zulassen
+	- up / down voting von Kommentaren mit Einfluss auf die Sortierung
+	- rating (1-5 Sterne)
+
+10. Moderation
+**done**	- Kommentare werden sofort freigegeben (mit der Option, Kommentare melden zu können)
+	- Kommentare werden durch Moderator freigegeben (mit einer Mitteilung an den Moderator, dass eine Kommentierung vorgenommen wurde)	
+**nth:**	- nur die Kommentare von positiv bewerteten Nutzern werden sofort freigegeben
+
+11. Ansichten für Admin
+	- Liste der Kommentare je Video / Kategorie / User / Datum / Typ von Video
+
+12. Aufgabenstellungen für die einzelnen Videosequenzen im Video
+	- Darstellung vordefinierter Arbeitsaufgaben zur Arbeit mit den Videos (ähnlich Edubreak) 
 
 
 

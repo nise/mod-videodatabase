@@ -40,10 +40,11 @@ module.exports = function (grunt) {
 				  },
 				  build: {
 				    files: {
-				      'amd/build/helloworld.min.js': [
-				      	'amd/src/helloworld.js',
-				      	'amd/src/select2.js',
-				      	'amd/src/bootstrap-table.js'
+				      'amd/build/videodatabase.min.js': [
+				      	'amd/src/videodatabase.js',//,
+//				      	'amd/src/jquery.js'
+				      	'amd/src/select2.min.js'
+	//			      	'amd/src/bootstrap-table.js'
 				      	] 
 				    }
 				  }

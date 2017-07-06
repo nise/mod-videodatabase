@@ -51,17 +51,20 @@
 				<FIELD NAME="length" TYPE="int" LENGTH="8" NOTNULL="false" SEQUENCE="false" COMMENT=""/> 
 				<FIELD NAME="size" TYPE="int" LENGTH="10" COMMENT="Size in MB" NOTNULL="false" SEQUENCE="false"/>
 				<FIELD NAME="license" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
+				<FIELD NAME="poster" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
 				<!-- context specific data	-->
 				<FIELD NAME="institution" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
 				<FIELD NAME="tags" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
 				<FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT=""/>
 				<FIELD NAME="compentencies" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
+				<FIELD NAME="klassenstufe" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
+				<FIELD NAME="sports" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
 				<FIELD NAME="movements" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
 				<FIELD NAME="activities" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
 				<FIELD NAME="actors" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
 				<FIELD NAME="perspectives" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
 				<FIELD NAME="location" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
-				<FIELD NAME="group" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
+				<FIELD NAME="klasse" TYPE="int" LENGTH="6" NOTNULL="false" DEFAULT="-1" COMMENT=""/>
         <!--
         <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>

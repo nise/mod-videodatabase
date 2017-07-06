@@ -27,6 +27,19 @@
         "Fahren, Rollen, Gleiten"
       ]
     },
+      {  
+      "id":"sports",
+      "name":"Sportart",
+      "type":"single",
+      "items":[  
+        "Fußball",
+        "Handball",
+        "Barren",
+        "Judo",
+        "Handball",
+        "Volleyball"
+      ]
+    },
     {  
       "id":"activities",
       "name":"Aktivitäten",
@@ -93,6 +106,10 @@
       "name":"Lerngruppe",
       "type":"multi",
       "items":[  
+      	"Eingangsstufe",
+        "Unterstufe",
+        "Mittelstufe",
+        "Werkstufe",
         "Klassenstufe 1",
         "Klassenstufe 2",
         "Klassenstufe 3",
@@ -105,11 +122,7 @@
         "Klassenstufe 10",
         "Klassenstufe 11",
         "Klassenstufe 12",
-        "Klassenstufe 13",
-        "Eingangsstufe",
-        "Unterstufe",
-        "Mittelstufe",
-        "Werkstufe"
+        "Klassenstufe 13"
       ]
     }
   ]
