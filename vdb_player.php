@@ -88,15 +88,7 @@ if(isset($_GET['video_id'])){
 
 	// init player
 	//echo '<video id="video1" width="320" height="240" controls><source src="/videos/'.$out['filename'].'" type="video/mp4"><source src="movie.webm" type="video/webm">Your browser does not support the video tag.</video>';
-	echo ' <video id="my-video" class="video-js" controls preload="auto" height="500"
-  poster="/poster.png" data-setup="{}">
-    <source src="/videos/'.$out['filename'].'" type="video/mp4">
-    <!--<source src="/videos/'.$out['filename'].'" type="video/webm">-->
-    <p class="vjs-no-js">
-      To view this video please enable JavaScript, and consider upgrading to a web browser that
-      <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
-    </p>
-  </video>';
+	
   
      $js = 
 <<<EOS
@@ -111,31 +103,65 @@ EOS;
 	echo "No video_id provided";
 }
 
-echo '<div id="page">
-		<div class="main">   
-			<div id="seq"></div>
-			<div id="overlay"></div>
-			<div id="split"></div>
-			<div id="accordion-resizer" class="ui-widget-content"></div>
-		</div>
-		<div id="video-controls" class="video-controls">
-			<div class="timelines vi2-btn">
-				<div class="vi2-video-seeklink vi2-btn"></div>
-				<div class="vi2-video-seek vi2-btn"></div>
-				<div class="vi2-video-progress vi2-btn"></div>
+echo '
+<div id="wrapper" style="overflow:hidden;">
+		<div id="page" style="overflow:hidden;">
+			<!-- Storage -->
+			<div style="display:none; visibility:hidden;" id="vi2"></div>
+			<!-- Main -->
+			<div class="container-fluid">
+				<div class="row">
+					<div id="videowrapper" class="col-lg-9 col-md-9 col-sm-9 ">
+						<div id="seq" class=""></div>
+						<div id="overlay" class=""></div>
+						<div id="split" class="col-md-9"></div>
+						<div id="screen" class="col-md-9"></div>
+					</div>
+					<div id="accordion-resizer" class="col-lg-3 col-md-3 col-sm-3 hidden-xs visible-sm-inline">
+						<div id="accordion"></div>
+					</div>
+				</div>
+				<div id="video-controls" class="video-controls">
+					<div class="timelines">
+						<!--<div class="vi2-video-seeklink vi2-btn"></div>-->
+						<div class="vi2-timeline-top"></div>
+						<div class="vi2-timeline-main vi2-btn"></div>
+						<div class="vi2-timeline-bottom"></div>
+						<div class="vi2-video-progress vi2-btn"></div>
+					</div>
+					<div class="control-bar">
+						<div class="vi2-video-play-pause vi2-btn" title="Play/Pause">
+							<span class="glyphicon glyphicon-play"></span>
+							<span class="glyphicon glyphicon-pause"></span>
+						</div>
+						<div class="vi2-volume-box">
+							<div class="vi2-volume-slider"></div>
+							<span class="vi2-volume-button vi2-btn" title="Mute/Unmute"></span>
+						</div>
+						<div class="vi2-video-timer right"></div>
+					</div>
+				</div>
 			</div>
-			<div class="control-bar">
-				<div class="vi2-video-play-pause vi2-btn" title="Play/Pause"></div>
-				<div class="vi2-video-timer"></div>
-				<div class="vi2-volume-box">
-					<div class="vi2-volume-slider"></div>
-					<a class="vi2-volume-button vi2-btn" title="Mute/Unmute"></a>
+			<!-- Modal -->
+			<div class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content modal-form">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+							<h4 class="modal-title" id="myModalLabel"></h4>
+						</div>
+						<div class="modal-body"></div>
+						<div class="modal-validation"></div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default btn-remove-data"><span class="glyphicon glyphicon-trash"> </span> löschen</button>
+							<button type="button" class="btn btn-default" data-dismiss="modal">abbrechen</button>
+							<button type="button" class="btn btn-primary btn-sava-data">speichern</button>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div> <!-- end page -->
-	<!-- video annotations -->
-	<div style="display:none; visibility:hidden;" id="vi2"></div>';
+';
 	
 //
 
