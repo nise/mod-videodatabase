@@ -14,16 +14,6 @@ select option:disabled, .option-head {
 }
 
 
-@font-face {
-    font-family: 'Glyphicons Halflings';
-    font-style: normal;
-    font-weight: normal;
-    src: url([[font:theme|glyphicons-halflings-regular.eot]]);
-    src: url([[font:theme|glyphicons-halflings-regular.eot]]) format('embedded-opentype'),
-         url([[font:theme|glyphicons-halflings-regular.woff]]) format('woff'),
-         url([[font:theme|glyphicons-halflings-regular.ttf]]) format('truetype'),
-         url([[font:theme|glyphicons-halflings-regular.svg]]) format('svg');
-}
 
 .sorting_asc:after {
 	color:red;
@@ -85,11 +75,24 @@ cursor: pointer;
     }
 
 
+.mega{
+    font-size: 100px;
+}
 
+.row .coll, thumbnail{
+    display:inline;
+    border: solid red 1px;
+    color: #0070a8;
+    max-width: 300px !important;
+}
+
+.thumbnail{
+    align-content: center;
+}
 
 @import("css/jquery.dataTables.min.css");
 
-@import("css/video-js.css");
+
 
 
 

@@ -5,16 +5,15 @@ MOODLE version 3.1.3 !!
 
 
 #backlog
-
-- use bootstrap
+- include js player
 - video manager
+ - single video page (see screen shot)
 - upload: location, filetype restriction, poster 
 - load external 
 - form 
  - save form data 
  - validate data
  - file upload
-- include js player
 - Startseite inkl. Erklärung der Anwendung, Link zum Lehrplan
 - video logging
 - video annotation 
@@ -81,6 +80,10 @@ Qwertz12*
 
 thomas
 Sp0rtpl4tz*
+
+
+# todo server
+https://docs.moodle.org/31/en/MySQL_full_unicode_support
 
 
 #Kommentarfunktion

@@ -1,0 +1,254 @@
+
+
+/* timeline marker */
+.analysis-timeline-marker{
+	position: absolute; 
+	top:1px !important;
+	display: block;
+	cursor:pointer; 
+	width: 8px; 
+	height: 8px; 
+	left:0; 
+	margin: 0; 
+	padding: 0;
+	z-index:200;
+	background-color: red;
+}
+
+
+/* Display marker */
+.analysis-timeline-marker:hover{
+	width: 14px; 
+	height: 14px;
+	background-color: white;
+}
+
+
+.analysis-marker-wraper{
+	display:inline-block;
+	min-height:14px;
+	border:solid 1px blue;
+}
+
+.analysis-marker{
+	background-color:red;
+	display:inline-block;
+	width:25px;
+	height:25px;
+	border-radius: 8px;
+	box-sizing: border-box;
+	margin:0 4px;
+}
+
+.analysis-marker:hover{
+	background-color:#fff;
+}
+
+
+
+/* Annotate marker */
+.analysis-marker-annotate{
+	background-color:transparent;
+	position:absolute;
+	display:inline-block;
+	width:100px;
+	height:100px;
+	margin:0 4px;
+	border: dashed 2px red;
+}
+
+.analysis-marker-annotate-fill{
+	display:inline-block;
+	background-color:red;
+	color:#fff;
+	opacity:0.2;
+	width:100%;
+	height:100%;
+	position:absolute;
+	top:0;
+	left:0;
+	cursor:move;
+	overflow:hidden;
+}
+
+.analysis-marker-annotate-fill:hover{
+	background-color:#fff;
+	opacity:0.4;
+}
+
+.analysis-marker-annotate .input-wraper {
+	display:none;
+	padding:0 14px 10px 4px;
+	position:absolute;
+	width:220px;
+	height:225px;
+}
+
+.analysis-marker-annotate:hover .input-wraper{
+	display:block;
+}
+
+
+.right{
+ left: 99px;
+} 
+
+.left{
+ right: 90px;
+}
+
+.top{
+ top: 0px;
+}
+
+.bottom{
+ bottom: 0px;
+}
+
+select.marker-element,  input.marker-element, textarea.marker-element{
+	background-color:#fff;
+	opacity:1;
+	width:200px;
+	margin: 0 0 4px 0;
+	height:25px;
+	font-size:10px;
+	line-height:12px;
+	padding:2px 4px;
+	vertical-align:top;
+	float:right;
+}
+
+textarea.marker-element{
+	height:80px;
+}
+
+
+
+/* Buttons */
+.vi2-analysis-btn{
+	position:relative;
+	padding:2px 4px;
+	height:20px;
+	font-size:10px;
+	color:#fff;
+	margin:2px 0;
+	cursor:pointer;
+	background-color:red;
+	opacity:0.8;
+	border-radius: 4px;
+}
+
+.vi2-analysis-btn:hover{
+	background-color:red;
+	color:#fff;
+	opacity:1;
+	text-decoration:none;
+}
+
+.input-wraper .remove-btn{
+	margin-left:133px;
+	padding:2px 4px 2px 3px;
+	width:23px;
+	position:relative;
+	display:inline;
+}
+.input-wraper .save-btn{
+	margin-left:0px;
+	position:relative;
+	display:inline;
+	font-weight:bold;
+}
+
+
+
+.marker-element{
+	top:0;
+	border:none;
+}
+
+.analysis-input-fields{
+	display:block;
+	position:absolute;
+	border:red solid 1px;
+}
+
+
+
+
+
+
+
+/* control bar button for adding a marker */
+.vi2-analysis-controls {
+	display:inline-block;
+	padding: 0px 4px;
+	width:29px;
+  height:29px; 
+  font-size:20px; 
+  text-align: center;
+  float:left;
+  -webkit-border-radius: 1px;
+  -moz-border-radius: 1px;
+  border-radius: 1px;
+  background-color:#555;
+	color:#fff;
+	cursor: pointer;
+	z-index:5000;
+	margin:0;  
+}
+
+
+.vi2-analysis-controls:hover {
+	background: #fff; color:#003366;
+}
+
+
+/* menu entries */
+.analysis-list{ padding:0px; list-style-type:none;  list-style-position: inside; margin:0;}
+.analysis-list li { line-height:160%; display:list-item; margin: 4px 0; padding:2px 4px; }
+.analysis-list li:hover { }
+
+.analysis-list li a { text-decoration:none; padding: 2px 1px 1px 3px; color:#111; cursor:pointer;}
+.analysis-list li a.analysis-menu-question {
+	width:90%;
+	display:inline-block;
+}
+
+
+.analysis-header {
+	display:block;
+	border-bottom: 2px solid #777;
+	font-size:11px;
+	padding:0;
+	height:20px;
+}
+
+.analysis-user {
+	background-color: #777;
+	color:#fff;
+	margin:0;
+	border:0;
+	padding: 0px 4px;
+	vertical-align:bottom;
+	height:12px;
+}
+
+
+/* time-depending hightling of menu entries */
+.analysis-list li.vi2-highlight {
+  -webkit-animation: highlight-fade 5s 1;
+  -moz-animation: highlight-fade 5s 1;
+}
+
+@-webkit-keyframes highlight-fade {
+    0% { background-color: rgba(255,0,0,1); }
+    100% { background-color: rgba(0,0,0,0); }
+}
+@-moz-keyframes highlight-fade {
+    0% { background-color: rgba(255,0,0,1); }
+    100% { background-color: rgba(0,0,0,0); }
+}
+
+
+
+
