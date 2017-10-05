@@ -9,7 +9,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
 require('../../config.php');
 require_once($CFG->dirroot.'/mod/videodatabase/locallib.php');
 require_once($CFG->libdir.'/completionlib.php');
@@ -40,6 +39,7 @@ $context = context_module::instance($cm->id);
 require_capability('mod/videodatabase:vdb_player', $context);
 
 $PAGE->set_url('/mod/videodatabase/vdb_player.php', array('id' => $cm->id));
+$PAGE->navbar->add('videos', new moodle_url('vdb_video-manager.php'));
 
 $options = empty($videodatabase->displayoptions) ? array() : unserialize($videodatabase->displayoptions);
 
@@ -53,6 +53,7 @@ if ($inpopup and $videodatabase->display == RESOURCELIB_DISPLAY_POPUP) {
     $PAGE->set_activity_record($videodatabase);
 }
 $PAGE->requires->css( '/mod/videodatabase/styles.css', true );
+$PAGE->requires->css( '/mod/videodatabase/vi-two.css', true );
 echo $OUTPUT->header();
 
 /*************************************************/
@@ -81,24 +82,63 @@ if(isset($_GET['video_id'])){
 	$res = $DB->get_records($table,array('id'=>$_GET['video_id']));
 	//print_r($res[27]);
 	$out = (array)$res[$_GET['video_id']];//[2]
-
+	/*
+	"id": "test",
+			"progress": "",
+			"video": "/videos/VIDEO01_1_Biathlon2_Begruessung.mp4",
+			"updated_at": 1480970644530,
+			"assessmentwriting": [],
+			"assessmentfillin": [],
+			"assessment": [],
+			"comments": [],
+			"slides": [],
+			"assessmentanalysis": [],
+			"highlight": [],
+			"hyperlinks": [],
+			"tags": [],
+			"toc": [],
+			"metadata": [
+				{
+					"author": "Thomas Borchert",
+					"institution": "Universität Leipzig",
+					"title": "Probe",
+					"category": "Sportunterricht",
+					"abstract": "...",
+					"length": "2000",
+					"date": null,
+					"source": "UL",
+					"thumbnail": [
+						"img/placeholder.png"
+					],
+					"tags": [
+						"sport"
+					]
+				}
+			],
+	*/
+	
+	// map database entry to internal structur eof vi-two
+	$arr = (object)array();
+	$arr->id = $out['id'];
+	$arr->video = $out['filename'];
+	$arr->metadata = array();
+	$arr->metadata[0] = (object)array();
+	$arr->metadata[0]->author = $out['contributor'];
+	$arr->metadata[0]->title = $out['title'];
+	$arr->metadata[0]->abstract = $out['description'];
+	$arr->metadata[0]->thumbnail = "still-".str_replace('.mp4','_comp.jpg',$out['filename']);
+	//print_r($out);
+	//echo json_encode($arr);
 	//
-	echo '<h2>Video: ' . $out['title'] . '</h2>';
+	echo '<h2>' . $out['title'] . '</h2>';
 	echo "<a class='button' href='./vdb_upload.php?id=". $cm->id ."&video_id=". $_GET['video_id'] ."' class='button'>Video Metadaten bearbeiten</a><br/><br/>";
 
 	// init player
-	//echo '<video id="video1" width="320" height="240" controls><source src="/videos/'.$out['filename'].'" type="video/mp4"><source src="movie.webm" type="video/webm">Your browser does not support the video tag.</video>';
-	
-  
-     $js = 
-<<<EOS
-	<script type="text/javascript">
-		require(['jquery'], function($) { 
-				$('#bam').text('snj');
-		});
-	</script>
-EOS;
-
+	//echo "<video id='video1' width=320 height=240 controls poster='images/stills/still-".str_replace('.mp4','_comp.jpg',$out['filename'] ) ."'>";
+	//echo '<source src="/videos/'.$out['filename'].'" type="video/mp4">';
+	//echo '<source src="/videos/'.str_replace(".mp4",".webm",$out["filename"]) .'" type="video/webm">';
+	//echo 'Your browser does not support the video tag.';
+	//echo '</video>';
 }else{
 	echo "No video_id provided";
 }
@@ -143,7 +183,7 @@ echo '
 				</div>
 			</div>
 			<!-- Modal -->
-			<div class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+			<div hidden class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
 				<div class="modal-dialog" role="document">
 					<div class="modal-content modal-form">
 						<div class="modal-header">
@@ -163,20 +203,31 @@ echo '
 		</div>
 ';
 	
-//
-
-echo '<div id="bam">xxx</div>';
 
 echo $OUTPUT->footer();
-//$PAGE->requires->js( new moodle_url($CFG->wwwroot . '/mod/videodatabase/js/vi-two-lib.min.js') );
-//$PAGE->requires->js( new moodle_url($CFG->wwwroot . '/mod/videodatabase/js/test2.js') ); 
-//$PAGE->requires->js_call_amd('mod_videodatabase/test','test', array());
-//$PAGE->requires->js_call_amd('mod_videodatabase/video-js','f');
-//$PAGE->requires->js( new moodle_url($CFG->wwwroot . '/mod/videodatabase/js/test2.js') ); 
 
-//$PAGE->requires->js( new moodle_url($CFG->wwwroot . '/mod/videodatabase/js/vi-two.js') );
-
-//$PAGE->requires->js_call_amd('mod_videodatabase/videodatabase_player','init');
+// load video meta data into page
+$jsondata = json_encode($arr);
+$js = 
+<<<EOS
+	<script type="text/javascript">
+		require(['jquery'], function($) { 
+				//$('#bam').text('snj');
+		});
+		const video_data = $jsondata
+			;
+		video_data.video = '/videos/'+video_data.video.replace('.mp4','.webm');
+	</script>
+EOS;
 echo $js;
+
+// load vi2 code from file
+$file=file_get_contents("js/vi-two.js");
+$vi2 = <<<EOS
+<script type="text/javascript">
+$file
+</script>
+EOS;
+echo $vi2;
 
 ?>
