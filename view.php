@@ -71,7 +71,7 @@ function bulkVideoImport() {
 	$table = "videodatabase_videos";
 	$row = 1;
 	$video_arr = array();
-	if (($handle = fopen($CFG->dirroot.'/mod/videodatabase/data/testdata.csv', "r")) !== FALSE) {
+	if (($handle = fopen($CFG->dirroot.'/mod/videodatabase/data/testdata2.csv', "r")) !== FALSE) {
 		while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
 		  $num = count($data);
 		  echo "<p>imported $num fields in line $row: <br /></p>\n";
@@ -111,7 +111,6 @@ function bulkVideoImport() {
 			$record->klasse = (int)$data[30]; echo "_$data[30]__"; // xxx bug!!! it will not run with this line
 			$record->klassenstufe = $data[31]; 
 			$record->sports = $data[32];
-			$record->filename = $data[33];
 //			echo print_r($record);
 
 			//$DB->insert_record_raw($table, $record);
@@ -127,8 +126,7 @@ function bulkVideoImport() {
 	// test
 	//return $DB->count_records($table); 
 }
-//
-//bulkVideoImport();
+
 
 /*********/
 $PAGE->set_url('/mod/videodatabase/view.php', array('id' => $cm->id));
@@ -146,7 +144,6 @@ if ($inpopup and $videodatabase->display == RESOURCELIB_DISPLAY_POPUP) {
 }
 
 $PAGE->requires->css( '/mod/videodatabase/styles.css', true );
-$PAGE->requires->css( '/mod/videodatabase/css/bootstrap.min.css');
 
 
 echo $OUTPUT->header();
@@ -167,48 +164,134 @@ $formatoptions->overflowdiv = true;
 $formatoptions->context = $context;
 $content = format_text($content, $videodatabase->contentformat, $formatoptions);
 
-//
+/***************************/
 
+//$context = {  title: "Cheese sandwich",  }
+//$context = json_encode(array("title" => "hello world"));
+//echo parent::render_from_template("test", array("title" => "hello world"));
 
 $PAGE->requires->js( new moodle_url($CFG->wwwroot . '/mod/videodatabase/amd/src/videodatabase.js'), true);
+//$PAGE->requires->js( new moodle_url($CFG->wwwroot . '/mod/videodatabase/js/vi-db.js'));
 
-echo '
-<div class="container"><br><br>
-	<div class="row-fluid">
-		<div class="col-xs-6 col-md-3 coll text-center">
-			<div class="thumbnail">
-				<a href="vdb_video-manager.php?id='. $id .'">
-					<span class="fa fa-video-camera mega" aria-hidden="true"></span>
-				</a>	
-				<h4>
-					<a href="vdb_video-manager.php?id='. $id .'">Videos</a>
-				</h4>
-			</div>
-		</div>
-		<div class="col-xs-6 col-md-3 text-center">
-			<div class="thumbnail">
-				<a href="vdb_comments.php?id='. $id .'">
-					<span class="fa fa-comments mega"></span>
-				</a>	
-				<h4>
-					<a href="vdb_comments.php?id='. $id .'">Kommentare</a>
-				</h4>
-			</div>
-		</div>
-		<div class="col-xs-6 col-md-3 text-center">
-			<div class="thumbnail">
-				<a href="vdb_admin.php?id='. $id .'">
-					<span class="fa fa-cog mega"></span>
-				</a>	
-				<h4>
-					<a href="vdb_admin.php?id='. $id .'">Datenverwaltung</a>
-				</h4>
-			</div>
-		</div>
-	</div>
-</div>
-';
+//$PAGE->requires->js_call_amd('videodatabase','init');//, $functionname, $params);
 
+/*echo "<label>Filter:</label>";
+echo "<div id='filter1'></div>";
+echo "<div id='filter2'></div>";
+*/
+
+
+echo '<a href="vdb_video-manager.php?id='. $id .'">Video Manager</a>';
+echo '<br>';
+
+echo '<a href="vdb_video-list.php?id='. $id .'">List of Videos</a>';
+
+
+	$table = "videodatabase_videos";
+
+	$res = $DB->get_records($table, $conditions=null, $sort='', $fields='*', $limitfrom=0, $limitnum=0);
+
+
+	echo '<div id="videotable" class="table-responsive">
+			<table id="the_videotable" class="table display" cellspacing="0" width="100%">
+			<thead>
+		  <tr>
+		    <th>Titel</th>
+		    <th>Sportart</th>
+		    <th>Stufe</th>
+		    <th>Fachbezogene Kompetenzen</th>
+		    <th>Bewegungsfelder</th>
+		  	<th>Aktivitäten</th>
+		  	<th>Akteure</th>
+		  	<th>Pädagogische Perspektive</th>
+		  	<th>Ort</th>
+		  	<th>Lerngruppe</th>
+		  </tr>
+		</thead>
+		<tbody>';
+		$row = 0;
+	foreach($res as $video){ 
+	$row++;
+	// prep
+	$activities = '';
+	$act = preg_replace("/\ /", "", $video->activities);
+	$arr = explode(',',$act);
+	for($i=0; $i < sizeof($arr); $i++){
+		$activities .= 'activities-'.$arr[$i].' ';
+	}
+//print_r($video);
+	$competencies = '';
+	echo "<tr class='
+		actors-" . preg_replace("/\//", "", $video->actors ) . " 
+		compentencies-" . preg_replace("/\ /", "", $video->compentencies ) . "
+		movements-" . preg_replace("/,\s/", "", $video->movements ) . " 
+		sports-" . preg_replace("/,\s/", "", $video->sports ) . " 
+		location-" . $video->location . " 
+		". $activities . "
+		". $competencies . "  
+		table-hover accordion-toggle' data-toggle='collapse' data-target='#demo".$row."'>";
+	echo "<td><a href='vdb_player.php?id=" . $id ."&video_id=" . $video->id . "'>$video->title</a></td>";
+	echo "<td>$video->sports</td>";
+	echo "<td>$video->klassenstufe</td>";
+	echo "<td>$video->compentencies</td>";
+	echo "<td>$video->movements</td>";
+
+	echo "<td>$video->activities</td>";
+	echo "<td>$video->actors</td>";
+	echo "<td>$video->perspectives</td>";
+	echo "<td>$video->location</td>";
+	echo "<td>$video->klasse</td>";
+	echo "</tr>";
+
+	/*  echo "<tr>";
+	echo "<td colspan='8' class='hiddenRow'>";
+	echo "<div class='accordian-body collapse' id='demo".$row."'>demo".$row."</div>";
+	echo "</tr>";          */
+	/*
+	echo "<td>$video->creator</td>";
+	echo "<td>$video->subject</td>";
+	echo "<td>$video->description</td>";
+	echo "<td>$video->tags</td>";
+	echo "<td>$video->publisher</td>";
+	echo "<td>$video->institution</td>";
+	echo "<td>$video->contributer</td>";
+	echo "<td>$video->date</td>";
+	echo "<td>$video->type</td>";
+	echo "<td>$video->mimetype</td>";
+	echo "<td>$video->format</td>";
+	echo "<td>$video->creator</td>";
+	echo "<td>$video->source</td>";
+	echo "<td>$video->language</td>";
+	echo "<td>$video->relation</td>";
+	echo "<td>$video->coverage</td>";
+	echo "<td>$video->rights</td>";
+	echo "<td>$video->license</td>";
+	echo "<td>$video->filename</td>";
+	echo "<td>$video->length</td>";
+	echo "<td>$video->size</td>";
+	echo "<td>$video->timemodified</td>";
+	echo "<td>$video->creator</td>";
+	*/
+
+	}    
+	echo '</tbody>
+	</table></div>';
+
+
+
+//$data = $DB->get_records_list($table, 'title', array( 'video2'));
+
+//$data = json_encode($data);
+//$data = json_decode($data, true);
+//secho print_r($data);
+
+//echo bulkVideoImport();
+
+//$PAGE->requires->js( new moodle_url($CFG->wwwroot . '/mod/videodatabase/amd/jquery.select2.js') );
+$string = file_get_contents($CFG->wwwroot . '/mod/videodatabase/data/category-schema-de.json');
+
+$json = array($data); // $json['data']
+$PAGE->requires->js_call_amd('mod_videodatabase/videodatabase','init', 'table');
 
 echo $OUTPUT->box($content, "generalbox center clearfix");
 

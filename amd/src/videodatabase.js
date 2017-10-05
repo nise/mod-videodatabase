@@ -7,10 +7,7 @@
 /* jshint ignore:start */
 define(['jquery', 'core/log', 'mod_videodatabase/jquery.dataTables'], function ($, log) {  // 'mod_videodatabase/jquery.select2',  'mod_videodatabase/test'
 	return {
-		
-
 		init: function (type) { //alert(JSON.stringify(type))
-				
 			if (type === undefined) {
 				type = 'table';
 			}

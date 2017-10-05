@@ -48,7 +48,6 @@ $completion->set_module_viewed($cm);
 
 /*********/
 $PAGE->set_url('/mod/videodatabase/vdb_video-manager.php', array('id' => $cm->id));
-$PAGE->navbar->add('Videos', new moodle_url('vdb_video-manager.php'));
 
 $options = empty($videodatabase->displayoptions) ? array() : unserialize($videodatabase->displayoptions);
 
@@ -111,6 +110,7 @@ foreach($res as $video){
 	for($i=0; $i < sizeof($arr); $i++){
 		$activities .= 'activities-'.$arr[$i].' ';
 	}
+	
 	$competencies = '';
 	echo "<div class='col-xs-6 col-md-2 video-item 
 		actors-" . preg_replace("/\//", "", $video->actors ) . " 
@@ -122,9 +122,7 @@ foreach($res as $video){
 		". $competencies ."'>";
 	
 	echo "
-		<a class='title' href='vdb_player.php?id=" . $id ."&video_id=" . $video->id ."'>
-			<img style='width:100%;' class='still-images' src='images/stills/" . 'still-'.str_replace('.mp4','_comp.jpg',$video->filename ) ."' />
-		</a>	
+		<img style='width:100%;' src='/poster.png' />
 		<div class='meta'>
 			<a class='title' href='vdb_player.php?id=" . $id ."&video_id=" . $video->id ."'>".$video->title."</a>
 			<div hidden >". substr($video->description, 0, 40)."</div>
@@ -137,22 +135,6 @@ foreach($res as $video){
 }    
 echo '</div>';
 echo "</div>";
-
-$js = 
-<<<EOS
-	<script type="text/javascript">
-		require(['jquery'], function($) { 
-			$('.still-images')
-			.hover(function () { 
-				var source = $(this).attr('src'); 
-			  	$(this).attr('src', source.replace('.jpg', '.gif'));
-			} ,function () {
-				var source = $(this).attr('src');
-				$(this).attr('src', source.replace('.gif', '.jpg'));
-		  	});
-		});
-	</script>
-EOS;
 
 //$data = $DB->get_records_list($table, 'title', array( 'video2'));
 
@@ -173,7 +155,7 @@ echo $OUTPUT->box($content, "generalbox center clearfix");
 /*********************************/
 //$PAGE->requires->js( new moodle_url($CFG->wwwroot . '/mod/videodatabase/js/bootstrap.min.js') ); 
 echo $OUTPUT->footer();
-echo $js;
+
 
 /*********************************/
 
