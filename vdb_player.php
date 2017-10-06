@@ -212,7 +212,7 @@ $js =
 <<<EOS
 	<script type="text/javascript">
 		require(['jquery'], function($) { 
-				//$('#bam').text('snj');
+				//$('#page').text('snj');
 		});
 		const video_data = $jsondata
 		;

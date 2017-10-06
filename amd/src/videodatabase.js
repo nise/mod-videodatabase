@@ -5,12 +5,12 @@
  */
 
 /* jshint ignore:start */
-define(['jquery', 'core/log', 'mod_videodatabase/jquery.dataTables'], function ($, log) {  // 'mod_videodatabase/jquery.select2',  'mod_videodatabase/test'
+define(['jquery', 'core/log', 'mod_videodatabase/jquery.dataTables'], function ($, log, uuu) {  // 'mod_videodatabase/jquery.select2',  'mod_videodatabase/test
+
 	return {
 		
-
-		init: function (type) { //alert(JSON.stringify(type))
-				
+		init: function (type) { 
+			
 			if (type === undefined) {
 				type = 'table';
 			}
@@ -153,7 +153,8 @@ define(['jquery', 'core/log', 'mod_videodatabase/jquery.dataTables'], function (
 			};
 			//console.log(JSON.stringify(json));
 
-			$(document).ready(function () {
+			$(document).ready(function () { 
+				$('#debug').html(999);
 
 				//console.log(JSON.parse(JSON.stringify(data)))
 				if (type === 'table') {

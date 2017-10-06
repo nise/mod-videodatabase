@@ -97,9 +97,11 @@ echo "<div class='collapse' id='filter2'></div><br><br><br>";
 $table = "videodatabase_videos";
 $res = $DB->get_records($table, $conditions=null, $sort='', $fields='*', $limitfrom=0, $limitnum=0);
 
+$PAGE->requires->js_call_amd('mod_videodatabase/test','init');
 
-echo '<div id="the_videotable" class="video-manager row">';
-   
+echo '<div id="the_videotabl" class="video-manager row">';
+echo '<div id="debug">Hello</div>';
+
 $row = 0;
 foreach($res as $video){ 
 	$row++;
@@ -137,42 +139,50 @@ foreach($res as $video){
 echo '</div>';
 echo "</div>";
 
+
 $js = 
 <<<EOS
-	<script type="text/javascript">
-		require(['jquery'], function($) { 
-			$('.still-images')
-			.hover(function () { 
-				var source = $(this).attr('src'); 
-			  	$(this).attr('src', source.replace('.jpg', '.gif'));
-			} ,function () {
-				var source = $(this).attr('src');
-				$(this).attr('src', source.replace('.gif', '.jpg'));
-		  	});
-		});
-	</script>
+	<script type="text/javascript"></script>
 EOS;
 
-//$data = $DB->get_records_list($table, 'title', array( 'video2'));
+$PAGE->requires->js_amd_inline(" 
+require(['jquery'], function($) {
+	var source = '';	
+	$('.still-images')
+		.hover(function () { 
+			source = $(this).attr('src'); 
+			$(this).attr('src', source.replace('.jpg', '.gif'));
+		} ,function () {
+			source = $(this).attr('src');
+			$(this).attr('src', source.replace('.gif', '.jpg'));
+		});
+});
+");
 
-//$data = json_encode($data);
-//$data = json_decode($data, true);
-//secho print_r($data);
+$PAGE->requires->js_amd_inline(" 
+require(['jquery', 'mod_videodatabase/jquery.dataTables'], function ($, uuu) { 
+	//$('#debug').html(999)
+	
+});
+");
+// $data = $DB->get_records_list($table, 'title', array( 'video2'));
+// $data = json_encode($data);
+// $data = json_decode($data, true);
+// echo print_r($data);
 
 
 //$PAGE->requires->js( new moodle_url($CFG->wwwroot . '/mod/videodatabase/amd/jquery.select2.js') );
-$string = file_get_contents($CFG->wwwroot . '/mod/videodatabase/data/category-schema-de.json');
+//$string = file_get_contents($CFG->wwwroot . '/mod/videodatabase/data/category-schema-de.json');
 
-$json = array($data); // $json['data']
+//$json = array($data); // $json['data']
 
-$PAGE->requires->js_call_amd('mod_videodatabase/videodatabase','init', array('div'));
 
 echo $OUTPUT->box($content, "generalbox center clearfix");
 
 /*********************************/
 //$PAGE->requires->js( new moodle_url($CFG->wwwroot . '/mod/videodatabase/js/bootstrap.min.js') ); 
 echo $OUTPUT->footer();
-echo $js;
+//echo $js;
 
 /*********************************/
 

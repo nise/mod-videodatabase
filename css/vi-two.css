@@ -27,17 +27,17 @@
 }
 
 .vi2-timeline-main .ui-slider-handle {
-		display:none;
-		position:absolute;
-		margin:0;
-		padding:0;
-		width:4px;
-		height:inherit;
-		background-color:#555;
-		cursor:col-resize;
-		border:0;
-		z-index:200;
-		top:0;
+	display:none;
+	position:absolute;
+	margin:0;
+	padding:0;
+	width:4px;
+	height:inherit;
+	background-color:#555;
+	cursor:col-resize;
+	border:0;
+	z-index:200;
+	top:0;
 }
 
 .vi2-timeline-main .ui-slider-handle:hover { 
@@ -279,7 +279,7 @@ width: 100%;
 author: niels.seidel@nise81.com
 */
 
-video {
+video, #seq, .seq {
 	margin-left: 20px;
 	width:inherit;
 }
