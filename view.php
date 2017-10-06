@@ -141,7 +141,7 @@ echo '
 			</div>
 		</div>
 	</div>
-	<a href="/moodle/mod/videodatabase/view.php?id=2&dummy=true">import dummy data</a>
+	<a href="/moodle/mod/videodatabase/view.php?id='. $id .'&dummy=true">import dummy data</a>
 </div>
 ';
 
