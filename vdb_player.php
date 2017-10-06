@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Page module version information
  *
@@ -145,13 +144,13 @@ if(isset($_GET['video_id'])){
 
 echo '
 <div id="wrapper" style="overflow:hidden;">
-		<div id="page" style="overflow:hidden;">
+		<div id="pagex" style="overflow:hidden;">
 			<!-- Storage -->
 			<div style="display:none; visibility:hidden;" id="vi2"></div>
 			<!-- Main -->
 			<div class="container-fluid">
 				<div class="row">
-					<div id="videowrapper" class="col-lg-9 col-md-9 col-sm-9 ">
+					<div id="videowrapper" class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
 						<div id="seq" class=""></div>
 						<div id="overlay" class=""></div>
 						<div id="split" class="col-md-9"></div>
@@ -161,7 +160,7 @@ echo '
 						<div id="accordion"></div>
 					</div>
 				</div>
-				<div id="video-controls" class="video-controls">
+				<div id="video-controls" class="video-controls col-lg-9 col-md-9 col-sm-12 col-xs-12">
 					<div class="timelines">
 						<!--<div class="vi2-video-seeklink vi2-btn"></div>-->
 						<div class="vi2-timeline-top"></div>
@@ -203,7 +202,6 @@ echo '
 		</div>
 ';
 	
-
 echo $OUTPUT->footer();
 
 // load video meta data into page

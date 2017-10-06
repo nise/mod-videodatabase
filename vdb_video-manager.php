@@ -11,7 +11,7 @@
  */
 
 require('../../config.php');
-require_once($CFG->dirroot.'/mod/videodatabase/locallib.php');
+    require_once($CFG->dirroot.'/mod/videodatabase/locallib.php');
 require_once($CFG->libdir.'/completionlib.php');
 
 $id      = optional_param('id', 0, PARAM_INT); // Course Module ID
@@ -23,7 +23,6 @@ if ($p) {
         print_error('invalidaccessparameter');
     }
     $cm = get_coursemodule_from_instance('videodatabase', $videodatabase->id, $videodatabase->course, false, MUST_EXIST);
-
 } else {
     if (!$cm = get_coursemodule_from_id('videodatabase', $id)) {
         print_error('invalidcoursemodule');
@@ -86,7 +85,7 @@ $formatoptions->overflowdiv = true;
 $formatoptions->context = $context;
 $content = format_text($content, $videodatabase->contentformat, $formatoptions);
 
-echo "<div class='container'>";
+echo "<div class='container-fluid'>";
 echo "<label>Filter:</label>";
 echo "<div id='filter1'></div>";
 echo '<a class="btn btn-primary" role="button" data-toggle="collapse" href="#filter2" aria-expanded="false" aria-controls="filter2">Erweiterte Filter</a>';
@@ -95,25 +94,23 @@ echo "<div class='collapse' id='filter2'></div><br><br><br>";
 
 // fetch data
 $table = "videodatabase_videos";
-$res = $DB->get_records($table, $conditions=null, $sort='', $fields='*', $limitfrom=0, $limitnum=0);
+$res = $DB->get_records($table, $conditions = null, $sort = '', $fields = '*', $limitfrom = 0, $limitnum = 0);
 
-$PAGE->requires->js_call_amd('mod_videodatabase/test','init');
-
-echo '<div id="the_videotabl" class="video-manager row">';
+$PAGE->requires->js_call_amd('mod_videodatabase/test', 'init');
 echo '<div id="debug">Hello</div>';
-
+echo '<div id="the_videotabl" class="video-manager row">';
 $row = 0;
-foreach($res as $video){ 
-	$row++;
-	// prep
-	$activities = '';
-	$act = preg_replace("/\ /", "", $video->activities);
-	$arr = explode(',',$act);
-	for($i=0; $i < sizeof($arr); $i++){
-		$activities .= 'activities-'.$arr[$i].' ';
-	}
-	$competencies = '';
-	echo "<div class='col-xs-6 col-md-2 video-item 
+foreach ($res as $video) {
+    $row++;
+    // prep
+    $activities = '';
+    $act = preg_replace("/\ /", "", $video->activities);
+    $arr = explode(',', $act);
+    for ($i=0; $i < sizeof($arr); $i++) {
+        $activities .= 'activities-'.$arr[$i].' ';
+    }
+    $competencies = '';
+    echo "<div class='col-xs-12 col-sm-5 col-md-2 video-item 
 		actors-" . preg_replace("/\//", "", $video->actors ) . " 
 		compentencies-" . preg_replace("/\ /", "", $video->compentencies ) . "
 		movements-" . preg_replace("/,\s/", "", $video->movements ) . " 
@@ -121,10 +118,10 @@ foreach($res as $video){
 		location-" . $video->location . " 
 		". $activities . "
 		". $competencies ."'>";
-	
-	echo "
+    
+    echo "
 		<a class='title' href='vdb_player.php?id=" . $id ."&video_id=" . $video->id ."'>
-			<img style='width:100%;' class='still-images' src='images/stills/" . 'still-'.str_replace('.mp4','_comp.jpg',$video->filename ) ."' />
+			<img style='width:100%;' class='still-images' src='images/stills/" . 'still-'.str_replace('.mp4', '_comp.jpg', $video->filename ) ."' />
 		</a>	
 		<div class='meta'>
 			<a class='title' href='vdb_player.php?id=" . $id ."&video_id=" . $video->id ."'>".$video->title."</a>
@@ -134,13 +131,12 @@ foreach($res as $video){
 			<div class=''>".$video->sports."</div>	
 		</div>		
 	</div>";
-	
-}    
+}
 echo '</div>';
 echo "</div>";
 
 
-$js = 
+$js =
 <<<EOS
 	<script type="text/javascript"></script>
 EOS;
@@ -177,7 +173,7 @@ require(['jquery', 'mod_videodatabase/jquery.dataTables'], function ($, uuu) {
 //$json = array($data); // $json['data']
 
 
-echo $OUTPUT->box($content, "generalbox center clearfix");
+//echo $OUTPUT->box($content, "generalbox center clearfix");
 
 /*********************************/
 //$PAGE->requires->js( new moodle_url($CFG->wwwroot . '/mod/videodatabase/js/bootstrap.min.js') ); 
@@ -185,6 +181,3 @@ echo $OUTPUT->footer();
 //echo $js;
 
 /*********************************/
-
-
-

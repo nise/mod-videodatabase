@@ -59,76 +59,6 @@ $completion = new completion_info($course);
 $completion->set_module_viewed($cm);
 
 
-
-/*
- * @name: 
- * Imports dataset with video metadate from csv-file and stores them in the database 
- * see: https://docs.moodle.org/dev/Data_manipulation_API#Example.28s.29
- **/
-function bulkVideoImport() {
-	global $CFG, $DB;
-	//$DB->set_debug(true);
-	$table = "videodatabase_videos";
-	$row = 1;
-	$video_arr = array();
-	if (($handle = fopen($CFG->dirroot.'/mod/videodatabase/data/testdata.csv', "r")) !== FALSE) {
-		while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-		  $num = count($data);
-		  echo "<p>imported $num fields in line $row: <br /></p>\n";
-		  $row++;
-		  echo "_$data[17]__";
-			$record = new stdClass();
-			$record->id = (int)$row;
-			//$record->video_db = $row;
-			$record->title = (string)$data[2];
-			$record->creator = $data[3];
-			$record->subject = $data[4];
-			$record->description = $data[5];
-			$record->publisher = $data[6];
-			$record->contributor = $data[7];
-			//$record->date = (int)$data[8];
-			$record->type = $data[9];
-			$record->mimetype = $data[10];
-			$record->format = $data[11];
-			$record->source = $data[12];
-			$record->language = $data[13];
-			$record->relation = $data[14];
-			$record->coverage = $data[15];
-			$record->rights = $data[16];
-			$record->filename = $data[17];
-			$record->length = (int)$data[18];
-			$record->size = (int)$data[19];
-			$record->license = $data[20];
-			$record->institution = $data[21];
-			$record->tags = $data[22];
-		//	$record->timemodified = (int)$data[23];
-			$record->compentencies = $data[24];
-			$record->movements = $data[25];
-			$record->activities = $data[26]; 
-			$record->actors = $data[27];
-			$record->perspectives = $data[28];
-			$record->location = $data[29];
-			$record->klasse = (int)$data[30];  // xxx bug!!! it will not run with this line
-			$record->klassenstufe = $data[31]; 
-			$record->sports = $data[32];
-//			echo print_r($record);
-
-			//$DB->insert_record_raw($table, $record);
-			array_push($video_arr, $record);
-		}
-		fclose($handle);
-	}
-	// delete all records
-	$DB->delete_records($table, array('subject'=>'sport'));
-	// insert into database
-	echo $DB->insert_records($table, $video_arr);
-	
-	// test
-	//return $DB->count_records($table); 
-}
-//
-//bulkVideoImport();
-
 /*********/
 $PAGE->set_url('/mod/videodatabase/view.php', array('id' => $cm->id));
 
@@ -167,12 +97,18 @@ $formatoptions->context = $context;
 $content = format_text($content, $videodatabase->contentformat, $formatoptions);
 
 //
-
+//
+if(isset($_GET["dummy"]) && $_GET["dummy"] == 'true'){
+	bulkVideoImport($PAGE);
+} 
 
 $PAGE->requires->js( new moodle_url($CFG->wwwroot . '/mod/videodatabase/amd/src/videodatabase.js'), true);
 
 echo '
 <div class="container"><br><br>
+	<div id="alert" hidden class="alert alert-success" role="alert">
+		<strong>Well done!</strong> You successfully important the dummy dataset.
+	</div>
 	<div class="row-fluid">
 		<div class="col-xs-6 col-md-3 coll text-center">
 			<div class="thumbnail">
@@ -205,11 +141,12 @@ echo '
 			</div>
 		</div>
 	</div>
+	<a href="/moodle/mod/videodatabase/view.php?id=2&dummy=true">import dummy data</a>
 </div>
 ';
 
 
-echo $OUTPUT->box($content, "generalbox center clearfix");
+//echo $OUTPUT->box($content, "generalbox center clearfix");
 
 /*********************************/
 $strlastmodified = get_string("lastmodified");
@@ -218,6 +155,73 @@ $strlastmodified = get_string("lastmodified");
 
 
 echo $OUTPUT->footer();
+
+
+
+/*
+ * @name: 
+ * Imports dataset with video metadate from csv-file and stores them in the database 
+ * see: https://docs.moodle.org/dev/Data_manipulation_API#Example.28s.29
+ **/
+function bulkVideoImport($PAGE) {
+	global $CFG, $DB;
+	//$DB->set_debug(true);
+	$table = "videodatabase_videos";
+	$row = 1;
+	$video_arr = array();
+	if (($handle = fopen($CFG->dirroot.'/mod/videodatabase/data/testdata.csv', "r")) !== FALSE) {
+		while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+		  $num = count($data);
+		 	$row++;
+			$record = new stdClass();
+			$record->id = (int)$row;
+			//$record->video_db = $row;
+			$record->title = (string)$data[2];
+			$record->creator = $data[3];
+			$record->subject = $data[4];
+			$record->description = $data[5];
+			$record->publisher = $data[6];
+			$record->contributor = $data[7];
+			//$record->date = (int)$data[8];
+			$record->type = $data[9];
+			$record->mimetype = $data[10];
+			$record->format = $data[11];
+			$record->source = $data[12];
+			$record->language = $data[13];
+			$record->relation = $data[14];
+			$record->coverage = $data[15];
+			$record->rights = $data[16];
+			$record->filename = $data[17];
+			$record->length = (int)$data[18];
+			$record->size = (int)$data[19];
+			$record->license = $data[20];
+			$record->institution = $data[21];
+			$record->tags = $data[22];
+		//	$record->timemodified = (int)$data[23];
+			$record->compentencies = $data[24];
+			$record->movements = $data[25];
+			$record->activities = $data[26]; 
+			$record->actors = $data[27];
+			$record->perspectives = $data[28];
+			$record->location = $data[29];
+			$record->klasse = (int)$data[30];
+			$record->klassenstufe = $data[31]; 
+			$record->sports = $data[32];
+			// collect
+			array_push($video_arr, $record);
+		}
+		fclose($handle);
+	}
+	// delete all records
+	$DB->delete_records($table, array('subject'=>'sport'));
+	// insert into database
+	$DB->insert_records($table, $video_arr);
+	$PAGE->requires->js_amd_inline(" 
+		require(['jquery'], function (jQuery) { 
+			jQuery('#alert').show();
+		});
+	"); 
+}
 
 /*********************************/
 
