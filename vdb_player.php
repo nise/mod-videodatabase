@@ -53,6 +53,7 @@ if ($inpopup and $videodatabase->display == RESOURCELIB_DISPLAY_POPUP) {
 }
 $PAGE->requires->css( '/mod/videodatabase/styles.css', true );
 $PAGE->requires->css( '/mod/videodatabase/css/vi-two.css', true );
+//echo '<script language="JavaScript" type="text/javascript" src="/moodle/lib/jquery/jquery-3.1.0.min.js"></script>';
 echo $OUTPUT->header();
 
 /*************************************************/
@@ -206,24 +207,21 @@ echo $OUTPUT->footer();
 
 // load video meta data into page
 $jsondata = json_encode($arr);
-$js = 
-<<<EOS
-	<script type="text/javascript">
-		require(['jquery'], function($) { 
-				//$('#page').text('snj');
-		});
-		const video_data = $jsondata
-		;
-		video_data.video = '/videos/'+video_data.video.replace('.mp4','.webm');
-	</script>
-EOS;
-echo $js;
 
 // load vi2 code from file
 $file=file_get_contents("js/vi-two.js");
 $vi2 = <<<EOS
 <script type="text/javascript">
-$file
+require(['jquery'], function($) {
+	var jQuery = $; 
+	const video_data = $jsondata
+	;
+	video_data.video = '/videos/'+video_data.video.replace('.mp4','.webm');
+	// $(document).ready(function () { 
+	$file
+	//});
+});
+
 </script>
 EOS;
 echo $vi2;

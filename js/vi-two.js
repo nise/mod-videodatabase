@@ -25977,89 +25977,52 @@ $.inherit = function() {
     return moment_with_locales;
 
 }));var
-					vi2 = {}, // global variable				
-					Vi2 = {}  // set the Namespace for the classes
-					;
+	vi2 = {}, // global variable				
+	Vi2 = {}  // set the Namespace for the classes
+	;
 
-				function initVideo(db) { 
-					vi2.db = db;
-					vi2.dom = "#vi2";
-					var videoData = vi2.db.getStreamById('test');
-					
-					var video = $('<div></div>')
-						.attr('type', "video")
-						.attr('starttime', 0)
-						.attr('duration', 7)
-						.attr('id', "myvideo")
-						.text(videoData.video)
-						.appendTo(vi2.dom);
-					var viLog = new Vi2.Log({ logger_path: '/log' });
-					$(this).bind('log', function (e, msg) { viLog.add(msg); });
+function initVideo(db) {
+	vi2.db = db;
+	vi2.dom = "#vi2";
+	var videoData = vi2.db.getStreamById('test');
 
-					vi2.utils = new Vi2.Utils();
-					var options = {
-						id: 'test',
-						embed: false,
-						/*selector: phaseHasSlides === 0 ? '#seq' : '#screen',
-						videoWidth: phaseHasSlides === 1 ? 28 : 900,  // video größe hängt nicht von den angeschalteten widgets, sondern von den anotierten ressourcen ab
-						videoHeight: phaseHasSlides === 1 ? 15 : 450,*/
-						markupType: 'html'
-						//thumbnail: _this.db.getMetadataById(_this.currentVideo).thumbnail[2]
-					};
-					vi2.observer = new Vi2.Observer(options);
-					vi2.observer.init(0);
-					vi2.observer.parse(vi2.dom, 'html');
-					vi2.observer.player.video.oncanplay = function (e) {
-						vi2.observer.player.play();
-					};
-				}
-		/*		
-				var video_data = {
-    "_id": "test",
-    "id": "test",
-    "progress": "",
-    "video": "/videos/VIDEO01_1_Biathlon2_Begruessung.mp4",
-    "updated_at": 1480970644530,
-    "assessmentwriting": [],
-    "assessmentfillin": [],
-    "assessment": [],
-    "comments": [],
-    "slides": [],
-    "assessmentanalysis": [],
-    "highlight": [],
-    "hyperlinks": [],
-    "tags": [],
-    "toc": [],
-    "metadata": [
-        {
-            "author": "Thomas Borchert",
-            "institution": "Universität Leipzig",
-            "title": "Probe",
-            "category": "Sportunterricht",
-            "abstract": "...",
-            "length": "2000",
-            "date": null,
-            "source": "UL",
-            "thumbnail": [
-                "img/placeholder.png"
-            ],
-            "tags": [
-                "sport"
-            ]
-        }
-    ],
-    "__v": 0
-};
-*/
+	var video = $('<div></div>')
+		.attr('type', "video")
+		.attr('starttime', 0)
+		.attr('duration', 7)
+		.attr('id', "myvideo")
+		.text(videoData.video)
+		.appendTo(vi2.dom);
+	var viLog = new Vi2.Log({ logger_path: '/log' });
+	$(this).bind('log', function (e, msg) { viLog.add(msg); });
 
-				$(document).ready(function () { 
-					//vi2 = new ViLab(server, "<%= items[0]._id %>");
-					vi2.db = new Vi2.DataBase({ modus: 'native', data: video_data, path: ''}, window, 'initVideo', undefined);//this.server_url+this.plugin_dir
-					vi2.db.init();
-					vi2.dom = "#vi2";
-				
+	vi2.utils = new Vi2.Utils();
+	var options = {
+		id: 'test',
+		embed: false,
+		/*selector: phaseHasSlides === 0 ? '#seq' : '#screen',
+		videoWidth: phaseHasSlides === 1 ? 28 : 900,  // video größe hängt nicht von den angeschalteten widgets, sondern von den anotierten ressourcen ab
+		videoHeight: phaseHasSlides === 1 ? 15 : 450,*/
+		markupType: 'html'
+		//thumbnail: _this.db.getMetadataById(_this.currentVideo).thumbnail[2]
+	};
+	vi2.observer = new Vi2.Observer(options);
+	vi2.observer.init(0);
+	vi2.observer.parse(vi2.dom, 'html');
+	vi2.observer.player.video.oncanplay = function (e) {
+		vi2.observer.player.play();
+	};
+}
 
-				});
+
+$(document).ready(function () {
+	//vi2 = new ViLab(server, "<%= items[0]._id %>");
+	vi2.db = new Vi2.DataBase({ modus: 'native', data: video_data, path: '' }, 'window', 'initVideo', undefined);//this.server_url+this.plugin_dir
+	vi2.db.init();
+	vi2.dom = "#vi2";
+
+
+});
 /* 
 * name: Vi2.Observer 
 *	author: niels.seidel@nise81.com
@@ -26510,112 +26473,113 @@ Vi2.Observer = $.inherit(/* @lends Observer# **/{
 
 
 	/* class DataBase **/ 
-	Vi2.DataBase = $.inherit(/** @lends DataBase# */{
+	Vi2.DataBase = $.inherit(/** @lends DataBase# */ {
 
 		/** 
 		*		@constructs
 		*		@param {object} options An object containing the parameters
 		*		@param {function} call_back Function that will be called after relevant data is available 
 		*/
-  	__constructor : function(options, call_back, fn, video_id) {  
-  		this.call_back = call_back;
-  		var _this = this;
-  		this.options = $.extend(this.options, options); 
-  		this._d = 0;
-  		this.init(fn);
-      
-		},
+  	__constructor:function(options, call_back, fn, video_id) {
+		this.call_back = call_back; 
+		var _this = this; 
+		this.options = $.extend(this.options, options); 
+		this._d = 0; 
+		this.init(fn); 
+
+		}, 
 				
-		name : 'dataBase',
-		options : {
-			modus: 'REST',
-			path :'',
-			jsonFiles: [
+		name:'dataBase', 
+		options: {
+			modus:'REST', 
+			path:'', 
+			jsonFiles:[
   		//	{path: '/json/videos/', storage: 'json_data'}, 
   		//	{path: '/groups', storage: 'json_group_data'},
 				// {path: this.options.path+'data-slides.json', storage: 'json_slide_data'},
   		//	{path: '/json/users', storage: 'json_user_data'}
   		]
 		}, // ?
-		call_back : {},
-		_d : 0,
-		json_data : {},
-		json_slide_data : {},
-		json_user_data : {},
-		content_selector : '#content',
-		dom : '#hydro1', // unused
+		call_back: {}, 
+		_d:0, 
+		json_data: {}, 
+		json_slide_data: {}, 
+		json_user_data: {}, 
+		content_selector:'#content', 
+		dom:'#hydro1', // unused
 		
 		
-		init : function(fn){
-			var _this = this;
-			if( this.options.modus === 'REST' ){  
-					$.each(this.options.jsonFiles, function(key, file) { 
-				    console.log("making requst for " + file.path);  
-				    _this.loadJSON(file.path, file.storage, fn);
-				   });
-	    }else if( this.options.data !== undefined ){
-	    	this.json_data = this.options.data;
-	    	this.call_back[fn](this);
-	    }else{
-	    	console.log('no data available at vi-two databases');
-	    }
-		},
+		init:function(fn) {
+			var _this = this; 
+			if (this.options.modus === 'REST') {
+				$.each(this.options.jsonFiles, function(key, file) {
+				    console.log("making requst for " + file.path); 
+				    _this.loadJSON(file.path, file.storage, fn); 
+				}); 
+			}else if (this.options.data !== undefined && fn !== undefined ) {
+				this.json_data = this.options.data; 
+				//window[fn](this); 
+				initVideo(this);
+			}else {
+				console.log('no data available at vi-two databases'); 
+			}
+		}, 
 
 	/**
 	*	@param {Sring} URL of JSON file
 	*	@param {Object} Internal Object where the fetched data will be stored for processing within the class 
 	*/
-	loadJSON : function(jsonURL, storage, fn){ 
-		var _this = this;
-    $.ajax({
-        type: "get",
-        beforeSend: function(xhr){
-    				if (xhr.overrideMimeType){
-				      xhr.overrideMimeType("application/json");
-    				}
-  			},
-        url: _this.options.path + jsonURL,
-        dataType: 'json',
-        success: function(data){ 
-            //alert("got " + jsonURL);
-            _this[storage] = data;  
-            
-            //alert(JSON.stringify(_this.json_data))
-            _this._d++; 
-            if (_this._d === Object.size( _this.options.jsonFiles ) ){ 
-            	console.log('done'); 
-            	// call
-            	_this.call_back[fn]();
-            	
-            }
-        },
-        error: function(e){
-        	//window.location = "/login"; 
-					var err = new Error('Could not catch data');
+	loadJSON:function(jsonURL, storage, fn) {
+		var _this = this; 
+$.ajax( {
+type:"get", 
+beforeSend:function(xhr) {
+				if (xhr.overrideMimeType) {
+				      xhr.overrideMimeType("application/json"); 
 				}
-    });
-	},
+			}, 
+url:_this.options.path + jsonURL, 
+dataType:'json', 
+success:function(data) {
+//alert("got " + jsonURL);
+_this[storage] = data; 
+
+//alert(JSON.stringify(_this.json_data))
+_this._d++; 
+if (_this._d === Object.size(_this.options.jsonFiles)) {
+	console.log('done'); 
+	// call
+            	_this.call_back[fn](); 
+	
+            }
+}, 
+error:function(e) {
+	//window.location = "/login"; 
+					var err = new Error('Could not catch data'); 
+				}
+}); 
+	}, 
 
 
 /* DB Calls */	
 	
 	/* returns true if stream of id exists */
-	isStream : function(id){
-		var t = false;
-		$.each(this.json_data, function(val){
-			if (this.id === id){
-				t = true;
+	isStream:function(id) {
+		var t = false; 
+		$.each(this.json_data, function(val) {
+			if (this.id === id) {
+				t = true; 
 			}
-		});
-		return t;
-	},
+		}); 
+		return t; 
+	}, 
 		
 	//get stream by id
-	getStreamById : function(id){ 
-		if(this.json_data === undefined){
-			return {};
-		}else{
-			return this.json_data;
+	getStreamById:function(id) {
+		if (this.json_data === undefined) {
+			return {}; 
+		}else {
+			return this.json_data; 
 		}
 		// old:
 		/*
@@ -26628,228 +26592,227 @@ Vi2.Observer = $.inherit(/* @lends Observer# **/{
 		
 		return stream;
 		*/
-	},
+	}, 
 			
 
 
 	/* CATEGORIES*/
 
 	/* returns data of all categories */
-	getAllCategories : function(){ 
-		return this.json_data.categories;
-	},
+	getAllCategories:function() {
+		return this.json_data.categories; 
+	}, 
 	
 	
 	// returns ordered list of all categories
-	getCategoryTaxonomie : function(){
-		var cat = {};
-		$.each(this.json_data.categories, function(i,val){ 
-				cat[this.pos] = {first_level: this.title, desc: this.desc};
+	getCategoryTaxonomie:function() {
+		var cat =  {}; 
+		$.each(this.json_data.categories, function(i, val) {
+				cat[this.pos] =  {first_level:this.title, desc:this.desc}; 
 		}); 
-		return cat;
-	},
+		return cat; 
+	}, 
 	
 	
 	/* returns data of the requested category */
-	getCategory : function(cat_name){
-		var data = {};
-		$.each(this.json_data.categories, function(i,val){ 
-			if(this.title === cat_name){
-				data = {first_level: this.title, desc: this.desc, pos: this.pos, link: this.link, icon:this.icon};
-			} 
+	getCategory:function(cat_name) {
+		var data =  {}; 
+		$.each(this.json_data.categories, function(i, val) {
+			if (this.title === cat_name) {
+				data =  {first_level:this.title, desc:this.desc, pos:this.pos, link:this.link, icon:this.icon}; 
+			}
 		}); 
-		return data;
-	},
+		return data; 
+	}, 
 	
 
 	/* META DATA */
 
 	//
-	getMetadataById : function(id){ 
-		return this.getStreamById(id).metadata[0];
-	},
+	getMetadataById:function(id) {
+		return this.getStreamById(id).metadata[0]; 
+	}, 
 		
 	//get all titles
-	getTitles : function(){
-		var titles = [];
-		$.each(this.json_data, function(val){
-				titles.push({first_level: this.metadata[0].title});
-		});
-		return removeDuplicates(titles);
-	},
+	getTitles:function() {
+		var titles = []; 
+		$.each(this.json_data, function(val) {
+				titles.push( {first_level:this.metadata[0].title}); 
+		}); 
+		return removeDuplicates(titles); 
+	}, 
 	
 	//get all authors
-	getAuthors : function(){
-		var authors = [];
-		$.each(this.json_data, function(val){
-				authors.push({first_level: this.metadata[0].author});
-		});
-		return removeDuplicates(authors);
-	},
+	getAuthors:function() {
+		var authors = []; 
+		$.each(this.json_data, function(val) {
+				authors.push( {first_level:this.metadata[0].author}); 
+		}); 
+		return removeDuplicates(authors); 
+	}, 
 	
 	/* - - */
-	getStreamsOfSameAuthor : function(id){
+	getStreamsOfSameAuthor:function(id) {
 		var author = this.getMetadataById(id).author; 
-		var authors = [];
-		$.each(this.json_data, function(i, stream){ 
-				if(stream.metadata[0].author === author && stream.id != id){ 
+		var authors = []; 
+		$.each(this.json_data, function(i, stream) {
+				if (stream.metadata[0].author === author && stream.id != id) {
 					authors.push(stream.id); //$('#debug').val($('#debug').val() + stream.id);
 				}
-		});
-		return authors;
+		}); 
+		return authors; 
 	}, 
 	
 	
 
 	/* TAGS */	
 
-	/* returns all tags of a video/stream **/
-	getTagsById : function(id){
-		if(this.json_data.tags === undefined){
-			return {};
-		}else{
-			return this.getStreamById(id).tags;
+	/* returns all tags of a video/stream *  */
+	getTagsById:function(id) {
+		if (this.json_data.tags === undefined) {
+			return {}; 
+		}else {
+			return this.getStreamById(id).tags; 
 		}
-	},
+	}, 
 	
 	/* returns all comments related to an video **/
-	getCommentsById : function(id){
-		if( this.getStreamById(id).comments === null ){
+	getCommentsById:function(id) {
+		if (this.getStreamById(id).comments === null) {
 			return {}
-		}else{
-			return this.getStreamById(id).comments;
+		}else {
+			return this.getStreamById(id).comments; 
 		}	
-	},
+	}, 
 		
 	/* returns all tags related to the whole video collection **/
-	getTagList : function(){
-		var tags = [];
-		$.each(this.json_data, function(val){
-			$.each(this.tags, function(val){
-				tags.push({first_level: this.tagname});
-			});
-		});
-		return this.removeDuplicates(tags).sort();
-	},
+	getTagList:function() {
+		var tags = []; 
+		$.each(this.json_data, function(val) {
+			$.each(this.tags, function(val) {
+				tags.push( {first_level:this.tagname}); 
+			}); 
+		}); 
+		return this.removeDuplicates(tags).sort(); 
+	}, 
 	
 	/* returns ordered list of all tags */
-	getTagTaxonomie : function(){ 
-		var tax = [];
-		$.each(this.json_data._taxonomy, function(i, stream){
-			tax.push({first_level: this.id, second_level: this.sub});	
-		});
-		return tax;
-	},
+	getTagTaxonomie:function() {
+		var tax = []; 
+		$.each(this.json_data._taxonomy, function(i, stream) {
+			tax.push( {first_level:this.id, second_level:this.sub}); 	
+		}); 
+		return tax; 
+	}, 
 	
 	/* -- */ 
-	getStreamsWithSameTag : function(id){
-		var _this = this;
-		var streams = [];
+	getStreamsWithSameTag:function(id) {
+		var _this = this; 
+		var streams = []; 
 		var tags = this.getStreamById(id).tags; 
-		$.each(tags, function(i, the_tag_name){	
-			$.each(_this.json_data, function(j, stream){  
-				$.each(stream.tags, function(k, tag){ 
-					if(this.tagname === the_tag_name.tagname){ 
+		$.each(tags, function(i, the_tag_name) {	
+			$.each(_this.json_data, function(j, stream) {
+				$.each(stream.tags, function(k, tag) {
+					if (this.tagname === the_tag_name.tagname) {
 					 streams.push(stream.id); //$('#debug').val($('#debug').val() +' '+ stream.id);
 					}
-				});
-			});			
-		});
-		return streams;
-	},
+				}); 
+			}); 			
+		}); 
+		return streams; 
+	}, 
 	
 	
 	/* -- */
-	getRandomStreams : function( id ){
-		var _this = this;
-		var streams = [];
-		$.each(_this.json_data, function(j, stream){ 
-			streams.push(stream.id);
-		});
+	getRandomStreams:function(id) {
+		var _this = this; 
+		var streams = []; 
+		$.each(_this.json_data, function(j, stream) {
+			streams.push(stream.id); 
+		}); 
 		return streams; // xxx need to be sort random
-	},
+	}, 
 	
 	
 
 	/* LINKS */
 	
 		/* -- */
-	getLinkTargetsById : function(id){
+	getLinkTargetsById:function(id) {
 		var links = []; 
-		$.each(	this.getStreamById(id).hyperlinks, function(val){ 
-			links.push(this.target);  //$('#debug').val($('#debug').val() + this.target);
-		});
-		return	links;
-	},
+		$.each(	this.getStreamById(id).hyperlinks, function(val) {
+			links.push(this.target); //$('#debug').val($('#debug').val() + this.target);
+		}); 
+		return	links; 
+	}, 
 	
 	/* -- */
-	getLinkSourcesById : function(id){
-		var links = [];	
-		$.each(this.json_data, function(i, stream){
-			$.each(stream.hyperlinks, function(i, link){
-				if(this.target === id){
+	getLinkSourcesById:function(id) {
+		var links = []; 	
+		$.each(this.json_data, function(i, stream) {
+			$.each(stream.hyperlinks, function(i, link) {
+				if (this.target === id) {
 				 links.push(stream.id); //$('#debug').val($('#debug').val() +' '+ stream.id);
 				}
-			});
-		});			
-		return links;	
-	},
+			}); 
+		}); 			
+		return links; 	
+	}, 
 	
 	/* -- */ 	
-	getLinksById : function(id){
+	getLinksById:function(id) {
 		return this.getStreamById(id).hyperlinks; 
-	},
+	}, 
 	
 	/* -- */ 	
-	getAssessmentFillInById : function(id){
+	getAssessmentFillInById:function(id) {
 		return this.getStreamById(id).assessmentfillin; 
-	},
+	}, 
 	
 	/* -- */ 	
-	getAssessmentWritingById : function(id){
+	getAssessmentWritingById:function(id) {
 		return this.getStreamById(id).assessmentwriting; 
-	},
+	}, 
 	
 	/* -- */ 	
-	getAssessmentById : function(id){
-		if(this.json_data.assessment === undefined){
-			return {};
-		}else{	
+	getAssessmentById:function(id) {
+		if (this.json_data.assessment === undefined) {
+			return {}; 
+		}else {	
 			return this.json_data.assessment; 
 			//return this.getStreamById(id).assessment;
 		}
-	},
+	}, 
 	
 	/* returns all comments related to an video **/
-	getAnalysisById : function(id){  
-		return this.getStreamById(id).assessmentanalysis === null ? {} : this.getStreamById(id).assessmentanalysis;
-	},
+	getAnalysisById:function(id) {
+		return this.getStreamById(id).assessmentanalysis === null? {}:this.getStreamById(id).assessmentanalysis; 
+	}, 
 	
 	
 	/* returns table of content of the requested video */
-	getTocById : function(id){
-		if(this.json_data.toc === undefined){
-			return {};
-		}else{ 
-			return this.getStreamById(id).toc;
+	getTocById:function(id) {
+		if (this.json_data.toc === undefined) {
+			return {}; 
+		}else {
+			return this.getStreamById(id).toc; 
 		}
-	},
+	}, 
 	
 		/* returns highlight of the requested video */
-	getHighlightById : function(id){ 
-		if( this.json_data.highlight === undefined ){
-			return {};
-		}else{ 
-			return this.getStreamById(id).highlight;
+	getHighlightById:function(id) {
+		if (this.json_data.highlight === undefined) {
+			return {}; 
+		}else {
+			return this.getStreamById(id).highlight; 
 		}
-	},
+	}, 
 	
 	
 	/** 
 	*	@param {String} Video id
-	*	@returns {Object} JSON object with temporal annotation of images/slides of video with the given id.
-	*/ 	  
-	getSlidesById : function(id){ 
+	*	@returns {Object} JSON object with temporal annotation of images/slides of video with the given id. */	  
+	getSlidesById:function(id) {
 		//alert(JSON.stringify( this.getStreamById(id)['slides'] ))
 		return this.getStreamById(id).slides; 
 		/*
@@ -26873,53 +26836,53 @@ Vi2.Observer = $.inherit(/* @lends Observer# **/{
 	/*
 	*
 	**/
-	hasSlides : function(id){
-		if(this.getStreamById(id).slides !== undefined){
-			if(this.getStreamById(id).slides.length > 0){
-				return true;
+	hasSlides:function(id) {
+		if (this.getStreamById(id).slides !== undefined) {
+			if (this.getStreamById(id).slides.length > 0) {
+				return true; 
 			}
 		}
-		return false;
-	},
+		return false; 
+	}, 
 	
 	
 	/**
 	
 	*/
-	getUserById : function(id){  //alert(id); alert(this.json_user_data)
-		var user = {}; 
-		$.each(this.json_user_data, function(i, val){ 
-			if( Number(val.id) === Number(id) ){  
-				user = val;
+	getUserById:function(id) {//alert(id); alert(this.json_user_data)
+		var user =  {}; 
+		$.each(this.json_user_data, function(i, val) {
+			if (Number(val.id) === Number(id)) {
+				user = val; 
 			}
 		}); 
-		return user;
+		return user; 
 	}, 
 		
 		
 	/**
 	
 	*/
-	getGroupById : function(id){
-		var group = {}; 
-		$.each(this.json_group_data, function(i, val){ 
-			if ( Number(val.id) === Number(id) ){  
-				group = val;
+	getGroupById:function(id) {
+		var group =  {}; 
+		$.each(this.json_group_data, function(i, val) {
+			if (Number(val.id) === Number(id)) {
+				group = val; 
 			}
 		}); 
-		return group;
-	},
+		return group; 
+	}, 
 	
 	/* --- **/
-	getUserByGroupId : function(group, pos){ //alert(group+'  '+pos)
-		var u = [];
-		$.each(this.json_user_data, function(i, val){ 
-			if ( val.groups[pos] === group){  
-				u.push( val );
+	getUserByGroupId:function(group, pos) {//alert(group+'  '+pos)
+		var u = []; 
+		$.each(this.json_user_data, function(i, val) {
+			if (val.groups[pos] === group) {
+				u.push(val); 
 			}
-		});
+		}); 
 		
-		return u;
+		return u; 
 	}, 
 				
 	
@@ -26951,41 +26914,40 @@ Vi2.Observer = $.inherit(/* @lends Observer# **/{
 /* TO CLEAN UP */	
 
 	//
-	getVideoById : function(id){ 
+	getVideoById:function(id) {
 		var video = $('<div></div>')
-			.attr('type',"video")
-			.attr('starttime',0)
-			.attr('duration',7)
+			.attr('type', "video")
+			.attr('starttime', 0)
+			.attr('duration', 7)
 			.attr('id', "myvideo")
-			.text(this.getStreamById(id).video);  
-		return video;
+			.text(this.getStreamById(id).video); 
+		return video; 
 	}
 	
 	/* returns stream by its title  // xxx remove rendering code
-	getStreamsByTitle : function(title_name){
-		var _this = this;
-		var template = $("#item_template").val();
+	getStreamsByTitle:function(title_name) {
+		var _this = this; 
+		var template = $("#item_template").val(); 
 		
 		$(_this.content_selector)
 			.empty()
-			.trigger('clear');
+			.trigger('clear'); 
 			//.append($('<h2></h2>').text('Lectures in category: '+title_name));
 
-		$.each(this.json_data.stream, function(i, stream){
-				if(stream.metadata[0].title == title_name){
-					var item =$('<div></div>')
+		$.each(this.json_data.stream, function(i, stream) {
+				if (stream.metadata[0].title == title_name) {
+					var item = $('<div></div>')
 						.addClass('content-item')
 						.setTemplate(template)
 						.processTemplate(stream)
-						.appendTo($(_this.content_selector));
+						.appendTo($(_this.content_selector)); 
 				}
-		});
+		}); 
 		//$('.text').hidetext();
 		// reset drop downs
-		$('.getStreamsByTag').val(-1);
-		$('.getStreamsByCategory').val(-1);
-	},
-	*/
+		$('.getStreamsByTag').val(-1); 
+		$('.getStreamsByCategory').val(-1); 
+	},  */
 	
 	
 	
@@ -27433,83 +27395,83 @@ http://dev.opera.com/articles/view/everything-you-need-to-know-about-html5-video
 
 
 var Video = $.inherit(/** @lends VideoPlayer# */
-{
-	/** 
-	* 	@constructs 
-	*		@param {object} options An object containing the parameters
-	*		@param {Observer} observer Observer of VI-TWO
-	*/
-  __constructor: function(options) { 
-  	vi2.observer.player = this;
-		this.options = $.extend(this.options, options); 
-		// init spinner
-		this.spinner = new Spinner(this.spinner_options); //this.stopSpinning();
-		this.video = document.getElementById( (this.options.selector).replace(/\#/,'') );  
-  	this.loadUI();
-  },
+	{
+		/** 
+		* 	@constructs 
+		*		@param {object} options An object containing the parameters
+		*		@param {Observer} observer Observer of VI-TWO
+		*/
+		__constructor: function (options) {
+			vi2.observer.player = this;
+			this.options = $.extend(this.options, options);
+			// init spinner
+			this.spinner = new Spinner(this.spinner_options); //this.stopSpinning();
+			this.video = document.getElementById((this.options.selector).replace(/\#/, ''));
+			this.loadUI();
+		},
 
-	name: 'video player',
-	// defaults
-	options: {
-		observer: null, 
-		selector: '#video1', 
-		width: 500, 
-		height: 375, 
-		seek:0, 
-		videoControlsSelector: '.video-controls', 
-		thumbnail:'/static/img/placeholder.jpg', 
-		defaultVolume : 1 // 0..1
-	},
-	video: null,
-	timeline : null,
-	observer: null,
-	url: '',
+		name: 'video player',
+		// defaults
+		options: {
+			observer: null,
+			selector: '#video1',
+			width: 500,
+			height: 375,
+			seek: 0,
+			videoControlsSelector: '.video-controls',
+			thumbnail: '/static/img/placeholder.jpg',
+			defaultVolume: 1 // 0..1
+		},
+		video: null,
+		timeline: null,
+		observer: null,
+		url: '',
 
-	/* selectors */
-  video_container: null,
-	video_wrap: null,
-	play_btn: null,
-	volume_btn: null,
-	
-	/* flags */
-	volume: null,
-	isMuted: false,
-	isSequence: false,
-	seqList: [],
-	seqNum: null,
-	seqLoop: false,
-	videoIsPlaying: true,
-	percentLoaded: 0,
-	buffclick: 0,
-	
-	/* spinner options */
-	spinner : false,
-	spinner_options : {
-  	lines: 6, // The number of lines to draw
-  	length: 0, // The length of each line
-  	width: 20, // The line thickness
-  	radius: 20, // The radius of the inner circle
-  	color: '#003366', // #rgb or #rrggbb
-  	speed: 1, // Rounds per second
-  	trail: 89, // Afterglow percentage
-  	shadow: false, // Whether to render a shadow
-  	hwaccel: false, // Whether to use hardware acceleration
-  	className: 'spinner', // The CSS class to assign to the spinner
-  	zIndex: 29, // The z-index (defaults to 2000000000)
-  	top: 'auto', // Top position relative to parent in px
-  	left: 'auto' // Left position relative to parent in px
-	},
-	
+		/* selectors */
+		video_container: null,
+		video_wrap: null,
+		play_btn: null,
+		volume_btn: null,
 
-	/* load video */
-	// param: url= url of video; seek = time seek within video in seconds
-	loadVideo: function(url, seek) {    
-		var _this = this;
-		this.url = url;
-	  this.seek = seek === undefined ? 0 : seek;
-	  
-	  // create and append video element
-	  var video_element = $('<video></video>')
+		/* flags */
+		volume: null,
+		isMuted: false,
+		isSequence: false,
+		seqList: [],
+		seqNum: null,
+		seqLoop: false,
+		videoIsPlaying: true,
+		percentLoaded: 0,
+		buffclick: 0,
+
+		/* spinner options */
+		spinner: false,
+		spinner_options: {
+			lines: 6, // The number of lines to draw
+			length: 0, // The length of each line
+			width: 20, // The line thickness
+			radius: 20, // The radius of the inner circle
+			color: '#003366', // #rgb or #rrggbb
+			speed: 1, // Rounds per second
+			trail: 89, // Afterglow percentage
+			shadow: false, // Whether to render a shadow
+			hwaccel: false, // Whether to use hardware acceleration
+			className: 'spinner', // The CSS class to assign to the spinner
+			zIndex: 29, // The z-index (defaults to 2000000000)
+			top: 'auto', // Top position relative to parent in px
+			left: 'auto' // Left position relative to parent in px
+		},
+
+
+		/* load video */
+		// param: url= url of video; seek = time seek within video in seconds
+		loadVideo: function (url, seek) {
+			var _this = this;
+			this.url = url;
+			this.seek = seek === undefined ? 0 : seek;
+
+			// create and append video element
+			var video_element = $('<video></video>')
 				.attr('controls', false)
 				.attr('autobuffer', true)
 				.attr('preload', "metadata")
@@ -27518,310 +27480,310 @@ var Video = $.inherit(/** @lends VideoPlayer# */
 				//.css({width:'75vw'}) // xxx: size should be defined somewhere
 				//.addClass('embed-responsive-item col-md-12')
 				.text('Your Browser does not support either this video format or videos at all');
-		$('#seq')
-			//.addClass('embed-responsive embed-responsive-16by9')
-			.html( video_element ); 
-		
-			
-			
-	  this.video = document.getElementById( ( this.options.selector ).replace(/\#/,'') );
-	 
-	  if(this.videoIsPlaying){
-	  		$(vi2.observer.player).trigger('player.play', []);
-	  }
-	  this.video.pause();
-		this.startSpinning(); 
-		
-		var supportedCodec = this.detectVideoSupport();
-		this.video = $.extend( this.video, {
-			loop: false,
-	  	preload: 'metadata', // 'metadata' | true ??
-	  	autoplay: this.videoIsPlaying,
-	  	controls: false,
-	 // 	poster: '/static/img/stills/'+this.options.thumbnail, // xxx wrong path !!
-	 		 //	width: this.options.width,
-	  	//	height: this.options.height,
-	  	onerror: function(e) { _this.errorHandling(e); }
-		});
-		
-		// add timeline
-		this.timeline = new Vi2.AnnotatedTimeline( this.video, {}, this.seek );
-		
-		// add playback logger
-		this.logger();
-		
-		// xxx should depend on the configuration
-		var playbackSpeed = new Vi2.PlaybackSpeed();
-		vi2.observer.addWidget( playbackSpeed );  
-		
-		//var temporalBookmarks = new Vi2.TemporalBookmarks();
-		//vi2.observer.addWidget( temporalBookmarks );
-		
-		//var zoom = new Vi2.Zoom();
-		//vi2.observer.addWidget( zoom );	
-		
-		var skipBack = new Vi2.SkipBack();
-		vi2.observer.addWidget( skipBack );
-		
-		//var sharing = new Vi2.Sharing();
-		//vi2.observer.addWidget( sharing ); // http://localhost/elearning/vi2/vi-two/examples/iwrm/videos/iwrm_seidel1.webm
-		
-		this.play_btn = $('.vi2-video-play-pause');
-		
-		this.video.addEventListener('play', function(e){ 
-			vi2.observer.clock.startClock();
-			//$('header').hide();
-			_this.play_btn.find('.fa-pause').show();
-			_this.play_btn.find('.fa-play').hide();
-		});
-		
-		this.video.addEventListener('pause', function(e){
-			vi2.observer.clock.stopClock();
-			$('header').show();
-			_this.play_btn.find('.fa-pause').hide();
-			_this.play_btn.find('.fa-play').show();
-		});
-		
-		this.video.addEventListener('abort', function(e){  
-			vi2.observer.clock.stopClock();
-			$('header').show();
-			_this.play_btn.find('.fa-pause').hide();
-			_this.play_btn.find('.fa-play').show();
-		});
+			$('#seq')
+				//.addClass('embed-responsive embed-responsive-16by9')
+				.html(video_element);
 
-		// event binding: on can play
-		this.video.addEventListener('readystate', function(e) { 
-			_this.readyStateHandler(e); 
-		});
 
-		// event binding: on time update
-		this.video.addEventListener('timeupdate', function(e) { 
-			_this.timeUpdateHandler(e); 
-		});
-		
-		// event binding: on ended
-		this.video.addEventListener('ended', function(e) { 
-			_this.endedHandler(e); 
-		}, false);
 
-		
-	// trigger event that a new video stream has been loaded
+			this.video = document.getElementById((this.options.selector).replace(/\#/, ''));
+
+			if (this.videoIsPlaying) {
+				$(vi2.observer.player).trigger('player.play', []);
+			}
+			this.video.pause();
+			this.startSpinning();
+
+			var supportedCodec = this.detectVideoSupport();
+			this.video = $.extend(this.video, {
+				loop: false,
+				preload: 'metadata', // 'metadata' | true ??
+				autoplay: this.videoIsPlaying,
+				controls: false,
+				// 	poster: '/static/img/stills/'+this.options.thumbnail, // xxx wrong path !!
+				//	width: this.options.width,
+				//	height: this.options.height,
+				onerror: function (e) { _this.errorHandling(e); }
+			});
+
+			// add timeline
+			this.timeline = new Vi2.AnnotatedTimeline(this.video, {}, this.seek);
+
+			// add playback logger
+			this.logger();
+
+			// xxx should depend on the configuration
+			var playbackSpeed = new Vi2.PlaybackSpeed();
+			vi2.observer.addWidget(playbackSpeed);
+
+			//var temporalBookmarks = new Vi2.TemporalBookmarks();
+			//vi2.observer.addWidget( temporalBookmarks );
+
+			//var zoom = new Vi2.Zoom();
+			//vi2.observer.addWidget( zoom );	
+
+			var skipBack = new Vi2.SkipBack();
+			vi2.observer.addWidget(skipBack);
+
+			//var sharing = new Vi2.Sharing();
+			//vi2.observer.addWidget( sharing ); // http://localhost/elearning/vi2/vi-two/examples/iwrm/videos/iwrm_seidel1.webm
+
+			this.play_btn = $('.vi2-video-play-pause');
+
+			this.video.addEventListener('play', function (e) {
+				vi2.observer.clock.startClock();
+				//$('header').hide();
+				_this.play_btn.find('.fa-pause').show();
+				_this.play_btn.find('.fa-play').hide();
+			});
+
+			this.video.addEventListener('pause', function (e) {
+				vi2.observer.clock.stopClock();
+				$('header').show();
+				_this.play_btn.find('.fa-pause').hide();
+				_this.play_btn.find('.fa-play').show();
+			});
+
+			this.video.addEventListener('abort', function (e) {
+				vi2.observer.clock.stopClock();
+				$('header').show();
+				_this.play_btn.find('.fa-pause').hide();
+				_this.play_btn.find('.fa-play').show();
+			});
+
+			// event binding: on can play
+			this.video.addEventListener('readystate', function (e) {
+				_this.readyStateHandler(e);
+			});
+
+			// event binding: on time update
+			this.video.addEventListener('timeupdate', function (e) {
+				_this.timeUpdateHandler(e);
+			});
+
+			// event binding: on ended
+			this.video.addEventListener('ended', function (e) {
+				_this.endedHandler(e);
+			}, false);
+
+
+			// trigger event that a new video stream has been loaded
 			var t = new Date();
-			$(vi2.observer).trigger('stream.loaded', { 
+			$(vi2.observer).trigger('stream.loaded', {
 				stream: vi2.observer.current_stream,//params['stream'], 
 				playback_time: seek,//params['time'], 
 				time: t.getTime()
-			} );	
+			});
 
- 	// get sources and load video
-	 	if( url !== undefined){
-			$( this.video ).html( this.createSource(url, supportedCodec ), this.video.firstChild);	 
-		}
-	 
-	},
-
-
-	/* HTML5 playback detection 
-	* 	returns: mime type of supported video or empty string if there is no support
-	*		called-by: loadVideo()
-	* 	toDo: check support for video element
-	**/
-	detectVideoSupport: function() {
-		var dummy_video = document.createElement('video');
-
-		// prefer mp4 over webm over ogv 
-		if (dummy_video.canPlayType('video/mp4; codecs="avc1.42E01E, mp4a.40.2"') !== '') {
-			vi2.observer.log({context:'player',action:'video-support-mp4', values:['1'] });
-			return 'video/mp4'; 		
-		}else if (dummy_video.canPlayType('video/webm; codecs="vp8, vorbis"') !== '') {
-			vi2.observer.log({context:'player',action:'video-support-webm', values:['1'] });
-			return 'video/webm'; 
-		}else	 if(dummy_video.canPlayType('video/ogg; codecs="theora, vorbis"') !== ''){
-			vi2.observer.log({context:'player',action:'video-support-ogv', values:['1'] });
-			return 'video/ogv';
-		}else{
-			// no suitable video format is avalable
-			vi2.observer.log({context:'player',action:'video-support-none', values:['1'] }); 
-			$('#page').html('<h3>We appologize that video application is currently not supported by your browser.</h3>The provided video material can be played on Mozilla Firefox, Google Chrome and Opera. If you prefer Internet Explorer 9 you need to install a <a href="https://tools.google.com/dlpage/webmmf">webm video extension</a> provided by Google. In the near future we are going to server further video formats which will be supported by all major browsers.<br /><br /> Thank you for your understanding.');
-		}
-		return '';
-	},
-	
-	
-	detectBrowser : function(){
-    var ua= navigator.userAgent, tem,
-    M= ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
-    if(/trident/i.test(M[1])){
-        tem=  /\brv[ :]+(\d+)/g.exec(ua) || [];
-        return 'IE '+(tem[1] || '');
-    }
-    if(M[1]=== 'Chrome'){
-        tem= ua.match(/\b(OPR|Edge)\/(\d+)/);
-        if(tem!= null) return tem.slice(1).join(' ').replace('OPR', 'Opera');
-    }
-    M= M[2]? [M[1], M[2]]: [navigator.appName, navigator.appVersion, '-?'];
-    if((tem= ua.match(/version\/(\d+)/i))!= null) M.splice(1, 1, tem[1]);
-    return M[0];//.join(' ');
-	},
-
-
-	/* load sequence */
-	loadSequence: function(sources, num, seek) {  
-		this.seqList = sources;
-		this.seek = seek;
-		this.isSequence = true;
-		if (num === undefined) {
-			this.seqNum = 0;
-		}else {
-			this.seqNum = num;// % this.seqList.length;
-		} 
-		this.loadVideo(this.seqList[this.seqNum].url, this.seek);
-	},
-
-
-	/** 
-	* build video source element
-	* @param src = video url; mime_type = mime_type of video
-	*	@returns: video source element including src and type attribute
-	*/
-	createSource: function(src, mime_type) { 
-  	var
-  		ext = '.mp4',
-  		source = document.createElement('source'); 
-  	if( this.detectBrowser() === 'Firefox'){
-  		ext = '.mp4';  // lacy bug fix since firefox doesn't support mp4 anymore. xxx needs further testing.
-  		mime_type = "video/webm";
-  	}else if( this.detectBrowser() === 'Chrome'){
-  		ext = '.webm';
-  		mime_type = "video/webm";
-  	}
-  	
-  	// extract file type out of mime type
-  	source.src = src.replace('.mp4', ext)+"?foo="+(new Date().getTime());//
-  	// set mime type
-  	source.type = mime_type;
-  	return source;
-	},
-
-
-
-	/** 
-	* load UI 
-	**/
-	loadUI: function() { 
-		var _this = this;
-		// load other ui elements
-		this.createPlaybackControl();
-		this.createVolumeControl();
-		this.createVideoHiding();
-		
-		// show/hide video controls
-		//$(_this.options.videoControlsSelector).addClass("open-controls");
-		/*$("#overlay, #seq, #video1 #video-controls #accordion-resizer").hover(
-			function() {  
-		  	$(_this.options.videoControlsSelector).addClass("open-controls");
-			}, 
-			function() { 
-		  	$(_this.options.videoControlsSelector).removeClass("open-controls");
+			// get sources and load video
+			if (url !== undefined) {
+				$(this.video).html(this.createSource(url, supportedCodec), this.video.firstChild);
 			}
-		);*/
-		// ??
-		//$('#overlay').css('height', $('video').height() );
-		//$('#overlay').css('width', $('#video1').width() );
-		
-	
-		// hide cursor and controls if inactive
-		var mouseTimer = null, cursorVisible = true;
 
-		function disappearCursor() {
-		    mouseTimer = null; 
-		    document.body.style.cursor = "none";
-		    cursorVisible = false;
-		    //$(_this.options.videoControlsSelector).removeClass("open-controls");
-		}
-		var el = document.getElementById('video1');
-		document.onmousemove = function() {
-		    if (mouseTimer) {
-		        window.clearTimeout(mouseTimer);
-		    }
-		    if (!cursorVisible) {
-		        document.body.style.cursor = "default";
-		        cursorVisible = true;
-		        //$(_this.options.videoControlsSelector).addClass("open-controls");
-		    }
-		    mouseTimer = window.setTimeout(disappearCursor, 1000);
-		};
-		
-		$('body').unbind('keydown').bind('keydown', function(e) { 
-			//_this.keyboardCommandHandler(e); 
-		});
-		
-	},
-	
-	/**
-	* Creates video playback control
-	*/
-	createPlaybackControl : function(){
-		var _this = this;
-		
-		this.play_btn = $('.vi2-video-play-pause');
-		
-		
-		this.play_btn.bind('click', function() {
-			_this.play(); 
-		});
-
-		$(this.play_btn).bind('play', function(e) {  
-			vi2.observer.play();
-			$('.screen').remove();
-		});
-
-		$(this.play_btn).bind('pause', function(e) { 
-			vi2.observer.pause();
-		});
-		
-		$(vi2.observer.player).bind('player.play', function(e, a, b) { 
-  			//$('.navbar').hide();
-  	});
-  	
-  	$(vi2.observer.player).bind('player.pause', function(e, a, b) { 
-  			//$('.navbar').show();	
-  	});
-  	
-  	
-  	
-	},
+		},
 
 
-	/** 
-	* Creates a volume control element 
-	*/
-	createVolumeControl : function(){ 		
-		var _this = this;
-		// intit controls
-		this.volume = $('.vi2-volume-slider', this.video_container);
-		this.volume_btn = $('.vi2-volume-button', this.video_container);
-		// init slider
-		$(this.volume).slider({
+		/* HTML5 playback detection 
+		* 	returns: mime type of supported video or empty string if there is no support
+		*		called-by: loadVideo()
+		* 	toDo: check support for video element
+		**/
+		detectVideoSupport: function () {
+			var dummy_video = document.createElement('video');
+
+			// prefer mp4 over webm over ogv 
+			if (dummy_video.canPlayType('video/mp4; codecs="avc1.42E01E, mp4a.40.2"') !== '') {
+				vi2.observer.log({ context: 'player', action: 'video-support-mp4', values: ['1'] });
+				return 'video/mp4';
+			} else if (dummy_video.canPlayType('video/webm; codecs="vp8, vorbis"') !== '') {
+				vi2.observer.log({ context: 'player', action: 'video-support-webm', values: ['1'] });
+				return 'video/webm';
+			} else if (dummy_video.canPlayType('video/ogg; codecs="theora, vorbis"') !== '') {
+				vi2.observer.log({ context: 'player', action: 'video-support-ogv', values: ['1'] });
+				return 'video/ogv';
+			} else {
+				// no suitable video format is avalable
+				vi2.observer.log({ context: 'player', action: 'video-support-none', values: ['1'] });
+				$('#page').html('<h3>We appologize that video application is currently not supported by your browser.</h3>The provided video material can be played on Mozilla Firefox, Google Chrome and Opera. If you prefer Internet Explorer 9 you need to install a <a href="https://tools.google.com/dlpage/webmmf">webm video extension</a> provided by Google. In the near future we are going to server further video formats which will be supported by all major browsers.<br /><br /> Thank you for your understanding.');
+			}
+			return '';
+		},
+
+
+		detectBrowser: function () {
+			var ua = navigator.userAgent, tem,
+				M = ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
+			if (/trident/i.test(M[1])) {
+				tem = /\brv[ :]+(\d+)/g.exec(ua) || [];
+				return 'IE ' + (tem[1] || '');
+			}
+			if (M[1] === 'Chrome') {
+				tem = ua.match(/\b(OPR|Edge)\/(\d+)/);
+				if (tem != null) return tem.slice(1).join(' ').replace('OPR', 'Opera');
+			}
+			M = M[2] ? [M[1], M[2]] : [navigator.appName, navigator.appVersion, '-?'];
+			if ((tem = ua.match(/version\/(\d+)/i)) != null) M.splice(1, 1, tem[1]);
+			return M[0];//.join(' ');
+		},
+
+
+		/* load sequence */
+		loadSequence: function (sources, num, seek) {
+			this.seqList = sources;
+			this.seek = seek;
+			this.isSequence = true;
+			if (num === undefined) {
+				this.seqNum = 0;
+			} else {
+				this.seqNum = num;// % this.seqList.length;
+			}
+			this.loadVideo(this.seqList[this.seqNum].url, this.seek);
+		},
+
+
+		/** 
+		* build video source element
+		* @param src = video url; mime_type = mime_type of video
+		*	@returns: video source element including src and type attribute
+		*/
+		createSource: function (src, mime_type) {
+			var
+				ext = '.mp4',
+				source = document.createElement('source');
+			if (this.detectBrowser() === 'Firefox') {
+				ext = '.mp4';  // lacy bug fix since firefox doesn't support mp4 anymore. xxx needs further testing.
+				mime_type = "video/webm";
+			} else if (this.detectBrowser() === 'Chrome') {
+				ext = '.webm';
+				mime_type = "video/webm";
+			}
+
+			// extract file type out of mime type
+			source.src = src.replace('.mp4', ext) + "?foo=" + (new Date().getTime());//
+			// set mime type
+			source.type = mime_type;
+			return source;
+		},
+
+
+
+		/** 
+		* load UI 
+		**/
+		loadUI: function () {
+			var _this = this;
+			// load other ui elements
+			this.createPlaybackControl();
+			this.createVolumeControl();
+			this.createVideoHiding();
+
+			// show/hide video controls
+			//$(_this.options.videoControlsSelector).addClass("open-controls");
+			/*$("#overlay, #seq, #video1 #video-controls #accordion-resizer").hover(
+				function() {  
+					$(_this.options.videoControlsSelector).addClass("open-controls");
+				}, 
+				function() { 
+					$(_this.options.videoControlsSelector).removeClass("open-controls");
+				}
+			);*/
+			// ??
+			//$('#overlay').css('height', $('video').height() );
+			//$('#overlay').css('width', $('#video1').width() );
+
+
+			// hide cursor and controls if inactive
+			var mouseTimer = null, cursorVisible = true;
+
+			function disappearCursor() {
+				mouseTimer = null;
+				document.body.style.cursor = "none";
+				cursorVisible = false;
+				//$(_this.options.videoControlsSelector).removeClass("open-controls");
+			}
+			var el = document.getElementById('video1');
+			document.onmousemove = function () {
+				if (mouseTimer) {
+					window.clearTimeout(mouseTimer);
+				}
+				if (!cursorVisible) {
+					document.body.style.cursor = "default";
+					cursorVisible = true;
+					//$(_this.options.videoControlsSelector).addClass("open-controls");
+				}
+				mouseTimer = window.setTimeout(disappearCursor, 1000);
+			};
+
+			$('body').unbind('keydown').bind('keydown', function (e) {
+				//_this.keyboardCommandHandler(e); 
+			});
+
+		},
+
+		/**
+		* Creates video playback control
+		*/
+		createPlaybackControl: function () {
+			var _this = this;
+
+			this.play_btn = $('.vi2-video-play-pause');
+
+
+			this.play_btn.bind('click', function () {
+				_this.play();
+			});
+
+			$(this.play_btn).bind('play', function (e) {
+				vi2.observer.play();
+				$('.screen').remove();
+			});
+
+			$(this.play_btn).bind('pause', function (e) {
+				vi2.observer.pause();
+			});
+
+			$(vi2.observer.player).bind('player.play', function (e, a, b) {
+				//$('.navbar').hide();
+			});
+
+			$(vi2.observer.player).bind('player.pause', function (e, a, b) {
+				//$('.navbar').show();	
+			});
+
+
+
+		},
+
+
+		/** 
+		* Creates a volume control element 
+		*/
+		createVolumeControl: function () {
+			var _this = this;
+			// intit controls
+			this.volume = $('.vi2-volume-slider', this.video_container);
+			this.volume_btn = $('.vi2-volume-button', this.video_container);
+			// init slider
+			$(this.volume).slider({
 				orientation: 'horizontal',
 				range: 'min',
 				max: 1,
 				step: 0.05,
 				animate: false,
-				value : _this.options.defaultVolume,
-				slide: function(e,ui) { 
-					if(ui.value > 0 && ui.value < 0.5 ){ 
+				value: _this.options.defaultVolume,
+				slide: function (e, ui) {
+					if (ui.value > 0 && ui.value < 0.5) {
 						_this.isMuted = false;
 						_this.volume_btn.addClass('fa-volume-down');
 						_this.volume_btn.removeClass('fa-volume-up');
 						_this.volume_btn.removeClass('fa-volume-off');
-					}else if( ui.value >= 0.5 ){
+					} else if (ui.value >= 0.5) {
 						_this.isMuted = false;
 						_this.volume_btn.removeClass('fa-volume-down');
 						_this.volume_btn.addClass('fa-volume-up');
 						_this.volume_btn.removeClass('fa-volume-off');
-						
-					}else{
+
+					} else {
 						_this.isMuted = true;
 						_this.volume_btn.removeClass('fa-volume-down');
 						_this.volume_btn.removeClass('fa-volume-up');
@@ -27829,392 +27791,393 @@ var Video = $.inherit(/** @lends VideoPlayer# */
 					}
 					//_this.video_volume = parseFloat(ui.value);
 				},
-				change : function(e,ui){
+				change: function (e, ui) {
 					// set video volume
 					_this.video.volume = ui.value;
 					// button states
-					if(ui.value > 0 && ui.value < 0.5 ){ 
+					if (ui.value > 0 && ui.value < 0.5) {
 						_this.isMuted = false;
 						_this.volume_btn.addClass('fa-volume-down');
 						_this.volume_btn.removeClass('fa-volume-up');
 						_this.volume_btn.removeClass('fa-volume-off');
-					}else if( ui.value >= 0.5 ){
+					} else if (ui.value >= 0.5) {
 						_this.isMuted = false;
 						_this.volume_btn.removeClass('fa-volume-down');
 						_this.volume_btn.addClass('fa-volume-up');
 						_this.volume_btn.removeClass('fa-volume-off');
-						
-					}else{
+
+					} else {
 						_this.isMuted = true;
 						_this.volume_btn.removeClass('fa-volume-down');
 						_this.volume_btn.removeClass('fa-volume-up');
 						_this.volume_btn.addClass('fa-volume-off');
 					}
 					//_this.video_volume = parseFloat(ui.value);
-				}	
-		});
-		
-		this.volume_btn
-			.bind('click', function(e) { 
-				_this.muteVolume();
-			})
-			;
-			
-		if( this.volume.slider('value') === 0 ){
-			this.isMuted = true;
-			this.volume_btn.addClass('fa fa-volume-off');
-		}else{
-			this.volume_btn.addClass('fa fa-volume-up');
-		}
-
-		// set initial volume
-		// xxx does not work
-	},
-	
-	/**
-	* Get volume
-	*/
-	getVolume : function(){
-		return this.volume.slider('value');//this.video_volume;
-	},
-	
-	
-	/**
-	* Set volume
-	* @param volume {Number} Number in the range of 0 and 1. Every value outside that rang will be changed to the boundaries. 
-	*/
-	setVolume : function(volume){ 
-		this.volume.slider('value', volume);
-		vi2.observer.log({context:'player',action:'set-volume', values:[volume] }); 
-	},
-	
-	
-	/** 
-	* Increases audio volume by 5 percent 
-	*/
-	increaseVolume : function(){ 
-		$(this.volume).slider('value', $(this.volume).slider('value') + 0.05 );
-	},
-	
-	
-	/** 
-	* Decreases audio volume by 5 percent 
-	*/
-	decreaseVolume : function(){
-		$(this.volume).slider('value', $(this.volume).slider('value') - 0.05 );
-	},
-
-
-	tmp_volume : 0,
-	/** 
-	* Toggles the button to mute/unmute the volume. If volume get unmuted the volume will be reset to the value it had befor muting.
-	*/
-	muteVolume: function() { 
-		if( ! this.isMuted) {
-			tmp_volume = this.volume.slider('value');
-			this.setVolume(0);
-			this.isMuted = true;
-		}else {
-			this.setVolume( tmp_volume );
-			this.isMuted = false;
-		}
-	},
-
-
-
-	
-	
-	
-	
-	/* Creates controle element to hide/show the video frame 
-	*	xxx todo: this should be accomplished with a audio description and other accessibility assistance
-	*/
-	createVideoHiding: function(){		return;
-		
-		// hide moving picture in order limit visual cognition channel to one
-		// xxx: #screen should be replaced by an option
-		var o = new Image(); 
-		$(o).attr('src', '/static/img/stills/'+this.options.thumbnail).addClass('toggle-pair').prependTo('#screen').hide();
-		$(this.video).addClass('toggle-pair');
-		var hidden = true;
-		var btn = $('<span></span>')
-			.addClass('toggle-moving-picture')
-			.text('hide video')
-			.prependTo('#screen')
-			.click(function(){
-				$(this).text(hidden ? 'show video' : 'hide video');
-				hidden = ! hidden; 
-				$('#screen').find('.toggle-pair').toggle();
+				}
 			});
+
+			this.volume_btn
+				.bind('click', function (e) {
+					_this.muteVolume();
+				})
+				;
+
+			if (this.volume.slider('value') === 0) {
+				this.isMuted = true;
+				this.volume_btn.addClass('fa fa-volume-off');
+			} else {
+				this.volume_btn.addClass('fa fa-volume-up');
+			}
+
+			// set initial volume
+			// xxx does not work
+		},
+
+		/**
+		* Get volume
+		*/
+		getVolume: function () {
+			return this.volume.slider('value');//this.video_volume;
+		},
+
+
+		/**
+		* Set volume
+		* @param volume {Number} Number in the range of 0 and 1. Every value outside that rang will be changed to the boundaries. 
+		*/
+		setVolume: function (volume) {
+			this.volume.slider('value', volume);
+			vi2.observer.log({ context: 'player', action: 'set-volume', values: [volume] });
+		},
+
+
+		/** 
+		* Increases audio volume by 5 percent 
+		*/
+		increaseVolume: function () {
+			$(this.volume).slider('value', $(this.volume).slider('value') + 0.05);
+		},
+
+
+		/** 
+		* Decreases audio volume by 5 percent 
+		*/
+		decreaseVolume: function () {
+			$(this.volume).slider('value', $(this.volume).slider('value') - 0.05);
+		},
+
+
+		tmp_volume: 0,
+		/** 
+		* Toggles the button to mute/unmute the volume. If volume get unmuted the volume will be reset to the value it had befor muting.
+		*/
+		muteVolume: function () {
+			if (!this.isMuted) {
+				tmp_volume = this.volume.slider('value');
+				this.setVolume(0);
+				this.isMuted = true;
+			} else {
+				this.setVolume(tmp_volume);
+				this.isMuted = false;
+			}
+		},
+
+
+
+
+
+
+
+		/* Creates controle element to hide/show the video frame 
+		*	xxx todo: this should be accomplished with a audio description and other accessibility assistance
+		*/
+		createVideoHiding: function () {
+			return;
+
+			// hide moving picture in order limit visual cognition channel to one
+			// xxx: #screen should be replaced by an option
+			var o = new Image();
+			$(o).attr('src', '/static/img/stills/' + this.options.thumbnail).addClass('toggle-pair').prependTo('#screen').hide();
+			$(this.video).addClass('toggle-pair');
+			var hidden = true;
+			var btn = $('<span></span>')
+				.addClass('toggle-moving-picture')
+				.text('hide video')
+				.prependTo('#screen')
+				.click(function () {
+					$(this).text(hidden ? 'show video' : 'hide video');
+					hidden = !hidden;
+					$('#screen').find('.toggle-pair').toggle();
+				});
 			$('#screen').find('.toggle-pair').toggle().hide();
 			$('.toggle-moving-picture').hide();
-		
-	},
-	
 
-/********* LOADING Indicator *********************************/
-
-	/* 
-	* Starts the loading indicator in terms of a spinner. Function is called if video data is loading 
-	**/
-	startSpinning : function(){
-		this.spinner.spin(document.getElementById('overlay'));
-		$('.spinner').css('top','200px'); // xxx hardcoded repositioning of spinner element
-	},
-
-	/* 
-	* Stops the loading indicator 
-	**/
-	stopSpinning : function(){
-		this.spinner.stop(); 
-	},
+		},
 
 
+		/********* LOADING Indicator *********************************/
 
-/* EVENT HANDLER *************************/
+		/* 
+		* Starts the loading indicator in terms of a spinner. Function is called if video data is loading 
+		**/
+		startSpinning: function () {
+			this.spinner.spin(document.getElementById('overlay'));
+			$('.spinner').css('top', '200px'); // xxx hardcoded repositioning of spinner element
+		},
 
-
-	
-
-	/** 
-	* event handler: on can play. Notifies the observer about a new video.
-	*/
-	readyStateHandler: function(e) {
-		vi2.observer.updateVideo(this.seqList[this.seqNum].id, this.seqNum);
-	},
-
-
-	/* 
-	* event handler: on time update
-	**/
-	timeUpdateHandler: function(e) {
-		if ( this.video.readyState === 2 ) {
-			this.startSpinning(); 
-		}else if ( this.video.readyState === 4 ) {
-			this.stopSpinning();
-		}
-	},
-
-
-	/*
-	* event handler: on ended
-	**/
-	endedHandler: function(e) { 
-		vi2.observer.log({context:'player',action:'video-ended', values:[ this.url ]});
-		vi2.observer.ended();
-		this.video.removeEventListener('ended', arguments.callee, false);
-		//this.play_btn.removeClass('vi2-video-pause');
-		//this.play_btn.addClass('vi2-video-play');
-		// load next video clip if its a sequence
-		if (this.isSequence && ((this.seqNum + 1) < this.seqList.length || this.seqLoop)) {
-			this.seqNum = (this.seqNum + 1) % this.seqList.length;
-			this.loadVideo(this.seqList[this.seqNum].url);
-		}else { 
-			$(vi2.observer.player).trigger('video.end', null);
-		}
-	},
-	
-	
-	/* 
-	* Handles certain keyboad commends 
-	**/
-	keyboardCommandHandler : function(e){	
-		
-		e.preventDefault();
-		this.video.focus();
-		switch (e.which) {
-			case 32: // space 
-				this.play(); //
-				break;
-			case 189: // minus 173  oder 189
-				vi2.observer.getWidget('playbackSpeed').decreaseSpeed();
-				break;
-			case 187: // plus 171 oder 187
-				vi2.observer.getWidget('playbackSpeed').increaseSpeed();
-				break;
-			case 	38: // arrow up
-				this.increaseVolume(); // volume control
-				break;
-			case 40: // arrow down
-				this.decreaseVolume(); // volume control
-				break;
-			case 77: // m 
-				this.muteVolume();// volume mute	
-				break;
-			case 39: // 39: right 
-				vi2.observer.widget_list.toc.nextElement();
-				break;
-			case 37: // 37:left		
-				vi2.observer.widget_list.toc.previousElement();
-				break;
-			case 34: // 39: right  presenter
-				vi2.observer.player.play();
-				//vi2.observer.widget_list.toc.nextElement();
-				break;
-			case 33: // 37:left		presenter
-				vi2.observer.widget_list.toc.previousElement();
-				break;	
-		}
-		this.video.focus(); 
-	},
+		/* 
+		* Stops the loading indicator 
+		**/
+		stopSpinning: function () {
+			this.spinner.stop();
+		},
 
 
 
-	/* INTERFACES *************************/
+		/* EVENT HANDLER *************************/
 
-	/* just play */
-	play: function() {   
-		if ( this.video.paused === false) { 
-			this.video.pause(); 
+
+
+
+		/** 
+		* event handler: on can play. Notifies the observer about a new video.
+		*/
+		readyStateHandler: function (e) {
+			vi2.observer.updateVideo(this.seqList[this.seqNum].id, this.seqNum);
+		},
+
+
+		/* 
+		* event handler: on time update
+		**/
+		timeUpdateHandler: function (e) {
+			if (this.video.readyState === 2) {
+				this.startSpinning();
+			} else if (this.video.readyState === 4) {
+				this.stopSpinning();
+			}
+		},
+
+
+		/*
+		* event handler: on ended
+		**/
+		endedHandler: function (e) {
+			vi2.observer.log({ context: 'player', action: 'video-ended', values: [this.url] });
+			vi2.observer.ended();
+			this.video.removeEventListener('ended', arguments.callee, false);
+			//this.play_btn.removeClass('vi2-video-pause');
+			//this.play_btn.addClass('vi2-video-play');
+			// load next video clip if its a sequence
+			if (this.isSequence && ((this.seqNum + 1) < this.seqList.length || this.seqLoop)) {
+				this.seqNum = (this.seqNum + 1) % this.seqList.length;
+				this.loadVideo(this.seqList[this.seqNum].url);
+			} else {
+				$(vi2.observer.player).trigger('video.end', null);
+			}
+		},
+
+
+		/* 
+		* Handles certain keyboad commends 
+		**/
+		keyboardCommandHandler: function (e) {
+
+			e.preventDefault();
+			this.video.focus();
+			switch (e.which) {
+				case 32: // space 
+					this.play(); //
+					break;
+				case 189: // minus 173  oder 189
+					vi2.observer.getWidget('playbackSpeed').decreaseSpeed();
+					break;
+				case 187: // plus 171 oder 187
+					vi2.observer.getWidget('playbackSpeed').increaseSpeed();
+					break;
+				case 38: // arrow up
+					this.increaseVolume(); // volume control
+					break;
+				case 40: // arrow down
+					this.decreaseVolume(); // volume control
+					break;
+				case 77: // m 
+					this.muteVolume();// volume mute	
+					break;
+				case 39: // 39: right 
+					vi2.observer.widget_list.toc.nextElement();
+					break;
+				case 37: // 37:left		
+					vi2.observer.widget_list.toc.previousElement();
+					break;
+				case 34: // 39: right  presenter
+					vi2.observer.player.play();
+					//vi2.observer.widget_list.toc.nextElement();
+					break;
+				case 33: // 37:left		presenter
+					vi2.observer.widget_list.toc.previousElement();
+					break;
+			}
+			this.video.focus();
+		},
+
+
+
+		/* INTERFACES *************************/
+
+		/* just play */
+		play: function () {
+			if (this.video.paused === false) {
+				this.video.pause();
+				this.isPlaying(false);
+				$(vi2.observer.player).trigger('player.pause', []);
+				vi2.observer.clock.stopClock();
+				vi2.observer.log({ context: 'player', action: 'pause-click', values: ['1'] });
+			} else {
+				this.video.play();
+				this.isPlaying(true);
+				$(vi2.observer.player).trigger('player.play', []);
+				vi2.observer.clock.startClock();
+				vi2.observer.log({ context: 'player', action: 'play-click', values: ['1'] });
+			}
+		},
+
+		/* just pause */
+		pause: function () {
+			this.video.pause();
 			this.isPlaying(false);
-			$(vi2.observer.player).trigger('player.pause', []);
-			vi2.observer.clock.stopClock();
-			vi2.observer.log({context:'player',action:'pause-click', values:['1'] }); 
-		} else {  
-			this.video.play(); 
-			this.isPlaying(true);
-			$(vi2.observer.player).trigger('player.play', []);
-			vi2.observer.clock.startClock();
-			vi2.observer.log({context:'player',action:'play-click', values:['1'] }); 
+			$(vi2.observer.player).bind('player.pause');
+			vi2.observer.log({ context: 'player', action: 'pause2-click', values: ['1'] });
+		},
+
+		/*
+		**/
+		isPlaying: function (x) {
+			if (x === undefined) {
+				return this.videoIsPlaying;
+			} else {
+				this.videoIsPlaying = x;
+			}
+		},
+
+		/* returns duration of video */
+		duration: function () {
+			return this.video.duration; //$(this.options.selector).attr('duration');
+		},
+
+		/* return current playback time or set the time */
+		currentTime: function (x) {
+			if (x === undefined) {
+				return this.video.currentTime; //$(this.options.selector).attr('currentTime');
+			} else {
+				$(this.video).trigger('play');
+				this.video.currentTime = x;
+				this.play();
+
+			}
+		},
+
+		/* sets or returns video width */
+		width: function (x) {
+			if (x === null) {
+				return $('#video1').width();
+			} else {
+				//this.video.width = x;
+			}
+		},
+
+		/* sets or return video width */
+		height: function (x) {
+			if (x === null) {
+				return $('#video1').height();
+			} else {
+				//this.video.height = x;
+			}
+		},
+
+
+		/* prints errors */
+		errorHandling: function (e) {
+			//		console.log('Error - Media Source not supported: ' + this.video.error.code == this.video.error.MEDIA_ERR_SRC_NOT_SUPPORTED); // true
+			//	 	console.log('Error - Network No Source: ' + this.video.networkState == this.video.NETWORK_NO_SOURCE); // true
+		},
+
+
+		/*
+		* Logger
+		**/
+		logger: function () {
+			var
+				_this = this,
+				interval = 5,
+				lastposition = -1,
+				timer
+				;
+
+			function loop() {
+				var currentinterval;
+				currentinterval = (Math.round(_this.currentTime()) / interval) >> 0;
+				//console.log("i:" + currentinterval + ", p:" + player.getPosition());
+				if (currentinterval != lastposition) {
+					vi2.observer.log({ context: 'player', action: 'playback', values: [currentinterval] });
+					lastposition = currentinterval;
+				}
+			}
+
+			function start() {
+				if (timer) {
+					timer = clearInterval(timer);
+				}
+				timer = setInterval(loop, interval * 1000);
+				setTimeout(loop, 100);
+			}
+
+			function restart() {
+				if (timer) {
+					timer = clearInterval(timer);
+				}
+				lasttime = -1;
+				timer = setInterval(loop, interval * 1000);
+				setTimeout(loop, 100);
+			}
+
+			function stop() {
+				timer = clearInterval(timer);
+				loop();
+			}
+			/*
+				player.oncanplay(start);
+					   player.onSeek(restart);
+				player.onPause(stop);
+					player.onBuffer(stop);
+				player.onIdle(stop);
+				player.onComplete(stop);
+					player.onError(stop);
+			  */
+			this.video.addEventListener('play', function (e) {
+				start();
+			});
+
+			this.video.addEventListener('pause', function (e) {
+				stop();
+			});
+
+			this.video.addEventListener('abort', function (e) {
+				stop();
+			});
+
+			this.video.addEventListener('timeupdate', function (e) {
+
+			});
+
+			this.video.addEventListener('ended', function (e) {
+				stop();
+			}, false);
+
 		}
-	},
 
-	/* just pause */
-	pause: function() {
-		this.video.pause();
-		this.isPlaying(false);
-		$(vi2.observer.player).bind('player.pause');
-		vi2.observer.log({context:'player',action:'pause2-click', values:['1'] }); 
-	},
-	
-	/*
-	**/
-	isPlaying : function(x){
-		if( x === undefined){
-			return this.videoIsPlaying;
-		}else{
-			this.videoIsPlaying = x;
-		}
-	},
 
-	/* returns duration of video */
-	duration: function() {   
-		return this.video.duration; //$(this.options.selector).attr('duration');
-	},
-
-	/* return current playback time or set the time */
-	currentTime: function(x) { 
-		if (x === undefined) {
-			return this.video.currentTime; //$(this.options.selector).attr('currentTime');
-		}else { 
-			$(this.video).trigger('play');
-			this.video.currentTime = x;
-			this.play();
-			
-		}
-	},
-
-	/* sets or returns video width */
-	width: function(x) {
-		if (x === null) {
-			return $('#video1').width();
-		}else {
-			//this.video.width = x;
-		}
-	},
-
-	/* sets or return video width */
-	height: function(x) {
-		if (x === null) {
-			return $('#video1').height();
-		}else {
-			//this.video.height = x;
-		}
-	},
-	
-
-	/* prints errors */
-	errorHandling: function(e) { 
-//		console.log('Error - Media Source not supported: ' + this.video.error.code == this.video.error.MEDIA_ERR_SRC_NOT_SUPPORTED); // true
-//	 	console.log('Error - Network No Source: ' + this.video.networkState == this.video.NETWORK_NO_SOURCE); // true
-	},
-	
-	
-	/*
-	* Logger
-	**/
-	logger : function(){
-		var
-			_this = this,
-			interval = 5,
-			lastposition = -1, 
-    	timer
-    	;
-    	
-		function loop() {
-        var currentinterval;
-        currentinterval = (Math.round( _this.currentTime() ) / interval) >> 0;
-        //console.log("i:" + currentinterval + ", p:" + player.getPosition());
-        if (currentinterval != lastposition) { 
-            vi2.observer.log({context:'player', action:'playback', values:[ currentinterval ]});
-            lastposition = currentinterval;
-        }
-    }
-
-    function start() { 
-        if (timer) {
-            timer = clearInterval(timer);
-        }
-        timer = setInterval(loop, interval * 1000);
-        setTimeout(loop, 100);
-    }
-
-    function restart() {
-        if (timer) {
-            timer = clearInterval(timer);
-        }
-        lasttime = -1;
-        timer = setInterval(loop, interval * 1000);
-        setTimeout(loop, 100);
-    }
-
-    function stop() {
-        timer = clearInterval(timer);
-        loop();
-    }
-/*
-    player.oncanplay(start);
-   	 player.onSeek(restart);
-    player.onPause(stop);
-    	player.onBuffer(stop);
-    player.onIdle(stop);
-    player.onComplete(stop);
-    	player.onError(stop);
-  */  
-    this.video.addEventListener('play', function(e){ 
-			start();	
-		});
-		
-		this.video.addEventListener('pause', function(e){ 
-			stop();
-		});
-		
-		this.video.addEventListener('abort', function(e){  
-			stop();
-		});
-
-		this.video.addEventListener('timeupdate', function(e) { 
-							
-		});
-		
-		this.video.addEventListener('ended', function(e) { 
-			stop();
-		}, false);
-    
-	}
-	
-	
-}); // end video class
+	}); // end video class
 
 
 /* 

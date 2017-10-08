@@ -155,12 +155,7 @@ require(['jquery'], function($) {
 });
 ");
 
-$PAGE->requires->js_amd_inline(" 
-require(['jquery', 'mod_videodatabase/jquery.dataTables'], function ($, uuu) { 
-	//$('#debug').html(999)
-	
-});
-");
+
 // $data = $DB->get_records_list($table, 'title', array( 'video2'));
 // $data = json_encode($data);
 // $data = json_decode($data, true);

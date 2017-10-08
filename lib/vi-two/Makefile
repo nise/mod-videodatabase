@@ -33,6 +33,7 @@ modules =   lib/jquery-1.9.1.js\
 			src/vi2.player.playback-speed.js\
 			src/vi2.player.skip-back.js\
 			src/vi2.annotation.comments.js\
+			
 
 style =   css/vi2.annotated-timeline.css\
 			css/vi2.player.playback-speed.css\
