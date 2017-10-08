@@ -97,7 +97,7 @@ $table = "videodatabase_videos";
 $res = $DB->get_records($table, $conditions = null, $sort = '', $fields = '*', $limitfrom = 0, $limitnum = 0);
 
 $PAGE->requires->js_call_amd('mod_videodatabase/test', 'init');
-echo '<div id="debug">Hello</div>';
+//echo '<div id="debug">Hello</div>';
 echo '<div id="the_videotabl" class="video-manager row">';
 $row = 0;
 foreach ($res as $video) {
@@ -154,7 +154,6 @@ require(['jquery'], function($) {
 		});
 });
 ");
-
 
 // $data = $DB->get_records_list($table, 'title', array( 'video2'));
 // $data = json_encode($data);

@@ -38,7 +38,8 @@ $context = context_module::instance($cm->id);
 require_capability('mod/videodatabase:vdb_player', $context);
 
 $PAGE->set_url('/mod/videodatabase/vdb_player.php', array('id' => $cm->id));
-$PAGE->navbar->add('videos', new moodle_url('vdb_video-manager.php'));
+$PAGE->navbar->add('video manager', new moodle_url('vdb_video-manager.php?id='.$cm->id));
+
 
 $options = empty($videodatabase->displayoptions) ? array() : unserialize($videodatabase->displayoptions);
 
@@ -131,7 +132,7 @@ if(isset($_GET['video_id'])){
 	//echo json_encode($arr);
 	//
 	echo '<h2>' . $out['title'] . '</h2>';
-	echo "<a class='button' href='./vdb_upload.php?id=". $cm->id ."&video_id=". $_GET['video_id'] ."' class='button'>Video Metadaten bearbeiten</a><br/><br/>";
+	//echo "<a class='button' href='./vdb_upload.php?id=". $cm->id ."&video_id=". $_GET['video_id'] ."' class='button'>Video Metadaten bearbeiten</a><br/><br/>";
 
 	// init player
 	//echo "<video id='video1' width=320 height=240 controls poster='images/stills/still-".str_replace('.mp4','_comp.jpg',$out['filename'] ) ."'>";
