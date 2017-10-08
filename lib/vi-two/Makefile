@@ -15,7 +15,6 @@ modules =   lib/jquery-1.9.1.js\
 			lib/jquery.tinysort.js\
 			lib/jquery.tooltip.js\
 			lib/jquery.spin.js\
-			lib/jquery.panzoom.min.js\
 			lib/moment.min.js\
 			lib/init.js\
 			src/vi2.core.observer.js\
@@ -33,7 +32,8 @@ modules =   lib/jquery-1.9.1.js\
 			src/vi2.player.playback-speed.js\
 			src/vi2.player.skip-back.js\
 			src/vi2.annotation.comments.js\
-			
+
+add = lib/jquery.panzoom.min.js\			
 
 style =   css/vi2.annotated-timeline.css\
 			css/vi2.player.playback-speed.css\
