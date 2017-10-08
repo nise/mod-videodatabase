@@ -86,10 +86,11 @@ $formatoptions->context = $context;
 $content = format_text($content, $videodatabase->contentformat, $formatoptions);
 
 echo "<div class='container-fluid'>";
-echo "<label>Filter:</label>";
-echo "<div id='filter1'></div>";
-echo '<a class="btn btn-primary" role="button" data-toggle="collapse" href="#filter2" aria-expanded="false" aria-controls="filter2">Erweiterte Filter</a>';
-echo "<div class='collapse' id='filter2'></div><br><br><br>";
+//echo "<label>Filter:</label>";
+
+//echo "<div id='filter1'></div>";
+//echo '<a class="btn btn-primary" role="button" data-toggle="collapse" href="#filter2" aria-expanded="false" aria-controls="filter2">Erweiterte Filter</a>';
+//echo "<div class='collapse' id='filter2'></div><br><br><br>";
 
 
 // fetch data
