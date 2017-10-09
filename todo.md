@@ -5,7 +5,6 @@ MOODLE version 3.1.3 !!
 
 
 #backlog
-- fix filter
 - single video page (see screen shot)
 - upload: location, filetype restriction, poster 
 - load external 

@@ -46,7 +46,7 @@ $completion->set_module_viewed($cm);
 
 /*********/
 $PAGE->set_url('/mod/videodatabase/vdb_video-manager.php', array('id' => $cm->id));
-$PAGE->navbar->add('Videos', new moodle_url('vdb_video-manager.php'));
+$PAGE->navbar->add('Video Manager');// , new moodle_url('vdb_video-manager.php'.'?id='.$cm->id));
 
 $options = empty($videodatabase->displayoptions) ? array() : unserialize($videodatabase->displayoptions);
 

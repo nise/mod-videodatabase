@@ -59,11 +59,9 @@ $completion = new completion_info($course);
 $completion->set_module_viewed($cm);
 
 
-
-
 /*********/
 $PAGE->set_url('/mod/videodatabase/view.php', array('id' => $cm->id));
-$PAGE->navbar->add('Admin', new moodle_url('vdb_admin.php'));
+$PAGE->navbar->add('Datenverwaltung');
 
 $options = empty($videodatabase->displayoptions) ? array() : unserialize($videodatabase->displayoptions);
 
@@ -103,16 +101,22 @@ $content = format_text($content, $videodatabase->contentformat, $formatoptions);
 //$context = json_encode(array("title" => "hello world"));
 //echo parent::render_from_template("test", array("title" => "hello world"));
 
-$PAGE->requires->js( new moodle_url($CFG->wwwroot . '/mod/videodatabase/amd/src/videodatabase.js'), true);
+//$PAGE->requires->js( new moodle_url($CFG->wwwroot . '/mod/videodatabase/amd/src/videodatabase.js'), true);
 //$PAGE->requires->js( new moodle_url($CFG->wwwroot . '/mod/videodatabase/js/vi-db.js'));
 
 //$PAGE->requires->js_call_amd('videodatabase','init');//, $functionname, $params);
 
-/*echo "<label>Filter:</label>";
-echo "<div id='filter1'></div>";
-echo "<div id='filter2'></div>";
-*/
+echo "
+<a class='' role='button' data-toggle='collapse' href='#allfilter' aria-expanded='false' aria-controls='allfilter'>Filter anzeigen</a>
+<div class='collapse' id='allfilter'>
+	<div id='filter1'></div>
+	<div id='filter2'></div>
+</div><br>
+";
 
+$PAGE->requires->js_amd_inline(" 
+require(['mod_videodatabase/tableFilter'], function(f) {});
+");
 
 
 	$table = "videodatabase_videos";
@@ -217,16 +221,14 @@ echo "<div id='filter2'></div>";
 //$PAGE->requires->js( new moodle_url($CFG->wwwroot . '/mod/videodatabase/amd/jquery.select2.js') );
 $string = file_get_contents($CFG->wwwroot . '/mod/videodatabase/data/category-schema-de.json');
 
-$json = array($data); // $json['data']
-$PAGE->requires->js_call_amd('mod_videodatabase/videodatabase','init', 'table');
+//$json = array($data); // $json['data']
+//$PAGE->requires->js_call_amd('mod_videodatabase/videodatabase','init', 'table');
 
-echo $OUTPUT->box($content, "generalbox center clearfix");
+//echo $OUTPUT->box($content, "generalbox center clearfix");
 
 /*********************************/
-$strlastmodified = get_string("lastmodified");
+//$strlastmodified = get_string("lastmodified");
 //echo "<div class=\"modified\">$strlastmodified: ".userdate($videodatabase->timemodified)."</div>";
-
-
 
 echo $OUTPUT->footer();
 
