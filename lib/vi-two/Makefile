@@ -61,9 +61,6 @@ compress: ${modules}
 		cat $^ > vi-two.js
 	  java -jar /usr/bin/compiler.jar --js vi-two.js --js_output_file vi-two.min.js
 	  
-update: 
-	sudo git fetch --all 
-	sudo git reset --hard origin/oldmaster
 
 test:	${modules}
 	jshint $^ 
