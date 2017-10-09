@@ -5,15 +5,16 @@
  */
 
 /* jshint ignore:start */
-define(['jquery', 'core/log', 'mod_videodatabase/jquery.dataTables'], function ($, log) {
+// , 'mod_videodatabase/jquery.dataTables'
+define(['jquery', 'core/log'], function($, log) {
 
-    return {       
-        init: function (type) {
+    return {
+        init: function(type) {
 			log.debug('started');
             if (type === undefined) {
                 type = 'table';
             }
-            var filter_schema = {
+            var filterSchema = {
                 "language": "de",
                 "version": 1,
                 "data": [
@@ -150,26 +151,21 @@ define(['jquery', 'core/log', 'mod_videodatabase/jquery.dataTables'], function (
                     }
                 ]
             };
-            //console.log(JSON.stringify(json));
+            // console.log(JSON.stringify(json));
 
-            $(document).ready(function () { 
+            $(document).ready(function() { 
                 $('#debug').html(999);
-
-                //console.log(JSON.parse(JSON.stringify(data)))
+				// console.log(JSON.parse(JSON.stringify(data)))
                 if (type === 'table') {
-                    var table = $('#the_videotable').DataTable({
-                        "order": [],
-                        paging: false
-                    });
+                    // $('#the_videotable').DataTable({"order": [], paging: false});
                 }
 				// render filter
-				
 				var arr = [];
-                $.each(filter_schema.data, function (j, val) {
+                $.each(filterSchema.data, function(j, val) {
                     arr = [
-                        //'<label>'+ val.name +'</label>',
+                        // '<label>'+ val.name +'</label>',
                         '<select id="filter_' + val.id + '" class="sel2 ' + (val.type === 'multi' ? 'multi-filter"' : 'single-filter') + '" ' + (val.type === 'multi' ? 'multiple="multiple"' : '') + '>',
-                        '<option class="option-head" value="" selected>' + val.name + ' (alle)</option>' // disabled 
+                        '<option class="option-head" value="" selected>' + val.name + ' (alle)</option>'
                     ];
                     for (var i = 0; i < val.items.length; i++) {
                         arr.push('<option value="' + val.id + '-' + val.items[i].replace(/\//g, '').replace(/,\ /g, '').replace(/\ /g, '') + '">' + val.items[i] + '</option>');
@@ -183,7 +179,7 @@ define(['jquery', 'core/log', 'mod_videodatabase/jquery.dataTables'], function (
 
                 var filters = {};
 
-                $('#filter_actors').change(function () {
+                $('#filter_actors').change(function() {
                     if (this.value === "") {
                         filters.actors = 'null';
                     } else {
@@ -192,7 +188,7 @@ define(['jquery', 'core/log', 'mod_videodatabase/jquery.dataTables'], function (
                     applyFilter();
                 });
 
-                $('#filter_location').change(function () {
+                $('#filter_location').change(function() {
                     if (this.value === "") {
                         filters.location = 'null';
                     } else {
@@ -202,7 +198,7 @@ define(['jquery', 'core/log', 'mod_videodatabase/jquery.dataTables'], function (
                 });
 
 
-                $('#filter_movements').change(function () {
+                $('#filter_movements').change(function() {
                     if (this.value === "") {
                         filters.movements = 'null';
                     } else {
@@ -211,7 +207,7 @@ define(['jquery', 'core/log', 'mod_videodatabase/jquery.dataTables'], function (
                     applyFilter();
                 });
 
-                $('#filter_sports').change(function () {
+                $('#filter_sports').change(function() {
                     if (this.value === "") {
                         filters.sports = 'null';
                     } else {
@@ -221,49 +217,49 @@ define(['jquery', 'core/log', 'mod_videodatabase/jquery.dataTables'], function (
                 });
 
                 // multi
-                $('#filter_activities').change(function () { //alert($(this).val())
+                $('#filter_activities').change(function() { // alert($(this).val())
                     // reset
-                    $(this).find('option').each(function (i, val) {
+                    $(this).find('option').each(function(i, val) {
                         filters['activities_' + $(val).attr('value')] = 'null';
                     });
                     // set
-                    $('#filter_activities :selected').each(function (i) {
+                    $('#filter_activities :selected').each(function(i) {
                         filters['activities_' + $(this).attr('value')] = $(this).attr('value');
                     });
                     applyFilter();
                 });
 
-                $('#filter_compentencies').change(function () { //alert($(this).val())
+                $('#filter_compentencies').change(function() { // alert($(this).val())
                     // reset
-                    $(this).find('option').each(function (i, val) {
+                    $(this).find('option').each(function(i, val) {
                         filters['compentencies_' + $(val).attr('value')] = 'null';
                     });
                     // set
-                    $('#filter_compentencies :selected').each( function (i) {
+                    $('#filter_compentencies :selected').each(function(i) {
                         filters['compentencies_' + $(this).attr('value')] = $(this).attr('value');
                     });
                     applyFilter();
                 });
 
-                $('#filter_perspectives').change( function () { //alert($(this).val())
+                $('#filter_perspectives').change(function() { //alert($(this).val())
                     // reset
-                    $(this).find('option').each( function (i, val) {
+                    $(this).find('option').each(function(i, val) {
                         filters['perspectives_' + $(val).attr('value')] = 'null';
                     });
                     // set
-                    $('#filter_perspectives :selected').each(function (i, val) {
+                    $('#filter_perspectives :selected').each(function(i, val) {
                         filters['perspectives_' + $(this).attr('value')] = $(this).attr('value');
                     });
                     applyFilter();
                 });
 
-                $('#filter_group').change(function () { //alert($(this).val())
+                $('#filter_group').change(function() { // alert($(this).val())
                     // reset
-                    $(this).find('option').each(function (i, val) {
+                    $(this).find('option').each(function(i, val) {
                         filters['group_' + $(val).attr('value')] = 'null';
                     });
                     // set
-                    $('#filter_group :selected').each(function (i, val) {
+                    $('#filter_group :selected').each(function(i, val) {
                         filters['group_' + $(this).attr('value')] = $(this).attr('value');
                     });
                     applyFilter();
@@ -277,7 +273,7 @@ define(['jquery', 'core/log', 'mod_videodatabase/jquery.dataTables'], function (
                             filter_str += '.' + filters[f] + '';
                         }
                     }
-                    //alert('_'+filter_str)
+                    // alert('_'+filter_str)
                     if (type === 'table') {
                         $('#the_videotable tbody tr').hide();
                         $('#the_videotable tbody').find(filter_str).show();
@@ -291,7 +287,7 @@ define(['jquery', 'core/log', 'mod_videodatabase/jquery.dataTables'], function (
 
               /*require(['json!mod_videodatabase/data/category-schema-de.json'], function(data){
                     console.log(data)
-                }, function (err) {
+                }, function(err) {
                     console.log(err)
                 })*/
 

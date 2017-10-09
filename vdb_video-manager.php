@@ -64,6 +64,7 @@ $PAGE->requires->css( '/mod/videodatabase/styles.css', true );
 $PAGE->requires->css( '/mod/videodatabase/css/bootstrap.min.css');
 //$PAGE->requires->js( new moodle_url($CFG->wwwroot . '/mod/videodatabase/js/jquery.js'), true );
 
+
 echo $OUTPUT->header();
 
 
@@ -86,20 +87,22 @@ $formatoptions->context = $context;
 $content = format_text($content, $videodatabase->contentformat, $formatoptions);
 
 echo "<div class='container-fluid'>";
-//echo "<label>Filter:</label>";
-
-//echo "<div id='filter1'></div>";
-//echo '<a class="btn btn-primary" role="button" data-toggle="collapse" href="#filter2" aria-expanded="false" aria-controls="filter2">Erweiterte Filter</a>';
-//echo "<div class='collapse' id='filter2'></div><br><br><br>";
+echo '<div id="debug" hidden class="alert alert-success" role="alert"></div>';
+echo "
+<div class='filterbox'>
+    <label>Filter:</label>
+    <div id='filter1'></div>
+    <a class='btn btn-primary' role='button' data-toggle='collapse' href='#filter2' aria-expanded='false' aria-controls='filter2'>Erweiterte Filter</a>
+    <div class='collapse' id='filter2'></div>
+</div>    
+";
 
 
 // fetch data
 $table = "videodatabase_videos";
 $res = $DB->get_records($table, $conditions = null, $sort = '', $fields = '*', $limitfrom = 0, $limitnum = 0);
 
-$PAGE->requires->js_call_amd('mod_videodatabase/test', 'init');
-//echo '<div id="debug">Hello</div>';
-echo '<div id="the_videotabl" class="video-manager row">';
+echo '<div id="the_filters" class="video-manager row">';
 $row = 0;
 foreach ($res as $video) {
     $row++;
@@ -142,6 +145,13 @@ $js =
 	<script type="text/javascript"></script>
 EOS;
 
+//$PAGE->requires->js_call_amd('mod_videodatabase/filter', 'init');
+$PAGE->requires->js_amd_inline(" 
+require(['jquery','mod_videodatabase/filter'], function($, f) {
+    //new Filters();
+});
+");
+
 $PAGE->requires->js_amd_inline(" 
 require(['jquery'], function($) {
 	var source = '';	
@@ -155,6 +165,7 @@ require(['jquery'], function($) {
 		});
 });
 ");
+
 
 // $data = $DB->get_records_list($table, 'title', array( 'video2'));
 // $data = json_encode($data);

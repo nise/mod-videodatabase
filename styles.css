@@ -69,6 +69,15 @@ display:block;
   white-space: normal;
 }
 
+.filterbox {
+    margin-bottom:20px;
+}
+
+.btn, .btn-primary {
+    padding:2px !important;
+    margin:0;
+}
+
 a{
 cursor: pointer;
     text-decoration: none;
