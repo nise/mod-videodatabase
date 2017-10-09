@@ -92,8 +92,8 @@ echo "
 <div class='filterbox'>
     <label>Filter:</label>
     <div id='filter1'></div>
-    <a class='btn btn-primary' role='button' data-toggle='collapse' href='#filter2' aria-expanded='false' aria-controls='filter2'>Erweiterte Filter</a>
-    <div class='collapse' id='filter2'></div>
+    <a class='' role='button' data-toggle='collapse' href='#filter2' aria-expanded='false' aria-controls='filter2'>Erweiterte Filter</a>
+    <div class='collapse' id='filter2'></div><br>
 </div>    
 ";
 
