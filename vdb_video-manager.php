@@ -156,15 +156,10 @@ echo '
 
 
 //$PAGE->requires->js_call_amd('mod_videodatabase/filter', 'init');
-$PAGE->requires->js_amd_inline(" 
-require(['jquery','mod_videodatabase/filter'], function($, f) {
-    // 
-    var t = 0;
-});
-");
+
 
 $PAGE->requires->js_amd_inline(" 
-require(['jquery'], function($) {
+require(['jquery', 'mod_videodatabase/filter'], function($, f) {
 	var source = '';	
 	$('.still-images')
 		.hover(function () { 
