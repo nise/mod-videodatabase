@@ -52,7 +52,6 @@ define(['jquery', 'core/log', 'https://unpkg.com/vue', 'core/ajax'], function($,
                 })
                 .fail(function(data) {
                     console.log(data)
-                    alert("error");
                 });
     /**
      * Vue.js
