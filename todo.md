@@ -5,7 +5,6 @@ MOODLE version 3.1.3 !!
 
 
 #backlog
-- single video page (see screen shot)
 - upload: location, filetype restriction, poster 
 - load external 
 - form 
@@ -15,6 +14,11 @@ MOODLE version 3.1.3 !!
 - Startseite inkl. Erklärung der Anwendung, Link zum Lehrplan
 - video logging
 - video annotation 
+- player loop
+- player zoom
+
+- vote
+
 
 # nth
 - Video mit Wasserzeichen versehen
@@ -51,7 +55,7 @@ http://lisum.berlin-brandenburg.de/lisum/
 
 
 # bugs
-* data-load: $record->group = (string)$data[30]; // xxx bug!!! it will not run with this line
+
 
 # tech
 - templates, see https://docs.moodle.org/dev/Templates#Blocks_.28Moodle_3.0_onwards.29

@@ -279,21 +279,17 @@ width: 100%;
 author: niels.seidel@nise81.com
 */
 
-video, #seq, .seq {
-	margin-left: 20px;
-	width:inherit;
-}
-
 /* player controls */
 .video-controls {
 	background-color: rgba(0, 0, 0, 0.4);
 	clear: both;
 	display: block;
-	width:inherit;
 	height: 90px;
-	margin:0;
+	margin-left:15px;
+	padding:0;
 	left: 0;
 }
+
 
 .control-bar{
 	position:relative;

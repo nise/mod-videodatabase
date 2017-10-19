@@ -78,7 +78,7 @@ class course_module_viewed extends \core\event\content_viewed {
      */
     protected function get_legacy_logdata() {
         return array($this->courseid, 'page', 'view', 'view.php?id=' . $this->context->instanceid, $this->objectid,
-                $this->context->instanceid);
+            $this->context->instanceid);
     }
 }
 

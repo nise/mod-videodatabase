@@ -26547,8 +26547,8 @@ if (_this._d === Object.size(_this.options.jsonFiles)) {
 }, 
 error:function(e) {
 	//window.location = "/login"; 
-					var err = new Error('Could not catch data'); 
-				}
+	var err = new Error('Could not catch data'); 
+	}
 }); 
 	}, 
 
@@ -29861,7 +29861,8 @@ Vi2.SkipBack = $.inherit(/** @lends Vi2.SkipBack# */{ //
 			var container = $('<div></div>')
 				.append($('<div></div>')
 					.text( this.options.label )
-					.addClass('vi2-skipback-label glyphicon glyphicon-step-backward')
+					// .addClass('vi2-skipback-label glyphicon glyphicon-step-backward')
+					.addClass('vi2-skipback-label fa fa-step-backward')
 				)
 				.addClass('vi2-skipback-controls vi2-btn')
 				.attr('title', this.options.step+'s zurückspringen')

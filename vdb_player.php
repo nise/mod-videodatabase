@@ -38,8 +38,8 @@ $context = context_module::instance($cm->id);
 require_capability('mod/videodatabase:vdb_player', $context);
 
 $PAGE->set_url('/mod/videodatabase/vdb_player.php', array('id' => $cm->id));
-$PAGE->navbar->add('video manager', new moodle_url('vdb_video-manager.php?id='.$cm->id));
-
+$PAGE->navbar->add('Video Manager', new moodle_url('vdb_video-manager.php?id='.$cm->id));
+$PAGE->navbar->add('Video');
 
 $options = empty($videodatabase->displayoptions) ? array() : unserialize($videodatabase->displayoptions);
 
@@ -126,40 +126,84 @@ if(isset($_GET['video_id'])){
 	$arr->metadata[0] = (object)array();
 	$arr->metadata[0]->author = $out['contributor'];
 	$arr->metadata[0]->title = $out['title'];
+	
 	$arr->metadata[0]->abstract = $out['description'];
 	$arr->metadata[0]->thumbnail = "still-".str_replace('.mp4','_comp.jpg',$out['filename']);
 	//print_r($out);
 	//echo json_encode($arr);
 	//
-	echo '<h2>' . $out['title'] . '</h2>';
-	//echo "<a class='button' href='./vdb_upload.php?id=". $cm->id ."&video_id=". $_GET['video_id'] ."' class='button'>Video Metadaten bearbeiten</a><br/><br/>";
+	
+	
+	$videoMetaData = '<label>Beschreibung:</label> ' . $out['description'];
+	$videoMetaData .= '<br />';
+	$videoMetaData .= '<label>Kompetenzen:</label> ' . $out['compentencies'];
+	$videoMetaData .= '<br />';
+	$videoMetaData .= '<label>Sportart:</label> ' . $out['sports'];
+	$videoMetaData .= '<br />';
+	$videoMetaData .= '<label>Bewegungsfelder:</label> ' . $out['movements'];
+	$videoMetaData .= '<br />';
+	$videoMetaData .= '<label>Aktivitäten:</label> ' . $out['activities'];
+	$videoMetaData .= '<br />';
+	$videoMetaData .= '<label>Perspektiven:</label> ' . $out['perspectives'];
+	$videoMetaData .= '<br />';
+	$videoMetaData .= '<label>Ort:</label> ' . $out['location'];
+	$videoMetaData .= '<br />';
+	$videoMetaData .= '<label>Klasse:</label> ' . $out['klasse'];
+	$videoMetaData .= '<hr />';
+	$videoMetaData .= '<label>Produzent:</label> ' . $out['contributor'];
+	$videoMetaData .= '<br />';
+	$videoMetaData .= '<label>Herausgeber:</label> ' . $out['publisher'];
+	$videoMetaData .= '<br />';
+	
+	/*
+<FIELD NAME="compentencies" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
+				<FIELD NAME="klassenstufe" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
+				<FIELD NAME="sports" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
+				<FIELD NAME="movements" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
+				<FIELD NAME="activities" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
+				<FIELD NAME="actors" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
+				<FIELD NAME="perspectives" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
+				<FIELD NAME="location" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
+				<FIELD NAME="klasse" TYPE="int" LENGTH="6" NOTNULL="false" DEFAULT="-1" COMMENT=""/>
+        
 
-	// init player
-	//echo "<video id='video1' width=320 height=240 controls poster='images/stills/still-".str_replace('.mp4','_comp.jpg',$out['filename'] ) ."'>";
-	//echo '<source src="/videos/'.$out['filename'].'" type="video/mp4">';
-	//echo '<source src="/videos/'.str_replace(".mp4",".webm",$out["filename"]) .'" type="video/webm">';
-	//echo 'Your browser does not support the video tag.';
-	//echo '</video>';
-}else{
-	echo "No video_id provided";
-}
 
-echo '
-<div id="wrapper" style="overflow:hidden;">
+
+	$event = \mod\videodatabase\event\video_open::create(array(
+		'objectid' => $PAGE->cm->instance,
+		'context' => $PAGE->context,
+		'video' => $_GET['video_id']
+	));
+	$event->add_record_snapshot('course', $PAGE->course);
+	// In the next line you can use $PAGE->activityrecord if you have set it, or skip this line if you don't have a record.
+	$event->add_record_snapshot($PAGE->cm->modname, $activityrecord);
+	$event->trigger();
+	*/
+
+
+	echo '
+	<!-- Storage -->
+	<div style="display:none; visibility:hidden;" id="vi2"></div>
+	<!-- End Storage -->
+	
+	<!-- Player -->
+	<div id="wrapper" style="overflow:hidden;">
 		<div id="pagex" style="overflow:hidden;">
-			<!-- Storage -->
-			<div style="display:none; visibility:hidden;" id="vi2"></div>
+			
 			<!-- Main -->
 			<div class="container-fluid">
+				<h2>' . $out['title'] . '</h2>
 				<div class="row">
 					<div id="videowrapper" class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
-						<div id="seq" class=""></div>
+						<div id="seq" class="col-md-12"></div>
 						<div id="overlay" class=""></div>
 						<div id="split" class="col-md-9"></div>
 						<div id="screen" class="col-md-9"></div>
 					</div>
 					<div id="accordion-resizer" class="col-lg-3 col-md-3 col-sm-3 hidden-xs visible-sm-inline">
-						<div id="accordion"></div>
+						<div id="accordion" class="video-metadata">
+							'. $videoMetaData .'
+						</div>
 					</div>
 				</div>
 				<div id="video-controls" class="video-controls col-lg-9 col-md-9 col-sm-12 col-xs-12">
@@ -202,7 +246,14 @@ echo '
 				</div>
 			</div>
 		</div>
-';
+	</div>	
+	';
+
+}else{
+	echo "No video_id provided";
+}
+
+
 	
 echo $OUTPUT->footer();
 

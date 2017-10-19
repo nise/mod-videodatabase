@@ -8,9 +8,89 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since      3.1
  */
-define(['jquery', 'core/log'], function($, log) {
+define(['jquery', 'core/log', 'https://unpkg.com/vue', 'core/ajax'], function($, log, Vue, ajax) {
     
     var Filters = function() { };
+
+    /**
+     * AJAX
+     */
+    var promises = ajax.call([
+        { methodname: 'core_get_string', args: { component: 'mod_videodatabase', stringid: 'pluginname' } },
+        { methodname: 'core_get_string', args: { component: 'mod_videodatabase', stringid: 'changerate' } }
+    ]);
+ 
+   promises[0].done(function(response) {
+       console.log('mod_wiki/pluginname is' + response);
+   }).fail(function(ex) {
+       // do something with the exception
+   });
+ 
+   promises[1].done(function(response) {
+       console.log('mod_wiki/changerate is ' + response);
+   }).fail(function(ex) {
+       // do something with the exception
+   });
+
+   /**
+    * AJAX2
+    */
+    var baseurl = '/moodle/';
+            $.ajax({
+                    method: "POST",
+                    url: baseurl + "webservice/rest/server.php",
+                    data: {
+                        wstoken: '999428d7c544a48431235d0e56e2999c',
+                        moodlewsrestformat: 'json',
+                        wsfunction: 'hello_world', //'core_course_get_contents',
+                        courseid: 2
+                    }
+                })
+                .done(function(msg) {
+                    console.log('guut');
+                    console.log(msg);
+                })
+                .fail(function(data) {
+                    console.log(data)
+                    alert("error");
+                });
+    /**
+     * Vue.js
+     */
+    const NotFound = { template: '<p>Page not found</p>' }
+    const Home = { template: '<p>home page</p>' }
+    const About = { template: '<p>about page</p>' }
+    const routes = {
+      '/': Home,
+      '#home': About
+    }
+    new Vue({
+      el: '#app',
+      data: {
+        currentRoute: window.location.pathname
+      },
+      computed: {
+        ViewComponent () {
+          return routes[this.currentRoute] || NotFound
+        }
+      },
+      render (h) { return h(this.ViewComponent) }
+    });
+
+    new Vue({
+        el: "#uploadForm",
+        data: {
+            isShow: false,
+            selected: 'A',
+            options: [
+              { text: 'One', value: 'A' },
+              { text: 'Two', value: 'B' },
+              { text: 'Three', value: 'C' }
+            ]
+        }
+    }); 
+
+
 
     var filterSchema = {
         "language": "de",

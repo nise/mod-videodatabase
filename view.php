@@ -110,7 +110,7 @@ echo '
 		<strong>Well done!</strong> You successfully important the dummy dataset.
 	</div>
 	<div class="row-fluid">
-		<div class="col-xs-12 col-md-3 coll text-center">
+		<div class="col-xs-12 col-sm-6 col-md-3 text-center">
 			<div class="thumbnail">
 				<a href="vdb_video-manager.php?id='. $id .'">
 					<span class="fa fa-video-camera mega" aria-hidden="true"></span>
@@ -120,7 +120,7 @@ echo '
 				</h4>
 			</div>
 		</div>
-		<div class="col-xs-12 col-md-3 text-center">
+		<div class="col-xs-12 col-sm-6 col-md-3 text-center">
 			<div class="thumbnail">
 				<a href="vdb_comments.php?id='. $id .'">
 					<span class="fa fa-comments mega"></span>
@@ -130,7 +130,7 @@ echo '
 				</h4>
 			</div>
 		</div>
-		<div class="col-xs-12 col-md-3 text-center">
+		<div class="col-xs-12 col-sm-6 col-md-3 text-center">
 			<div class="thumbnail">
 				<a href="vdb_admin.php?id='. $id .'">
 					<span class="fa fa-cog mega"></span>

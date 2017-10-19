@@ -131,24 +131,35 @@ foreach ($res as $video) {
 			<a class='title' href='vdb_player.php?id=" . $id ."&video_id=" . $video->id ."'>".$video->title."</a>
 			<div hidden >". substr($video->description, 0, 40)."</div>
 			<div>".$video->group."</div>
-			<div class=''>".$video->movements."</div>
+			<div hidden class=''>".$video->movements."</div>
 			<div class=''>".$video->sports."</div>	
 		</div>		
 	</div>";
 }
 echo '</div>';
-echo "</div>";
+echo "</div><div id='app2'>
+<p hidden>{{ message2 }}</p>
+</div>";
 
+echo '
+<div hidden id="uploadForm">
+    <button v-on:click="isShow = !isShow" class="btn btn-primary fa fa-plus"> Video hinzufügen</button>
+    <div v-show="isShow" class="">
+        <select v-model="selected">
+            <option v-for="option in options" v-bind:value="option.value">
+            {{ option.text }}
+            </option>
+        </select>
+        <span>Selected: {{ selected }}</span>
+    </div>
+</div>';
 
-$js =
-<<<EOS
-	<script type="text/javascript"></script>
-EOS;
 
 //$PAGE->requires->js_call_amd('mod_videodatabase/filter', 'init');
 $PAGE->requires->js_amd_inline(" 
 require(['jquery','mod_videodatabase/filter'], function($, f) {
-    //new Filters();
+    // 
+    var t = 0;
 });
 ");
 
@@ -165,6 +176,8 @@ require(['jquery'], function($) {
 		});
 });
 ");
+
+
 
 
 // $data = $DB->get_records_list($table, 'title', array( 'video2'));
