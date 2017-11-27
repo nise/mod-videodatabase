@@ -123,6 +123,7 @@ require(['mod_videodatabase/tableFilter'], function(f) {});
 
 	$res = $DB->get_records($table, $conditions=null, $sort='', $fields='*', $limitfrom=0, $limitnum=0);
 
+	echo '<a href="vdb_player.php?id=2&amp;video_id=184" id="yui_3_17_2_1_1511779973860_28"><i class="fa fa-play" title="Video abspielen"></i> Balltanz</a>';
 
 	echo '<div id="videotable" class="table-responsive">
 			<table id="the_videotable" class="table display" cellspacing="0" width="100%">
@@ -161,8 +162,13 @@ require(['mod_videodatabase/tableFilter'], function(f) {});
 		location-" . $video->location . " 
 		". $activities . "
 		". $competencies . "  
-		table-hover accordion-toggle' data-toggle='collapse' data-target='#demo".$row."'>";
-	echo "<td><a href='vdb_player.php?id=" . $id ."&video_id=" . $video->id . "'>$video->title</a></td>";
+		data-target='#demo".$row."'>";
+	echo '	<td>
+				<a href="vdb_player.php?id=' . $id .'&video_id=' . $video->id . '"><i class="fa fa-play" title="Video abspielen"></i> ' . $video->title .'</a> <br>
+				<a href="vdb_form.php?id=' . $id .'&video_id=' . $video->id . '">
+				<i class="fa fa-pencil" title="Metadaten bearbeiten"></i>
+				</a>
+			</td>';
 	echo "<td>$video->sports</td>";
 	echo "<td>$video->klassenstufe</td>";
 	echo "<td>$video->compentencies</td>";
@@ -219,7 +225,7 @@ require(['mod_videodatabase/tableFilter'], function(f) {});
 
 
 //$PAGE->requires->js( new moodle_url($CFG->wwwroot . '/mod/videodatabase/amd/jquery.select2.js') );
-$string = file_get_contents($CFG->wwwroot . '/mod/videodatabase/data/category-schema-de.json');
+//$string = file_get_contents($CFG->wwwroot . '/mod/videodatabase/data/category-schema-de.json');
 
 //$json = array($data); // $json['data']
 //$PAGE->requires->js_call_amd('mod_videodatabase/videodatabase','init', 'table');
