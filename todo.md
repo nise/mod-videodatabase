@@ -5,6 +5,7 @@ MOODLE version 3.1.3 !!
 
 
 #backlog
+- define all webservices
 - upload: location, filetype restriction, poster 
 - load external 
 - form 
@@ -13,7 +14,7 @@ MOODLE version 3.1.3 !!
  - file upload
 - Startseite inkl. Erklärung der Anwendung, Link zum Lehrplan
 - video logging
-- video annotation 
+- video annotation
 - player loop
 - player zoom
 
@@ -22,7 +23,8 @@ MOODLE version 3.1.3 !!
 
 # nth
 - Video mit Wasserzeichen versehen
-- Settings-Page: define category-schema-de/en
+- Settings-Page: 
+ 
 - multi-language
 
 

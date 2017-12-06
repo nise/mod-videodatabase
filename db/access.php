@@ -52,11 +52,18 @@ $capabilities = array(
             'manager' => CAP_ALLOW,
             'admin' => CAP_ALLOW
         )
-    ),
-
-// admin operations
-
+    ),// admin operations
     'mod/videodatabase:vdb_form' => array(
+        'riskbitmask' => RISK_PERSONAL,
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => array(
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW,
+            'admin' => CAP_ALLOW
+        )
+    ),
+     'mod/videodatabase:vdb_form_cls' => array(
         'riskbitmask' => RISK_PERSONAL,
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
@@ -75,18 +82,6 @@ $capabilities = array(
             'manager' => CAP_ALLOW,
             'admin' => CAP_ALLOW
         )
-    ),
-    'mod/videodatabase:addinstance' => array(
-        'riskbitmask' => RISK_XSS,
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_COURSE,
-        'archetypes' => array(
-            'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW,
-            'admin' => CAP_ALLOW
-        ),
-        'clonepermissionsfrom' => 'moodle/course:manageactivities'
     )
-    
 );
 

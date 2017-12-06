@@ -100,28 +100,39 @@ $content = format_text($content, $videodatabase->contentformat, $formatoptions);
 
 //include simplehtml_form.php
 require_once($CFG->dirroot.'/mod/videodatabase/vdb_form_cls.php');
- 
+
+$out = array();
+if(isset($_GET['video_id'])){
+    $table = "videodatabase_videos";
+    $res = $DB->get_records($table, array( 'id' => $_GET['video_id'] ), $sort='', $fields='*', $limitfrom=0, $limitnum=0);
+    $out = (array)$res[$_GET['video_id']];
+  }
 //Instantiate simplehtml_form 
-$mform = new simplehtml_form();
+$mform = new simplehtml_form(null, $out);
  
 //Form processing and displaying is done here
 if ($mform->is_cancelled()) {
     //Handle form cancel operation, if cancel button is present on form
+    if ($return && !empty($cm->id)) {
+        redirect("$CFG->wwwroot/mod/$module->name/view.php?id=$cm->id");
+    } else {
+        redirect(course_get_url($course, $cw->section, array('sr' => $sectionreturn)));
+    }
+
 } else if ($fromform = $mform->get_data()) {
+    $fromform = add_moduleinfo($fromform, $course, $mform);
+    echo 'file   '.$mform->get_new_filename();
   //In this case you process validated data. $mform->get_data() returns data posted in form.
+
 } else {
   // this branch is executed if the form is submitted but the data doesn't validate and the form should be redisplayed
   // or on the first display of the form.
   
-  if(isset($_GET['video_id'])){
-    $table = "videodatabase_videos";
-    $res = $DB->get_records($table, array( 'id' => $_GET['video_id'] ), $sort='', $fields='*', $limitfrom=0, $limitnum=0);
-    $out = (array)$res[$_GET['video_id']];//[2]
-    print_r($out);
-  }
+  
     
   //Set default data (if any)
-  $mform->set_data($out);
+    $mform->set_data($out);
+    
   //displays the form
   $mform->display();
 }

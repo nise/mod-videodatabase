@@ -130,7 +130,7 @@ foreach ($res as $video) {
 		<div class='meta'>
 			<a class='title' href='vdb_player.php?id=" . $id ."&video_id=" . $video->id ."'>".$video->title."</a>
 			<div hidden >". substr($video->description, 0, 40)."</div>
-			<div>".$video->group."</div>
+			<div>".$video->klasse."</div>
 			<div hidden class=''>".$video->movements."</div>
 			<div class=''>".$video->sports."</div>	
 		</div>		
@@ -138,8 +138,17 @@ foreach ($res as $video) {
 }
 echo '</div>';
 echo "</div><div id='app2'>
-<p hidden>{{ message2 }}</p>
-</div>";
+<p>{{ message2 }}</p>
+</div>
+<a href='#/about'>about</a><a href='#/home'>home</a>
+<div id='app'>yyyy</div>
+";
+
+echo '
+<div id="example-3">
+  <a v-on:click="say(\'hi\')">Say hi</a>
+  <button v-on:click="say(\'what\')">Say what</button>
+</div>';
 
 echo '
 <div hidden id="uploadForm">
@@ -153,6 +162,8 @@ echo '
         <span>Selected: {{ selected }}</span>
     </div>
 </div>';
+
+
 
 
 //$PAGE->requires->js_call_amd('mod_videodatabase/filter', 'init');

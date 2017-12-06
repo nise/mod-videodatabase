@@ -60,7 +60,7 @@ $completion->set_module_viewed($cm);
 
 
 /*********/
-$PAGE->set_url('/mod/videodatabase/view.php', array('id' => $cm->id));
+$PAGE->set_url('/mod/videodatabase/vdb_admen.php', array('id' => $cm->id));
 $PAGE->navbar->add('Datenverwaltung');
 
 $options = empty($videodatabase->displayoptions) ? array() : unserialize($videodatabase->displayoptions);
@@ -106,6 +106,11 @@ $content = format_text($content, $videodatabase->contentformat, $formatoptions);
 
 //$PAGE->requires->js_call_amd('videodatabase','init');//, $functionname, $params);
 
+// Link Nav
+echo '<div class="navbar">';
+echo '<a class="nav" href="vdb_admin_settings.php?id='. $id .'"><span class="fa fa-cog"></span> Einstellungen</a>	';
+echo '</div>';
+
 echo "
 <a class='' role='button' data-toggle='collapse' href='#allfilter' aria-expanded='false' aria-controls='allfilter'>Filter anzeigen</a>
 <div class='collapse' id='allfilter'>
@@ -122,8 +127,6 @@ require(['mod_videodatabase/tableFilter'], function(f) {});
 	$table = "videodatabase_videos";
 
 	$res = $DB->get_records($table, $conditions=null, $sort='', $fields='*', $limitfrom=0, $limitnum=0);
-
-	echo '<a href="vdb_player.php?id=2&amp;video_id=184" id="yui_3_17_2_1_1511779973860_28"><i class="fa fa-play" title="Video abspielen"></i> Balltanz</a>';
 
 	echo '<div id="videotable" class="table-responsive">
 			<table id="the_videotable" class="table display" cellspacing="0" width="100%">

@@ -14,7 +14,7 @@ define(['jquery', 'core/log', 'https://unpkg.com/vue', 'core/ajax'], function($,
 
     /**
      * AJAX
-     */
+     
     var promises = ajax.call([
         { methodname: 'core_get_string', args: { component: 'mod_videodatabase', stringid: 'pluginname' } },
         { methodname: 'core_get_string', args: { component: 'mod_videodatabase', stringid: 'changerate' } }
@@ -31,65 +31,88 @@ define(['jquery', 'core/log', 'https://unpkg.com/vue', 'core/ajax'], function($,
    }).fail(function(ex) {
        // do something with the exception
    });
-
+*/
    /**
     * AJAX2
-    */
-    var baseurl = '/moodle/';
+    */ 
+
+    
+    
             $.ajax({
                     method: "POST",
-                    url: baseurl + "webservice/rest/server.php",
+                    url: "/moodle/webservice/rest/server.php",
                     data: {
-                        wstoken: '999428d7c544a48431235d0e56e2999c',
+                        wstoken: 'e321c48e338fc44830cda07824833944',
                         moodlewsrestformat: 'json',
-                        wsfunction: 'hello_world', //'core_course_get_contents',
+                        wsfunction: 'core_course_get_contents',
                         courseid: 2
                     }
                 })
                 .done(function(msg) {
-                    console.log('guut');
-                    console.log(msg);
+                    console.log('first');
+                    console.log(JSON.stringify(msg));
                 })
                 .fail(function(data) {
                     console.log(data)
                 });
+
+    $.ajax({
+        method: "POST",
+        url: "/moodle/webservice/rest/server.php",
+        data: {
+            wstoken: 'e321c48e338fc44830cda07824833944',
+            moodlewsrestformat: 'json',
+            wsfunction: 'local_wstemplate_hello_world',
+            videos: {'courseid': 2}
+        },
+        dataType: "json"
+    })
+        .done(function (msg) {
+            console.log('Second');
+            console.log(JSON.parse(msg.data)['165'].title);
+            console.log('----------------');
+        })
+        .fail(function (data) {
+            console.log(data)
+        }); 
+        
+    //
+    new Vue({
+        el: '#example-3',
+        methods: {
+            say: function (message) {
+                alert(message)
+            }
+        }
+    })    
+                
     /**
      * Vue.js
      */
+    /**
     const NotFound = { template: '<p>Page not found</p>' }
     const Home = { template: '<p>home page</p>' }
     const About = { template: '<p>about page</p>' }
+
     const routes = {
-      '/': Home,
-      '#home': About
+        '#/home': Home,
+        '#/about': About
     }
-    new Vue({
-      el: '#app',
-      data: {
-        currentRoute: window.location.pathname
-      },
-      computed: {
-        ViewComponent () {
-          return routes[this.currentRoute] || NotFound
-        }
-      },
-      render (h) { return h(this.ViewComponent) }
-    });
 
     new Vue({
-        el: "#uploadForm",
+        el: '#app',
         data: {
-            isShow: false,
-            selected: 'A',
-            options: [
-              { text: 'One', value: 'A' },
-              { text: 'Two', value: 'B' },
-              { text: 'Three', value: 'C' }
-            ]
-        }
-    }); 
-
-
+            currentRoute: window.location.hash
+        },
+        computed: {
+            ViewComponent() {
+                
+                return routes[this.currentRoute] || NotFound;
+            }
+        },
+        render(h) { return h(this.ViewComponent); }
+    });
+ */
 
     var filterSchema = {
         "language": "de",
