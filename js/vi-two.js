@@ -26009,12 +26009,23 @@ function initVideo(db) {
 
 $(document).ready(function () {
 	//vi2 = new ViLab(server, "<%= items[0]._id %>");
+	function startVi2(video_data){
+		console(video_data);
+		vi2.db = new Vi2.DataBase({ modus: 'native', data: video_data, path: '' }, 'window', 'initVideo', undefined);//this.server_url+this.plugin_dir
+		vi2.db.init();
+		vi2.dom = "#vi2";
+	}
+	
+
+});
+
+function startVi2(video_data) {
+	console.log(video_data);
 	vi2.db = new Vi2.DataBase({ modus: 'native', data: video_data, path: '' }, 'window', 'initVideo', undefined);//this.server_url+this.plugin_dir
 	vi2.db.init();
 	vi2.dom = "#vi2";
+}
 
-
-});
 /* 
 * name: Vi2.Observer 
 *	author: niels.seidel@nise81.com

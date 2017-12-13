@@ -8,13 +8,37 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// We defined the web service functions to install.
+
 $functions = array(
-        'local_wstemplate_hello_world' => array(
-                'classname'   => 'mod_videodatabase_external',
-                'methodname'  => 'hello_world',
+        'videodatabase_videos' => array(
+                'classname'   => 'mod_videodatabase_videos_external',
+                'methodname'  => 'get_all_videos',
                 'classpath'   => 'mod/videodatabase/classes/external.php',
-                'description' => 'Return Hello World FIRSTNAME. Can change the text (Hello World) sending a new text as parameter',
+                'description' => 'Getter for course-related videos',
+                'type'        => 'read',
+                'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
+        ),
+        'videodatabase_video' => array(
+                'classname'   => 'mod_videodatabase_video_external',
+                'methodname'  => 'get_video',
+                'classpath'   => 'mod/videodatabase/classes/external.php',
+                'description' => 'Getter a video',
+                'type'        => 'read',
+                'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
+        ),
+        'videodatabase_comments' => array(
+                'classname'   => 'mod_videodatabase_comments_external',
+                'methodname'  => 'get_all_comments',
+                'classpath'   => 'mod/videodatabase/classes/external.php',
+                'description' => 'Getter for course-related comments',
+                'type'        => 'read',
+                'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
+        ),
+        'videodatabase_video_comments' => array(
+                'classname'   => 'mod_videodatabase_video_comment_external',
+                'methodname'  => 'get_video_comments',
+                'classpath'   => 'mod/videodatabase/classes/external.php',
+                'description' => 'Getter for all comments related to a video',
                 'type'        => 'read',
                 'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
         )

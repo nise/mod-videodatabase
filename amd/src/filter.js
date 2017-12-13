@@ -7,10 +7,35 @@
  * @copyright  2017 Niels Seidel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since      3.1
+ * https://unpkg.com/vue
+ * http://localhost/moodle/mod/videodatabase/
+ * https://unpkg.com/vue-router/dist/vue-router.js
+ * 
  */
-define(['jquery', 'core/log', 'https://unpkg.com/vue', 'core/ajax'], function($, log, Vue, ajax) {
+define([
+    'jquery', 
+    'core/log', 
+    'core/ajax', 
+    '/moodle/mod/videodatabase/amd/src/vue.js', 
+    '/moodle/mod/videodatabase/amd/src/vue-router.js', 
+    '/moodle/mod/videodatabase/amd/src/vuex.js',
+   // '/moodle/mod/videodatabase/amd/src/vue-paginate.min.js',
     
-    var Filters = function() { };
+    'js/vi-two.js'
+    ], 
+    function (
+        $, 
+        log, 
+        ajax, 
+        Vue, 
+        VueRouter, 
+        Vuex, 
+        //VuePaginate, 
+      
+        Vi2
+    ) {
+
+    var Filters = function () { };
 
     /**
      * AJAX
@@ -32,87 +57,219 @@ define(['jquery', 'core/log', 'https://unpkg.com/vue', 'core/ajax'], function($,
        // do something with the exception
    });
 */
-   /**
-    * AJAX2
-    */ 
 
-    
-    
-            $.ajax({
-                    method: "POST",
-                    url: "/moodle/webservice/rest/server.php",
-                    data: {
-                        wstoken: 'e321c48e338fc44830cda07824833944',
-                        moodlewsrestformat: 'json',
-                        wsfunction: 'core_course_get_contents',
-                        courseid: 2
-                    }
-                })
-                .done(function(msg) {
-                    console.log('first');
-                    console.log(JSON.stringify(msg));
-                })
-                .fail(function(data) {
-                    console.log(data)
-                });
 
-    $.ajax({
-        method: "POST",
-        url: "/moodle/webservice/rest/server.php",
-        data: {
-            wstoken: 'e321c48e338fc44830cda07824833944',
-            moodlewsrestformat: 'json',
-            wsfunction: 'local_wstemplate_hello_world',
-            videos: {'courseid': 2}
-        },
-        dataType: "json"
-    })
-        .done(function (msg) {
-            console.log('Second');
-            console.log(JSON.parse(msg.data)['165'].title);
-            console.log('----------------');
+    function get_ws(ws, params, cb) {
+        $.ajax({
+            method: "POST",
+            url: "/moodle/webservice/rest/server.php",
+            data: {
+                wstoken: 'e321c48e338fc44830cda07824833944',
+                moodlewsrestformat: 'json',
+                wsfunction: ws,
+                data: params
+            },
+            dataType: "json"
         })
-        .fail(function (data) {
-            console.log(data)
-        }); 
-        
-    //
-    new Vue({
-        el: '#example-3',
-        methods: {
-            say: function (message) {
-                alert(message)
-            }
-        }
-    })    
-                
-    /**
-     * Vue.js
-     */
-    /**
-    const NotFound = { template: '<p>Page not found</p>' }
-    const Home = { template: '<p>home page</p>' }
-    const About = { template: '<p>about page</p>' }
-
-    const routes = {
-        '#/home': Home,
-        '#/about': About
+            .done(function (msg) {
+                cb(msg);
+            })
+            .fail(function (data) {
+                console.log(data);
+            });
     }
 
-    new Vue({
-        el: '#app',
-        data: {
-            currentRoute: window.location.hash
-        },
-        computed: {
-            ViewComponent() {
-                
-                return routes[this.currentRoute] || NotFound;
+    function con(msg) {
+        //console.log(JSON.parse(msg.data)['165'].title);
+        var data = JSON.parse(msg.data);
+
+
+        // setup
+        Vue.use(Vuex);
+        Vue.use(VueRouter);
+        //Vue.use(VuePaginate); // vue-bs-pagination
+        
+
+        // init store
+        const store = new Vuex.Store({
+            state: {
+                myValue: 0,
+                videos: data
+            },
+            getters: {
+                videoById(state) {
+                    var self = this;
+                    return function (id) {
+                        return state.videos[id];
+                    };
+                }
+            },
+            mutations: {
+                increment(state, value) {
+                    state.myValue += value;
+                }
             }
-        },
-        render(h) { return h(this.ViewComponent); }
-    });
- */
+        });
+        //console.log(store.state.videos[165].title);
+        //store.commit('increment', 10);
+        // console.log(store.getters.videoById(165));
+
+
+        
+        const Video = {
+            template: '#app-videoplayer',//'<div>Video {{ $route.params.id }}: {{ video.title }}</div>', 
+            computed: {
+                video() {
+                    // data mapping
+                    const video_data = store.getters.videoById(this.$route.params.id);
+                    video_data.metadata = [];
+                    video_data.metadata[0] = {}; 
+                    video_data.metadata[0].author = video_data['contributor'];
+                    video_data.metadata[0].title = video_data['title'];
+
+                    video_data.metadata[0].abstract = video_data['description'];
+                    video_data.metadata[0].thumbnail = "still-" + video_data.filename.replace('.mp4', '_comp.jpg');
+
+                    video_data.video = '/videos/' + video_data.filename.replace('.mp4', '.webm');
+                    startVi2(video_data);
+                    
+                    return store.getters.videoById( this.$route.params.id );
+                }
+            }
+        };
+
+        // init router
+        const router = new VueRouter({
+            routes: [
+                { path: '/videos', component: Video },
+                { path: '/video/view/:id', component: Video }
+                //,{ path: '/video/edit/:id', component: Form, props: true }
+            ]
+        });
+
+
+        var app4 = new Vue({
+            el: '#app-videomanager',
+            router,
+            data: {
+                paginate: ['videolist']
+            },
+            computed: {
+                columnObject: function () { //console.log(JSON.stringify(this.videos))
+                    return "col-xs-12 col-sm-5 col-md-2 video-item ";
+                },
+                videos() {
+                    return store.state.videos;
+                }
+            }
+        });
+
+
+        /*
+                var form = new Vue({
+                    el: '#app-form',
+                    //router,
+                    data: { videos: data, form_schema: filterSchema },
+                    // computed: {
+                    render: function (createElement) {
+                        var form_elements = [];
+                        // consider dublin core meta data
+                        var meta = [['title', 'Titel'],
+                        ['description', 'Beschreibung'],
+                        ['subject', 'Fach'],
+                        ['tags', 'Schlüsselwörter'],
+                        ['Creator', 'Ersteller'],
+                        ['publisher', 'Herausgeber'],
+                        ['institution', 'Institution'],
+                        ['source', 'Quelle'],
+                        ['language', 'Sprache'],
+                        ['license', 'Lizenz'],
+                        ['rights', 'Urheberrechte'],
+                        ['relation', 'Relation'],
+                        ['coverage', 'Bereich']];
+                        for (var i = 0, len = meta.length; i < len; i++) {
+                            form_elements.push(createElement(
+                                'label',
+                                {
+                                    attrs:
+                                        {
+                                            for: 'text',
+                                        }
+                                },
+                                meta[i][1]
+                            )
+                            );
+                            form_elements.push(createElement(
+                                'input',
+                                {
+                                    attrs:
+                                        {
+                                            type: 'text',
+                                            id: meta[i][0],
+                                            'v-model': meta[i][0]
+                                        }
+                                }
+                            )
+                            );
+                            form_elements.push(createElement('br'));
+                        }
+                        // consider categories
+                        for (var i = 0, len = this.form_schema.data.length; i < len; i++) {
+                            var items = [];
+                            // h
+                            items.push(createElement('h4', {}, this.form_schema.data[i].name));
+                            for (var j = 0, len2 = this.form_schema.data[i].items.length; j < len2; j++) {
+                                var combi = [];
+                                // input
+                                combi.push(
+                                    createElement(
+                                        'input',
+                                        {
+                                            attrs:
+                                                {
+                                                    type: this.form_schema.data[i].type === 'single' ? "radio" : "checkbox",
+                                                    id: this.form_schema.data[i].id + '-' + j,
+                                                    name: this.form_schema.data[i].id,
+                                                    value: this.form_schema.data[i].items[j],
+                                                    'v-model': this.form_schema.data[i].id
+                                                }
+                                        },
+                                        this.form_schema.data[i].items[j]
+                                    )
+                                );
+                                // label
+                                combi.push(
+                                    createElement(
+                                        'label',
+                                        {
+                                            attrs: { for: this.form_schema.data[i].id }
+                                        },
+                                        this.form_schema.data[i].items[j]
+                                    )
+                                );
+                                items.push(createElement('div', { class: { 'col-md-4': true } }, combi));
+                            }
+                            var el = createElement('div', { class: { 'row': true, 'col-md-8': true } }, items);
+                            form_elements.push(el);
+                        }
+                        // consider video data
+        
+                        // done
+                        return createElement('div', form_elements);
+                    }
+                    //}
+                });
+        
+        */
+    } // end con()
+
+
+
+    get_ws('videodatabase_videos', { 'courseid': 2 }, con);
+    //get_ws('videodatabase_video', { 'courseid': 2, 'videoid':165 }, con);
+
+
+    /************************/
 
     var filterSchema = {
         "language": "de",
@@ -253,11 +410,11 @@ define(['jquery', 'core/log', 'https://unpkg.com/vue', 'core/ajax'], function($,
     };
     // console.log(JSON.stringify(json));
 
-    $(document).ready(function() { 
-        
+    $(document).ready(function () {
+
         // render filter
         var arr = [];
-        $.each(filterSchema.data, function(j, val) {
+        $.each(filterSchema.data, function (j, val) {
             arr = [
                 // '<label>'+ val.name +'</label>',
                 '<select id="filter_' + val.id + '" class="sel2 ' + (val.type === 'multi' ? 'multi-filter"' : 'single-filter') + '" ' + (val.type === 'multi' ? 'multiple="multiple"' : '') + '>',
@@ -275,7 +432,7 @@ define(['jquery', 'core/log', 'https://unpkg.com/vue', 'core/ajax'], function($,
 
         var filters = {};
 
-        $('#filter_actors').change(function() {
+        $('#filter_actors').change(function () {
             if (this.value === "") {
                 filters.actors = 'null';
             } else {
@@ -284,7 +441,7 @@ define(['jquery', 'core/log', 'https://unpkg.com/vue', 'core/ajax'], function($,
             applyFilter();
         });
 
-        $('#filter_location').change(function() {
+        $('#filter_location').change(function () {
             if (this.value === "") {
                 filters.location = 'null';
             } else {
@@ -294,7 +451,7 @@ define(['jquery', 'core/log', 'https://unpkg.com/vue', 'core/ajax'], function($,
         });
 
 
-        $('#filter_movements').change(function() {
+        $('#filter_movements').change(function () {
             if (this.value === "") {
                 filters.movements = 'null';
             } else {
@@ -303,7 +460,7 @@ define(['jquery', 'core/log', 'https://unpkg.com/vue', 'core/ajax'], function($,
             applyFilter();
         });
 
-        $('#filter_sports').change(function() {
+        $('#filter_sports').change(function () {
             if (this.value === "") {
                 filters.sports = 'null';
             } else {
@@ -313,49 +470,49 @@ define(['jquery', 'core/log', 'https://unpkg.com/vue', 'core/ajax'], function($,
         });
 
         // multi
-        $('#filter_activities').change(function() { // alert($(this).val())
+        $('#filter_activities').change(function () { // alert($(this).val())
             // reset
-            $(this).find('option').each(function(i, val) {
+            $(this).find('option').each(function (i, val) {
                 filters['activities_' + $(val).attr('value')] = 'null';
             });
             // set
-            $('#filter_activities :selected').each(function(i) {
+            $('#filter_activities :selected').each(function (i) {
                 filters['activities_' + $(this).attr('value')] = $(this).attr('value');
             });
             applyFilter();
         });
 
-        $('#filter_compentencies').change(function() { // alert($(this).val())
+        $('#filter_compentencies').change(function () { // alert($(this).val())
             // reset
-            $(this).find('option').each(function(i, val) {
+            $(this).find('option').each(function (i, val) {
                 filters['compentencies_' + $(val).attr('value')] = 'null';
             });
             // set
-            $('#filter_compentencies :selected').each(function(i) {
+            $('#filter_compentencies :selected').each(function (i) {
                 filters['compentencies_' + $(this).attr('value')] = $(this).attr('value');
             });
             applyFilter();
         });
 
-        $('#filter_perspectives').change(function() { //alert($(this).val())
+        $('#filter_perspectives').change(function () { //alert($(this).val())
             // reset
-            $(this).find('option').each(function(i, val) {
+            $(this).find('option').each(function (i, val) {
                 filters['perspectives_' + $(val).attr('value')] = 'null';
             });
             // set
-            $('#filter_perspectives :selected').each(function(i, val) {
+            $('#filter_perspectives :selected').each(function (i, val) {
                 filters['perspectives_' + $(this).attr('value')] = $(this).attr('value');
             });
             applyFilter();
         });
 
-        $('#filter_group').change(function() { // alert($(this).val())
+        $('#filter_group').change(function () { // alert($(this).val())
             // reset
-            $(this).find('option').each(function(i, val) {
+            $(this).find('option').each(function (i, val) {
                 filters['group_' + $(val).attr('value')] = 'null';
             });
             // set
-            $('#filter_group :selected').each(function(i, val) {
+            $('#filter_group :selected').each(function (i, val) {
                 filters['group_' + $(this).attr('value')] = $(this).attr('value');
             });
             applyFilter();
@@ -372,20 +529,19 @@ define(['jquery', 'core/log', 'https://unpkg.com/vue', 'core/ajax'], function($,
             }
             // alert('_'+filter_str)
             $('#the_filters').find(filter_str).show();
-            
+
 
         }
 
 
-      /*require(['json!mod_videodatabase/data/category-schema-de.json'], function(data){
-            console.log(data)
-        }, function(err) {
-            console.log(err)
-        })*/
+        /*require(['json!mod_videodatabase/data/category-schema-de.json'], function(data){
+              console.log(data)
+          }, function(err) {
+              console.log(err)
+          })*/
 
 
     }); // end documents ready
     return Filters;
 }); // end define
     /* jshint ignore:end */
-    

@@ -5,7 +5,8 @@ MOODLE version 3.1.3 !!
 
 
 #backlog
-- define all webservices
+- pagination
+- vote
 - upload: location, filetype restriction, poster 
 - load external 
 - form 
@@ -17,8 +18,6 @@ MOODLE version 3.1.3 !!
 - video annotation
 - player loop
 - player zoom
-
-- vote
 
 
 # nth

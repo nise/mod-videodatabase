@@ -62,6 +62,7 @@ if ($inpopup and $videodatabase->display == RESOURCELIB_DISPLAY_POPUP) {
 // custome CSS
 $PAGE->requires->css( '/mod/videodatabase/styles.css', true );
 $PAGE->requires->css( '/mod/videodatabase/css/bootstrap.min.css');
+$PAGE->requires->css( '/mod/videodatabase/css/vi-two.css', true );
 //$PAGE->requires->js( new moodle_url($CFG->wwwroot . '/mod/videodatabase/js/jquery.js'), true );
 
 
@@ -86,18 +87,9 @@ $formatoptions->overflowdiv = true;
 $formatoptions->context = $context;
 $content = format_text($content, $videodatabase->contentformat, $formatoptions);
 
-echo "<div class='container-fluid'>";
-echo '<div id="debug" hidden class="alert alert-success" role="alert"></div>';
-echo "
-<div class='filterbox'>
-    <label>Filter:</label>
-    <div id='filter1'></div>
-    <a class='' role='button' data-toggle='collapse' href='#filter2' aria-expanded='false' aria-controls='filter2'>Erweiterte Filter</a>
-    <div class='collapse' id='filter2'></div><br>
-</div>    
-";
 
 
+/*
 // fetch data
 $table = "videodatabase_videos";
 $res = $DB->get_records($table, $conditions = null, $sort = '', $fields = '*', $limitfrom = 0, $limitnum = 0);
@@ -137,72 +129,143 @@ foreach ($res as $video) {
 	</div>";
 }
 echo '</div>';
-echo "</div><div id='app2'>
-<p>{{ message2 }}</p>
+*/
+
+
+
+echo "<div class='container-fluid'>";
+
+// form
+//echo '<div id="app-form">{{ form_content }}</div>';
+
+// video player
+echo '<script type="text/x-template" id="app-videoplayer">
+<div>
+    <!-- Storage -->
+	<div style="display:none; visibility:hidden;" id="vi2"></div>
+	<!-- End Storage -->
+	
+	<!-- Player -->
+	<div id="wrapper" style="overflow:hidden;">
+		<div id="pagex" style="overflow:hidden;">
+			
+			<!-- Main -->
+			<div class="container-fluid">
+				<h2> {{ video.title }}  </h2>
+				<div class="row">
+					<div id="videowrapper" class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+						<div id="seq" class="col-md-12"></div>
+						<div id="overlay" class=""></div>
+						<div id="split" class="col-md-9"></div>
+						<div id="screen" class="col-md-9"></div>
+					</div>
+					<div id="accordion-resizer" class="col-lg-3 col-md-3 col-sm-3 hidden-xs visible-sm-inline">
+						<div id="accordion" class="video-metadata">
+							(meta data)
+						</div>
+					</div>
+				</div>
+				<div id="video-controls" class="video-controls col-lg-9 col-md-9 col-sm-12 col-xs-12">
+					<div class="timelines">
+						<!--<div class="vi2-video-seeklink vi2-btn"></div>-->
+						<div class="vi2-timeline-top"></div>
+						<div class="vi2-timeline-main vi2-btn"></div>
+						<div class="vi2-timeline-bottom"></div>
+						<div class="vi2-video-progress vi2-btn"></div>
+					</div>
+					<div class="control-bar">
+						<div class="vi2-video-play-pause vi2-btn" title="Play/Pause">
+							<span class="fa fa-play"></span>
+							<span class="fa fa-pause"></span>
+						</div>
+						<div class="vi2-volume-box">
+							<div class="vi2-volume-slider"></div>
+							<span class="vi2-volume-button vi2-btn" title="Mute/Unmute"></span>
+						</div>
+						<div class="vi2-video-timer right"></div>
+					</div>
+				</div>
+			</div>
+			<!-- Modal -->
+			<div hidden class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content modal-form">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">x</span></button>
+							<h4 class="modal-title" id="myModalLabel"></h4>
+						</div>
+						<div class="modal-body"></div>
+						<div class="modal-validation"></div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default btn-remove-data"><span class="fa fa-trash"> </span> löschen</button>
+							<button type="button" class="btn btn-default" data-dismiss="modal">abbrechen</button>
+							<button type="button" class="btn btn-primary btn-sava-data">speichern</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+    </div>
 </div>
-<a href='#/about'>about</a><a href='#/home'>home</a>
-<div id='app'>yyyy</div>
+</script>';
+
+
+
+// filter
+
+echo '<div id="debug" hidden class="alert alert-success" role="alert"></div>';
+echo "
+<div class='filterbox'>
+    <label>Filter:</label>
+    <div id='filter1'></div>
+    <a class='' role='button' data-toggle='collapse' href='#filter2' aria-expanded='false' aria-controls='filter2'>Erweiterte Filter</a>
+    <div class='collapse' id='filter2'></div><br>
+</div>    
 ";
 
+// video manager
 echo '
-<div id="example-3">
-  <a v-on:click="say(\'hi\')">Say hi</a>
-  <button v-on:click="say(\'what\')">Say what</button>
-</div>';
-
-echo '
-<div hidden id="uploadForm">
-    <button v-on:click="isShow = !isShow" class="btn btn-primary fa fa-plus"> Video hinzufügen</button>
-    <div v-show="isShow" class="">
-        <select v-model="selected">
-            <option v-for="option in options" v-bind:value="option.value">
-            {{ option.text }}
-            </option>
-        </select>
-        <span>Selected: {{ selected }}</span>
+<div id="app-videomanager">
+    <router-view></router-view>
+    <div id="the_filters" class="video-manager row">
+            <div v-for="video in videos" v-bind:class="\'col-xs-12 col-sm-5 col-md-2 video-item \'+ \'actors-\'+video.actors.replace(/\//g,\'\') +\' \'+ video.compentencies.replace(/\ /g, \'\')+\' \'+ + \'movements-\'+video.movements.replace(/,\ /g, \'\') +\' \'+ \'sports-\'+ video.sports.replace(/,\ /g, \'\') +\' \'+  \'location-\'+video.location">
+                <a class="title" :key="video.ani = false" @mouseover="!video.ani" v-bind:href="\'vdb_player.php?id=' . $id .'&video_id=\' + video.id">
+                    <img v-show="video.ani===true" class="still-images" v-bind:src="\'images/stills/still-\'+video.filename.replace(\'.mp4\',\'_comp.gif\') " />    
+                    <img v-show="video.ani===false" class="still-images" v-bind:src="\'images/stills/still-\'+video.filename.replace(\'.mp4\',\'_comp.jpg\') " />
+                </a>	
+                <div class="meta">
+                    <router-link class="title" :to="{ path: \'/video/view/\' + video.id}">{{video.title}}</router-link>
+                    <div>{{video.klasse}}</div>
+                    <div>{{video.sports}}</div>	
+                </div>
+            </div>
     </div>
 </div>';
 
 
+echo "</div>"; // end fluid container
 
 
-//$PAGE->requires->js_call_amd('mod_videodatabase/filter', 'init');
 
 
 $PAGE->requires->js_amd_inline(" 
-require(['jquery', 'mod_videodatabase/filter'], function($, f) {
-	var source = '';	
-	$('.still-images')
-		.hover(function () { 
-			source = $(this).attr('src'); 
-			$(this).attr('src', source.replace('.jpg', '.gif'));
-		} ,function () {
-			source = $(this).attr('src');
-			$(this).attr('src', source.replace('.gif', '.jpg'));
-		});
-});
+    require(['jquery', 'mod_videodatabase/filter'], function($, f) {
+        var source = '';	
+        $('.still-imagesxx')
+            .hover(function () { 
+                source = $(this).attr('src'); 
+                $(this).attr('src', source.replace('.jpg', '.gif'));
+            } ,function () {
+                source = $(this).attr('src');
+                $(this).attr('src', source.replace('.gif', '.jpg'));
+            });
+    });
 ");
 
 
 
 
-// $data = $DB->get_records_list($table, 'title', array( 'video2'));
-// $data = json_encode($data);
-// $data = json_decode($data, true);
-// echo print_r($data);
-
-
-//$PAGE->requires->js( new moodle_url($CFG->wwwroot . '/mod/videodatabase/amd/jquery.select2.js') );
-//$string = file_get_contents($CFG->wwwroot . '/mod/videodatabase/data/category-schema-de.json');
-
-//$json = array($data); // $json['data']
-
-
-//echo $OUTPUT->box($content, "generalbox center clearfix");
 
 /*********************************/
-//$PAGE->requires->js( new moodle_url($CFG->wwwroot . '/mod/videodatabase/js/bootstrap.min.js') ); 
 echo $OUTPUT->footer();
-//echo $js;
-
 /*********************************/

@@ -4,16 +4,17 @@ h2 {
 	color:#444;
 }
 
+.still-images{
+    width:100%;
+}
+
 select option:disabled, .option-head {
 	font-weight:bold;
 }
 
-
-#region-main label{
-	font-weight:bold;
+[v-cloak] {
+  display: none;
 }
-
-
 
 .sorting_asc:after {
 	color:red;
@@ -34,7 +35,18 @@ select option:disabled, .option-head {
 
 
 label{
-	display:inline-block; 
+    display:inline-block;
+    vertical-align: middle;
+    font-weight: normal !important;
+    margin: 0 4px 0 4px !important;
+    word-wrap: break-word;
+    max-width:80% !important;
+}
+
+input {
+    display:inline-block;
+    vertical-align: middle;
+    margin: 0 !important; 
 }
 
 
