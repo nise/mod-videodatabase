@@ -6,6 +6,7 @@ MOODLE version 3.1.3 !!
 
 #backlog
 - pagination
+- bread crumb
 - vote
 - upload: location, filetype restriction, poster 
 - load external 

@@ -116,7 +116,8 @@ define([
 
 
         
-        const Video = {
+        const Video = //new Vue.component('Videoplayer', 
+            {
             template: '#app-videoplayer',//'<div>Video {{ $route.params.id }}: {{ video.title }}</div>', 
             computed: {
                 video() {
@@ -126,14 +127,13 @@ define([
                     video_data.metadata[0] = {}; 
                     video_data.metadata[0].author = video_data['contributor'];
                     video_data.metadata[0].title = video_data['title'];
-
                     video_data.metadata[0].abstract = video_data['description'];
                     video_data.metadata[0].thumbnail = "still-" + video_data.filename.replace('.mp4', '_comp.jpg');
-
                     video_data.video = '/videos/' + video_data.filename.replace('.mp4', '.webm');
+                    console.log(video_data)
                     startVi2(video_data);
                     
-                    return store.getters.videoById( this.$route.params.id );
+                    return video_data;//store.getters.videoById( this.$route.params.id );
                 }
             }
         };
@@ -142,8 +142,8 @@ define([
         const router = new VueRouter({
             routes: [
                 { path: '/videos', component: Video },
-                { path: '/video/view/:id', component: Video }
-                //,{ path: '/video/edit/:id', component: Form, props: true }
+                { path: '/videos/:id/view', component: Video },
+                { path: '/videos/:id/edit', component: Video }
             ]
         });
 

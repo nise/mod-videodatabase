@@ -139,7 +139,7 @@ echo "<div class='container-fluid'>";
 //echo '<div id="app-form">{{ form_content }}</div>';
 
 // video player
-echo '<script type="text/x-template" id="app-videoplayer">
+echo '<section id="app-videoplayer">
 <div>
     <!-- Storage -->
 	<div style="display:none; visibility:hidden;" id="vi2"></div>
@@ -151,7 +151,7 @@ echo '<script type="text/x-template" id="app-videoplayer">
 			
 			<!-- Main -->
 			<div class="container-fluid">
-				<h2> {{ video.title }}  </h2>
+				<h2>{{ video.title }}</h2>
 				<div class="row">
 					<div id="videowrapper" class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
 						<div id="seq" class="col-md-12"></div>
@@ -159,9 +159,28 @@ echo '<script type="text/x-template" id="app-videoplayer">
 						<div id="split" class="col-md-9"></div>
 						<div id="screen" class="col-md-9"></div>
 					</div>
-					<div id="accordion-resizer" class="col-lg-3 col-md-3 col-sm-3 hidden-xs visible-sm-inline">
+					<div id="accordion-resizer" class="col-lg-3 col-md-3 col-sm-3 hidden-xs">
 						<div id="accordion" class="video-metadata">
-							(meta data)
+							<label>Beschreibung:</label> {{ video.description }}
+							<br />
+							<label>Kompetenzen:</label> {{ video.compentencies}}
+							<br />
+							<label>Sportart:</label> {{ video.sports }}
+							<br />
+							<label>Bewegungsfelder:</label> {{ video.movements }}
+							<br />
+							<label>Aktivitäten:</label> {{ video.activities }}
+							<br />
+							<label>Perspektiven:</label> {{ video.perspectives }}
+							<br />
+							<label>Ort:</label> {{ video.location }}
+							<br />
+							<label>Klasse:</label> {{ video.klasse }}
+							<hr />
+							<label>Produzent:</label> {{ video.contributor }}
+							<br />
+							<label>Herausgeber:</label> {{ video.publisher }}
+							<br />
 						</div>
 					</div>
 				</div>
@@ -207,7 +226,7 @@ echo '<script type="text/x-template" id="app-videoplayer">
 		</div>
     </div>
 </div>
-</script>';
+</section>';
 
 
 
@@ -234,7 +253,7 @@ echo '
                     <img v-show="video.ani===false" class="still-images" v-bind:src="\'images/stills/still-\'+video.filename.replace(\'.mp4\',\'_comp.jpg\') " />
                 </a>	
                 <div class="meta">
-                    <router-link class="title" :to="{ path: \'/video/view/\' + video.id}">{{video.title}}</router-link>
+                    <router-link class="title" :to="{ path: \'/videos/\' + video.id + \'/view\'}">{{video.title}}</router-link>
                     <div>{{video.klasse}}</div>
                     <div>{{video.sports}}</div>	
                 </div>
