@@ -155,7 +155,7 @@ require(['mod_videodatabase/tableFilter'], function(f) {});
 	for($i=0; $i < sizeof($arr); $i++){
 		$activities .= 'activities-'.$arr[$i].' ';
 	}
-//print_r($video);
+print_r($video);
 	$competencies = '';
 	echo "<tr class='
 		actors-" . preg_replace("/\//", "", $video->actors ) . " 
@@ -173,7 +173,7 @@ require(['mod_videodatabase/tableFilter'], function(f) {});
 				</a>
 			</td>';
 	echo "<td>$video->sports</td>";
-	echo "<td>$video->klassenstufe</td>";
+	echo "<td>$video->courselevel</td>";
 	echo "<td>$video->compentencies</td>";
 	echo "<td>$video->movements</td>";
 
@@ -181,7 +181,6 @@ require(['mod_videodatabase/tableFilter'], function(f) {});
 	echo "<td>$video->actors</td>";
 	echo "<td>$video->perspectives</td>";
 	echo "<td>$video->location</td>";
-	echo "<td>$video->klasse</td>";
 	echo "</tr>";
 
 	/*  echo "<tr>";

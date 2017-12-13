@@ -94,7 +94,8 @@ define([
         const store = new Vuex.Store({
             state: {
                 myValue: 0,
-                videos: data
+                videos: data,
+                mouse: {}
             },
             getters: {
                 videoById(state) {
@@ -102,21 +103,33 @@ define([
                     return function (id) {
                         return state.videos[id];
                     };
+                },
+                imageAniById(state) {
+                    var self = this;
+                    return function (id) {
+                        return state.mouse[id];
+                    };
                 }
             },
             mutations: {
-                increment(state, value) {
-                    state.myValue += value;
+                mouseOver(state, id) {
+                    state.mouse[id] = 1;
+                    console.log(id+'__'+ state.mouse[id])
+                },
+                mouseOut(state, id) {
+                    state.mouse[id] = 0;
                 }
             }
         });
+        //this.$set('contacts[' + newPsgId + ']', newObj)
+        //Vue.set(this.contacts[newPsgId], 'name', this.editPsgName); 
         //console.log(store.state.videos[165].title);
         //store.commit('increment', 10);
         // console.log(store.getters.videoById(165));
 
 
         
-        const Video = //new Vue.component('Videoplayer', 
+        const Video = //new Vue.component('videoplayer', 
             {
             template: '#app-videoplayer',//'<div>Video {{ $route.params.id }}: {{ video.title }}</div>', 
             computed: {
@@ -130,11 +143,25 @@ define([
                     video_data.metadata[0].abstract = video_data['description'];
                     video_data.metadata[0].thumbnail = "still-" + video_data.filename.replace('.mp4', '_comp.jpg');
                     video_data.video = '/videos/' + video_data.filename.replace('.mp4', '.webm');
-                    console.log(video_data)
-                    startVi2(video_data);
+                    
+                    //startVi2(video_data);
                     
                     return video_data;//store.getters.videoById( this.$route.params.id );
                 }
+            },
+            updated() {
+                video_data = store.getters.videoById(this.$route.params.id);
+                video_data.metadata = [];
+                video_data.metadata[0] = {};
+                video_data.metadata[0].author = video_data['contributor'];
+                video_data.metadata[0].title = video_data['title'];
+                video_data.metadata[0].abstract = video_data['description'];
+                video_data.metadata[0].thumbnail = "still-" + video_data.filename.replace('.mp4', '_comp.jpg');
+                video_data.video = '/videos/' + video_data.filename.replace('.mp4', '.webm');
+                //video_data.id = 'test';
+                startVi2(video_data);
+                //console.log(window.vi2.observer.current_stream);
+                //console.log(window.vi2.db.json_data);
             }
         };
 
@@ -152,14 +179,37 @@ define([
             el: '#app-videomanager',
             router,
             data: {
-                paginate: ['videolist']
+                paginate: ['videolist'],
+                mouseOverCheck:''
             },
             computed: {
                 columnObject: function () { //console.log(JSON.stringify(this.videos))
                     return "col-xs-12 col-sm-5 col-md-2 video-item ";
                 },
                 videos() {
+                    /*return store.state.videos.filter((item) => 
+                        item.name.includes(this.search_by_name) 
+                        && item.email.includes(this.search_by_email) 
+                        && item.status === this.pending_or_completed);
+                        */
                     return store.state.videos;
+                }
+            },
+            methods:{    
+                videoItemClass: function(id){
+                    var video = store.getters.videoById(id);
+                    console.log(video)
+                    return [
+                        // multi
+                        video['klasse'].split(' ').join('class-'),
+                        //'competencies-' + video.compentencies.replace(/\ /g, ''),
+                        // single
+                        'actors-'+video.actors.replace(/\//g, ''),
+                        'location-' + video.location,
+                        'sports-' + video.sports.replace(/,\ /g, ''),
+                        'movements-' + video.movements.replace(/, /g, ''),
+                        ''
+                    ].join(' ');
                 }
             }
         });
@@ -305,7 +355,7 @@ define([
                 ]
             },
             {
-                "id": "group",
+                "id": "class",
                 "name": "Lerngruppe",
                 "type": "multi",
                 "level": 1,
@@ -432,56 +482,36 @@ define([
 
         var filters = {};
 
-        $('#filter_actors').change(function () {
-            if (this.value === "") {
-                filters.actors = 'null';
+
+        $('.single-filter').change(function () {
+            //console.log('__'+this.value)
+            var filter_id = $(this).attr('id').replace('filter_','');
+            var value = this.value;
+            if (value === '') {
+                filters[filter_id] = 'null';
             } else {
-                filters.actors = this.value;
+                filters[filter_id] = value;
+                
             }
+            //console.log(filters[filter_id]);
             applyFilter();
         });
 
-        $('#filter_location').change(function () {
-            if (this.value === "") {
-                filters.location = 'null';
-            } else {
-                filters.location = this.value;
-            }
-            applyFilter();
-        });
-
-
-        $('#filter_movements').change(function () {
-            if (this.value === "") {
-                filters.movements = 'null';
-            } else {
-                filters.movements = this.value;
-            }
-            applyFilter();
-        });
-
-        $('#filter_sports').change(function () {
-            if (this.value === "") {
-                filters.sports = 'null';
-            } else {
-                filters.sports = this.value;
-            }
-            applyFilter();
-        });
-
+  
         // multi
-        $('#filter_activities').change(function () { // alert($(this).val())
+        $('.multi-filter').change(function () { // alert($(this).attr('))
+            var filter_id = $(this).attr('id').replace('filter_', '');
             // reset
             $(this).find('option').each(function (i, val) {
-                filters['activities_' + $(val).attr('value')] = 'null';
+                filters[filter_id+'_' + $(val).attr('value')] = 'null';
             });
             // set
-            $('#filter_activities :selected').each(function (i) {
-                filters['activities_' + $(this).attr('value')] = $(this).attr('value');
+            $('#filter_' + filter_id + ' :selected').each(function (i) {
+                filters[filter_id + '_' + $(this).attr('value')] = $(this).attr('value');
             });
             applyFilter();
         });
-
+/*
         $('#filter_compentencies').change(function () { // alert($(this).val())
             // reset
             $(this).find('option').each(function (i, val) {
@@ -517,9 +547,9 @@ define([
             });
             applyFilter();
         });
-
+*/
         function applyFilter() {
-            var filter_str = 'div';
+            var filter_str = 'div.video-item';
             $('.video-item').hide();
             // apply logical AND 
             for (var f in filters) {
@@ -527,19 +557,9 @@ define([
                     filter_str += '.' + filters[f] + '';
                 }
             }
-            // alert('_'+filter_str)
-            $('#the_filters').find(filter_str).show();
-
-
+            console.log(filter_str)
+            $('#videomanager').find(filter_str).show();
         }
-
-
-        /*require(['json!mod_videodatabase/data/category-schema-de.json'], function(data){
-              console.log(data)
-          }, function(err) {
-              console.log(err)
-          })*/
-
 
     }); // end documents ready
     return Filters;

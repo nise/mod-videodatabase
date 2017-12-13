@@ -25968,7 +25968,9 @@ $.inherit = function() {
 
     return moment_with_locales;
 
-}));var
+}));
+
+var
 	vi2 = {}, // global variable				
 	Vi2 = {}  // set the Namespace for the classes
 	;
@@ -26007,22 +26009,11 @@ function initVideo(db) {
 }
 
 
-$(document).ready(function () {
-	//vi2 = new ViLab(server, "<%= items[0]._id %>");
-	function startVi2(video_data){
-		console(video_data);
-		vi2.db = new Vi2.DataBase({ modus: 'native', data: video_data, path: '' }, 'window', 'initVideo', undefined);//this.server_url+this.plugin_dir
-		vi2.db.init();
-		vi2.dom = "#vi2";
-	}
-	
-
-});
 
 function startVi2(video_data) {
-	console.log(video_data);
+	//console.log(video_data);
 	vi2.db = new Vi2.DataBase({ modus: 'native', data: video_data, path: '' }, 'window', 'initVideo', undefined);//this.server_url+this.plugin_dir
-	vi2.db.init();
+	vi2.db.init('initVideo');
 	vi2.dom = "#vi2";
 }
 
@@ -26488,7 +26479,7 @@ Vi2.Observer = $.inherit(/* @lends Observer# **/{
 		var _this = this; 
 		this.options = $.extend(this.options, options); 
 		this._d = 0; 
-		this.init(fn); 
+		//this.init(fn); 
 
 		}, 
 				
@@ -26519,11 +26510,12 @@ Vi2.Observer = $.inherit(/* @lends Observer# **/{
 				    console.log("making requst for " + file.path); 
 				    _this.loadJSON(file.path, file.storage, fn); 
 				}); 
-			}else if (this.options.data !== undefined && fn !== undefined ) {
+			} else if (this.options.data !== undefined) {// && fn !== undefined
 				this.json_data = this.options.data; 
-				//window[fn](this); 
+				window[fn](this); 
 				initVideo(this);
 			}else {
+				console.log(this.options.data.id)
 				console.log('no data available at vi-two databases'); 
 			}
 		}, 

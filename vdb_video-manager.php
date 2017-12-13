@@ -139,16 +139,14 @@ echo "<div class='container-fluid'>";
 //echo '<div id="app-form">{{ form_content }}</div>';
 
 // video player
-echo '<section id="app-videoplayer">
+echo '<script type="text/x-template" id="app-videoplayer">
 <div>
-    <!-- Storage -->
+	<!-- Storage -->
 	<div style="display:none; visibility:hidden;" id="vi2"></div>
 	<!-- End Storage -->
-	
 	<!-- Player -->
 	<div id="wrapper" style="overflow:hidden;">
 		<div id="pagex" style="overflow:hidden;">
-			
 			<!-- Main -->
 			<div class="container-fluid">
 				<h2>{{ video.title }}</h2>
@@ -226,12 +224,11 @@ echo '<section id="app-videoplayer">
 		</div>
     </div>
 </div>
-</section>';
+</script>';
 
 
 
 // filter
-
 echo '<div id="debug" hidden class="alert alert-success" role="alert"></div>';
 echo "
 <div class='filterbox'>
@@ -246,16 +243,22 @@ echo "
 echo '
 <div id="app-videomanager">
     <router-view></router-view>
-    <div id="the_filters" class="video-manager row">
-            <div v-for="video in videos" v-bind:class="\'col-xs-12 col-sm-5 col-md-2 video-item \'+ \'actors-\'+video.actors.replace(/\//g,\'\') +\' \'+ video.compentencies.replace(/\ /g, \'\')+\' \'+ + \'movements-\'+video.movements.replace(/,\ /g, \'\') +\' \'+ \'sports-\'+ video.sports.replace(/,\ /g, \'\') +\' \'+  \'location-\'+video.location">
-                <a class="title" :key="video.ani = false" @mouseover="!video.ani" v-bind:href="\'vdb_player.php?id=' . $id .'&video_id=\' + video.id">
-                    <img v-show="video.ani===true" class="still-images" v-bind:src="\'images/stills/still-\'+video.filename.replace(\'.mp4\',\'_comp.gif\') " />    
-                    <img v-show="video.ani===false" class="still-images" v-bind:src="\'images/stills/still-\'+video.filename.replace(\'.mp4\',\'_comp.jpg\') " />
-                </a>	
+    <div id="videomanager" class="video-manager row">
+			<div 
+				v-for="video in videos" 
+				v-bind:class="\'col-xs-12 col-sm-5 col-md-2 video-item \'+ videoItemClass(video.id)"
+				>
+                <router-link class="title" :to="{ path: \'/videos/\' + video.id + \'/view\'}">
+					<img 
+						v-on:mouseover="mouseOverCheck = video.id" 
+						v-on:mouseout="mouseOverCheck = \'\'" 
+	 					class="still-images" 
+						 v-bind:src="mouseOverCheck === video.id ? \'images/stills/still-\'+video.filename.replace(\'.mp4\',\'_comp.gif\') : \'images/stills/still-\'+video.filename.replace(\'.mp4\',\'_comp.jpg\') " />    
+                </router-link>	
                 <div class="meta">
                     <router-link class="title" :to="{ path: \'/videos/\' + video.id + \'/view\'}">{{video.title}}</router-link>
                     <div>{{video.klasse}}</div>
-                    <div>{{video.sports}}</div>	
+                    <div>{{ video.sport }}</div>	
                 </div>
             </div>
     </div>
@@ -269,15 +272,7 @@ echo "</div>"; // end fluid container
 
 $PAGE->requires->js_amd_inline(" 
     require(['jquery', 'mod_videodatabase/filter'], function($, f) {
-        var source = '';	
-        $('.still-imagesxx')
-            .hover(function () { 
-                source = $(this).attr('src'); 
-                $(this).attr('src', source.replace('.jpg', '.gif'));
-            } ,function () {
-                source = $(this).attr('src');
-                $(this).attr('src', source.replace('.gif', '.jpg'));
-            });
+       //
     });
 ");
 

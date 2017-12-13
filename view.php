@@ -170,14 +170,16 @@ function bulkVideoImport($PAGE) {
 	//$DB->set_debug(true);
 	$table = "videodatabase_videos";
 	$row = 1;
+	
 	$video_arr = array();
-	if (($handle = fopen($CFG->dirroot.'/mod/videodatabase/data/testdata.csv', "r")) !== FALSE) {
+	if (($handle = fopen($CFG->dirroot.'/mod/videodatabase/data/testdata_20171213.csv', "r")) !== FALSE) {
 		while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
 		  $num = count($data);
 		 	$row++;
 			$record = new stdClass();
 			$record->id = (int)$row;
 			//$record->video_db = $row;
+			$record->courselevel = $data[0];
 			$record->title = (string)$data[2];
 			$record->creator = $data[3];
 			$record->subject = $data[4];
@@ -206,23 +208,21 @@ function bulkVideoImport($PAGE) {
 			$record->actors = $data[27];
 			$record->perspectives = $data[28];
 			$record->location = $data[29];
-			$record->klasse = (int)$data[30];
-			$record->klassenstufe = $data[31]; 
-			$record->sports = $data[32];
+			echo $record->courselevel;
+			//echo $data[0];
+			$record->sports = $data[31];
 			// collect
+			echo $data[30];
 			array_push($video_arr, $record);
 		}
 		fclose($handle);
+	}else{
+		echo 'not imported!!';
 	}
 	// delete all records
-	$DB->delete_records($table, array('subject'=>'sport'));
+	//$DB->delete_records($table);
 	// insert into database
 	$DB->insert_records($table, $video_arr);
-	$PAGE->requires->js_amd_inline(" 
-		require(['jquery'], function (jQuery) { 
-			jQuery('#alert').show();
-		});
-	"); 
 }
 
 /*********************************/
