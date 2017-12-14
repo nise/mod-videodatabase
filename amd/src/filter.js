@@ -180,7 +180,9 @@ define([
             router,
             data: {
                 paginate: ['videolist'],
-                mouseOverCheck:''
+                mouseOverCheck:'',
+                openerText: 'Filter öffnen',
+                isOpen: false
             },
             computed: {
                 columnObject: function () { //console.log(JSON.stringify(this.videos))
@@ -198,7 +200,7 @@ define([
             methods:{    
                 videoItemClass: function(id){
                     var video = store.getters.videoById(id);
-                    console.log(video)
+                    
                     return [
                         // multi
                         video['klasse'].split(' ').join('class-'),
@@ -210,6 +212,21 @@ define([
                         'movements-' + video.movements.replace(/, /g, ''),
                         ''
                     ].join(' ');
+                },
+                open() {
+                    this.openerText = 'Filter schließen';
+                    this.isOpen = true;
+                },
+                close() {
+                    this.openerText = 'Filter öffnen';
+                    this.isOpen = false;
+                },
+                toggle() { 
+                    if (this.isOpen) {
+                        this.close();
+                    } else {
+                        this.open();
+                    }
                 }
             }
         });
@@ -467,7 +484,7 @@ define([
         $.each(filterSchema.data, function (j, val) {
             arr = [
                 // '<label>'+ val.name +'</label>',
-                '<select id="filter_' + val.id + '" class="sel2 ' + (val.type === 'multi' ? 'multi-filter"' : 'single-filter') + '" ' + (val.type === 'multi' ? 'multiple="multiple"' : '') + '>',
+                '<select id="filter_' + val.id + '" class="sel2 ' + (val.type === 'multi' ? 'multi-filter' : 'single-filter') + '" ' + (val.type === 'multi' ? ' multiple="multiple" ' : '') + '>',
                 '<option class="option-head" value="" selected>' + val.name + ' (alle)</option>'
             ];
             for (var i = 0; i < val.items.length; i++) {
@@ -557,7 +574,7 @@ define([
                     filter_str += '.' + filters[f] + '';
                 }
             }
-            console.log(filter_str)
+            //console.log(filter_str)
             $('#videomanager').find(filter_str).show();
         }
 

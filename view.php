@@ -220,7 +220,7 @@ function bulkVideoImport($PAGE) {
 		echo 'not imported!!';
 	}
 	// delete all records
-	//$DB->delete_records($table);
+	$DB->delete_records($table);
 	// insert into database
 	$DB->insert_records($table, $video_arr);
 }

@@ -1,17 +1,15 @@
 <?php
-
 /**
  * Page module version information
  *
  * @package    mod
  * @subpackage page
- * @copyright  2017 Niels Seidel
+ * @copyright  2017 Niels Seidel, social-machinables.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
-
  */
 
 require('../../config.php');
-    require_once($CFG->dirroot.'/mod/videodatabase/locallib.php');
+require_once($CFG->dirroot.'/mod/videodatabase/locallib.php');
 require_once($CFG->libdir.'/completionlib.php');
 
 $id      = optional_param('id', 0, PARAM_INT); // Course Module ID
@@ -31,24 +29,20 @@ if ($p) {
 }
 
 $course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
-
 require_course_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 require_capability('mod/videodatabase:vdb_video-manager', $context);
-
 
 // Update 'viewed' state if required by completion system
 require_once($CFG->libdir . '/completionlib.php');
 $completion = new completion_info($course);
 $completion->set_module_viewed($cm);
 
-
-
-/*********/
+/* begin header*/
 $PAGE->set_url('/mod/videodatabase/vdb_video-manager.php', array('id' => $cm->id));
 $PAGE->navbar->add('Video Manager');// , new moodle_url('vdb_video-manager.php'.'?id='.$cm->id));
 
-$options = empty($videodatabase->displayoptions) ? array() : unserialize($videodatabase->displayoptions);
+//$options = empty($videodatabase->displayoptions) ? array() : unserialize($videodatabase->displayoptions);
 
 if ($inpopup and $videodatabase->display == RESOURCELIB_DISPLAY_POPUP) {
     $PAGE->set_pagelayout('popup');
@@ -56,22 +50,23 @@ if ($inpopup and $videodatabase->display == RESOURCELIB_DISPLAY_POPUP) {
     $PAGE->set_heading($course->fullname);
 } else {
     $PAGE->set_title($course->shortname.': '.$videodatabase->name);
-    $PAGE->set_heading($course->fullname);
+    $PAGE->set_heading($course->shortname.': '.$videodatabase->name);//$course->fullname);
     $PAGE->set_activity_record($videodatabase);
 }
 // custome CSS
 $PAGE->requires->css( '/mod/videodatabase/styles.css', true );
 $PAGE->requires->css( '/mod/videodatabase/css/bootstrap.min.css');
 $PAGE->requires->css( '/mod/videodatabase/css/vi-two.css', true );
-//$PAGE->requires->js( new moodle_url($CFG->wwwroot . '/mod/videodatabase/js/jquery.js'), true );
-
-
 echo $OUTPUT->header();
+/* end header */
 
 
-/****************************************/
-echo $OUTPUT->heading(format_string($videodatabase->name), 2);
 
+
+//echo $OUTPUT->heading(format_string($videodatabase->name), 2);
+echo "<div class='container-fluid'>";
+
+// don't Know wether this will be needed
 if (!empty($options['printintro'])) {
     if (trim(strip_tags($videodatabase->intro))) {
         echo $OUTPUT->box_start('mod_introbox', 'videodatabaseintro');
@@ -79,61 +74,20 @@ if (!empty($options['printintro'])) {
         echo $OUTPUT->box_end();
     }
 }
-
+/*
 $content = file_rewrite_pluginfile_urls($videodatabase->content, 'pluginfile.php', $context->id, 'mod_videodatabase', 'content', $videodatabase->revision);
 $formatoptions = new stdClass;
 $formatoptions->noclean = true;
 $formatoptions->overflowdiv = true;
 $formatoptions->context = $context;
 $content = format_text($content, $videodatabase->contentformat, $formatoptions);
-
-
-
-/*
-// fetch data
-$table = "videodatabase_videos";
-$res = $DB->get_records($table, $conditions = null, $sort = '', $fields = '*', $limitfrom = 0, $limitnum = 0);
-
-echo '<div id="the_filters" class="video-manager row">';
-$row = 0;
-foreach ($res as $video) {
-    $row++;
-    // prep
-    $activities = '';
-    $act = preg_replace("/\ /", "", $video->activities);
-    $arr = explode(',', $act);
-    for ($i=0; $i < sizeof($arr); $i++) {
-        $activities .= 'activities-'.$arr[$i].' ';
-    }
-    $competencies = '';
-    echo "<div class='col-xs-12 col-sm-5 col-md-2 video-item 
-		actors-" . preg_replace("/\//", "", $video->actors ) . " 
-		compentencies-" . preg_replace("/\ /", "", $video->compentencies ) . "
-		movements-" . preg_replace("/,\s/", "", $video->movements ) . " 
-		sports-" . preg_replace("/,\s/", "", $video->sports ) . " 
-		location-" . $video->location . " 
-		". $activities . "
-		". $competencies ."'>";
-    
-    echo "
-		<a class='title' href='vdb_player.php?id=" . $id ."&video_id=" . $video->id ."'>
-			<img style='width:100%;' class='still-images' src='images/stills/" . 'still-'.str_replace('.mp4', '_comp.jpg', $video->filename ) ."' />
-		</a>	
-		<div class='meta'>
-			<a class='title' href='vdb_player.php?id=" . $id ."&video_id=" . $video->id ."'>".$video->title."</a>
-			<div hidden >". substr($video->description, 0, 40)."</div>
-			<div>".$video->klasse."</div>
-			<div hidden class=''>".$video->movements."</div>
-			<div class=''>".$video->sports."</div>	
-		</div>		
-	</div>";
-}
-echo '</div>';
 */
 
 
 
-echo "<div class='container-fluid'>";
+
+
+
 
 // form
 //echo '<div id="app-form">{{ form_content }}</div>';
@@ -227,23 +181,27 @@ echo '<script type="text/x-template" id="app-videoplayer">
 </script>';
 
 
+echo '<h1>Videos</h1>';
 
 // filter
 echo '<div id="debug" hidden class="alert alert-success" role="alert"></div>';
-echo "
-<div class='filterbox'>
-    <label>Filter:</label>
-    <div id='filter1'></div>
-    <a class='' role='button' data-toggle='collapse' href='#filter2' aria-expanded='false' aria-controls='filter2'>Erweiterte Filter</a>
-    <div class='collapse' id='filter2'></div><br>
-</div>    
-";
+
+
 
 // video manager
 echo '
 <div id="app-videomanager">
-    <router-view></router-view>
-    <div id="videomanager" class="video-manager row">
+	<router-view></router-view>
+	<div class="zap-slideout" :class="{ isOpen: isOpen }">
+		<div class="zap-slideout-opener" @click="toggle">{{openerText}}</div>
+		<div class="zap-slideout-menu">Menu</div>
+	</div>
+	<div id="videomanager" class="video-manager row">
+			<div class="filterbox">
+				<div id="filter1"></div>
+				<a role="button" data-toggle="collapse" href="#filter2" aria-expanded="false" aria-controls="filter2">Erweiterte Filter</a>
+				<div class="collapse" id="filter2"></div>
+			</div>
 			<div 
 				v-for="video in videos" 
 				v-bind:class="\'col-xs-12 col-sm-5 col-md-2 video-item \'+ videoItemClass(video.id)"

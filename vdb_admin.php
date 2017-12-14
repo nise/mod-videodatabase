@@ -155,7 +155,7 @@ require(['mod_videodatabase/tableFilter'], function(f) {});
 	for($i=0; $i < sizeof($arr); $i++){
 		$activities .= 'activities-'.$arr[$i].' ';
 	}
-print_r($video);
+//print_r($video);
 	$competencies = '';
 	echo "<tr class='
 		actors-" . preg_replace("/\//", "", $video->actors ) . " 

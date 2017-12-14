@@ -5,11 +5,7 @@ MOODLE version 3.1.3 !!
 
 
 #backlog
-- pagination
-- bread crumb
-- vote
-- upload: location, filetype restriction, poster 
-- load external 
+- upload: location, filetype restriction, poster  
 - form 
  - save form data 
  - validate data
@@ -17,14 +13,17 @@ MOODLE version 3.1.3 !!
 - Startseite inkl. Erklärung der Anwendung, Link zum Lehrplan
 - video logging
 - video annotation
-- player loop
-- player zoom
+
 
 
 # nth
+- pagination
+- bread crumb
+- vote
+- player loop
+- player zoom
 - Video mit Wasserzeichen versehen
-- Settings-Page: 
- 
+- Settings-Page:  
 - multi-language
 
 
