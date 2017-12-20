@@ -8,9 +8,14 @@ h2 {
     width:100%;
 }
 
-select option:disabled, .option-head {
-	font-weight:bold;
+.right{
+    float:right;
 }
+
+select option:disabled, .option-head {
+    font-weight:bold;
+}
+
 
 [v-cloak] {
   display: none;
@@ -53,9 +58,19 @@ input {
 .video-item {
 margin: 0 10px 12px 0;
 padding:0 !important;
-min-height:200px !important;
+min-height:100px !important;
 display:block;
 /*border:solid 1px red;*/
+}
+
+#filter1 {
+    margin-bottom:40%;
+}
+
+#filter1 select{
+    width: 100%;
+    margin-bottom:10px;
+    border: solid #ccc 1px;
 }
 
 .video-item .meta {
@@ -91,10 +106,18 @@ display:block;
 }
 
 
-a{
-cursor: pointer;
+a {
+    cursor: pointer;
     text-decoration: none;
-    }
+}
+
+div.link{
+    color:blue;
+    cursor: pointer;
+    text-decoration: none;
+    margin-bottom: 10px;
+    display:block;
+}
 
 
 .mega{
@@ -112,50 +135,71 @@ cursor: pointer;
     align-content: center;
 }
 
+[v-cloak] {
+    display:none;
+}
 
-/* 
-Our Zap Slideout styles...
- */
-div.zap-slideout-menu {
+/* drop box file upload */
+ .dropbox {
+    outline: 2px dashed grey; /* the dash box */
+    margin:20px;
+    width:100%;
+    outline-offset: 10px;
+    background: lightcyan;
+    color: dimgray;
+    padding: 6px 10px;
+    min-height: 200px;
+    position: relative;
+    cursor: pointer;
+  }
+
+ .dropbox label {
+     font-size:2em;
+     font-weight:700;
+     align-content: center;
+     cursor: pointer;
+     width:100%;
+ }
+
+  .dropbox label p{
+      align-content: center;
+      text-align: center;
+    padding: 50px 0;
+    width:100%;
+      
+  }
+
+
+
+  .input-file {
+    opacity: 0; /* invisible but it's there! */
+    width: 100%;
+    cursor: pointer;
+  }
+
+  .dropbox:hover {
+    background: lightblue; /* when mouse over to the drop zone, change color */
+  }
+
+
+
+.slide-fade-enter-active {
   position: absolute;
-  top: 50%; left: 50%;
-  transform: translateX(-50%);
-  text-align: center;
-  border:solid red 1px;
+    left: -200px;
+    width: 100px;
+    height: 0;
+    background: blue;
+    -webkit-animation: slide 0.5s forwards;
+    -webkit-animation-delay: 2s;
+    animation: slide 0.5s forwards;
+    animation-delay: 2s;
+  
 }
-
-
-/* 
-Our Zap Slideout styles...
- */
-.zap-slideout.isOpen {
-  position: relative;
-  width: 240px;
-  height: 100vh;
-  padding: 30px;
-  background-color: #34495e;
-  transform: translateX(-100%);
-  transition: transform 0.6s ease(out-cubic);
+.slide-fade-leave-active {
+  
 }
-
-.zap-slideout-opener {
-  position: absolute;
-  top: 20px;
-  left: 100%;
-  margin-left: 20px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #fff;
-  cursor: pointer;
+.slide-fade-enter, .slide-fade-leave-to
 }
-
-.zap-slideout-menu {
-  font-weight: 600;
-  color: red;
-}
-
-
 
 @import("css/jquery.dataTables.min.css");
 

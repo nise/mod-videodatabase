@@ -54,8 +54,11 @@ if ($inpopup and $videodatabase->display == RESOURCELIB_DISPLAY_POPUP) {
     $PAGE->set_activity_record($videodatabase);
 }
 // custome CSS
-$PAGE->requires->css( '/mod/videodatabase/styles.css', true );
 $PAGE->requires->css( '/mod/videodatabase/css/bootstrap.min.css');
+$PAGE->requires->css( '/mod/videodatabase/styles.css', true );
+//$PAGE->requires->css( '/mod/videodatabase/css/animate.css', true );
+$PAGE->requires->css( '/mod/videodatabase/css/vfg.css', true );
+//$PAGE->requires->css( '/mod/videodatabase/css/vue2Dropzone.css', true );
 $PAGE->requires->css( '/mod/videodatabase/css/vi-two.css', true );
 echo $OUTPUT->header();
 /* end header */
@@ -64,7 +67,7 @@ echo $OUTPUT->header();
 
 
 //echo $OUTPUT->heading(format_string($videodatabase->name), 2);
-echo "<div class='container-fluid'>";
+echo "";
 
 // don't Know wether this will be needed
 if (!empty($options['printintro'])) {
@@ -89,12 +92,10 @@ $content = format_text($content, $videodatabase->contentformat, $formatoptions);
 
 
 
-// form
-//echo '<div id="app-form">{{ form_content }}</div>';
 
 // video player
-echo '<script type="text/x-template" id="app-videoplayer">
-<div>
+echo '
+<div id="app-video-template" v-cloak >{{hello}}
 	<!-- Storage -->
 	<div style="display:none; visibility:hidden;" id="vi2"></div>
 	<!-- End Storage -->
@@ -178,30 +179,95 @@ echo '<script type="text/x-template" id="app-videoplayer">
 		</div>
     </div>
 </div>
-</script>';
+';
 
 
-echo '<h1>Videos</h1>';
+
 
 // filter
 echo '<div id="debug" hidden class="alert alert-success" role="alert"></div>';
 
 
+echo '<div id="form-data">
+  <div class="panel-body">
+    
+  </div>
+</div>';
+
+echo '
+<div v-cloak id="form-upload-template">
+	<div class="container">
+		<form 
+			enctype="multipart/form-data" 
+			novalidate 
+			v-if="isInitial || isSaving"
+			class="dropbox"
+			>
+        	<input id="file" type="file" multiple :name="uploadFieldName" :disabled="isSaving" @change="filesChange($event.target.name, $event.target.files); fileCount = $event.target.files.length" accept="video/*" class="input-file" />
+			<label for="file">
+				<p v-if="isInitial">
+				Drag your file(s) here to begin<br> or click to browse
+				</p>
+				<p v-if="isFailed">{{ error }}</p>
+				<p v-if="isSaving">
+					Uploading {{ fileCount }} files
+					<div class="row">
+						<div v-cloak v-for="file in uploadedFiles" class="col-md-4">{{ file.name }} ({{ Math.round( file.size / 1024 / 1024 ) }}MB)
+						
+						<video width="100%" height="auto" controls>
+							<source :src="file.location" :type="file.type">
+							<!--<source src="movie.ogg" type="video/ogg">-->
+							Your browser does not support the video tag.
+							</video>
+						</div> 
+					</div>
+				</p>
+			</label>
+        
+      </form>
+      <!--SUCCESS-->
+      <div v-if="isSuccess">
+        <h2>Uploaded {{ uploadedFiles.length }} file(s) successfully.</h2>
+        <p>
+          <a href="javascript:void(0)" @click="reset()">Upload again</a>
+        </p>
+        <ul class="list-unstyled">
+          <li v-for="item in uploadedFiles">
+            <img :src="item.url" class="img-responsive img-thumbnail" :alt="item.originalName">
+          </li>
+        </ul>
+      </div>
+      <!--FAILED-->
+      <div v-if="isFailed">
+        <h2>Uploaded failed.</h2>
+        <p>
+          <a href="javascript:void(0)" @click="reset()">Try again</a>
+        </p>
+        <pre>{{ uploadError }}</pre>
+      </div>
+    </div>
+  </div>
+</div>
+<div v-cloak id="form-upload"></div>
+';
+
+
 
 // video manager
 echo '
-<div id="app-videomanager">
+<div id="app-videomanager" v-cloak>
+	
 	<router-view></router-view>
-	<div class="zap-slideout" :class="{ isOpen: isOpen }">
-		<div class="zap-slideout-opener" @click="toggle">{{openerText}}</div>
-		<div class="zap-slideout-menu">Menu</div>
-	</div>
+	<h1>Videos</h1>
+	<div class="link" @click="show = !show">{{ show ? "<< Filter verbergen" : "Filter anzeigen >>"}}</div>
+	<div class="container-fluid">
 	<div id="videomanager" class="video-manager row">
-			<div class="filterbox">
-				<div id="filter1"></div>
-				<a role="button" data-toggle="collapse" href="#filter2" aria-expanded="false" aria-controls="filter2">Erweiterte Filter</a>
-				<div class="collapse" id="filter2"></div>
-			</div>
+			<transition name="filter">
+				<div v-if="show" id="filter1" class="col-xs-12 col-sm-5 col-md-2 video-item filter-box">
+					<!--<a role="button" data-toggle="collapse" href="#filter2" aria-expanded="false" aria-controls="filter2">Erweiterte Filter</a>
+					<div class="collapse" id="filter2"></div>-->
+				</div>
+			</transition>
 			<div 
 				v-for="video in videos" 
 				v-bind:class="\'col-xs-12 col-sm-5 col-md-2 video-item \'+ videoItemClass(video.id)"
@@ -215,15 +281,22 @@ echo '
                 </router-link>	
                 <div class="meta">
                     <router-link class="title" :to="{ path: \'/videos/\' + video.id + \'/view\'}">{{video.title}}</router-link>
-                    <div>{{video.klasse}}</div>
-                    <div>{{ video.sport }}</div>	
+					<div>
+						<span v-for="star in video.id%5+1"> 
+							<span class="fa fa-star"></span>
+						</span>
+						<router-link class="title" :to="{ path: \'/videos/\' + video.id + \'/edit\'}">
+							<span class="fa fa-pencil right"></span>
+						</router-link>
+					</div>
                 </div>
             </div>
     </div>
+</div>
 </div>';
 
 
-echo "</div>"; // end fluid container
+echo ""; // end fluid container
 
 
 

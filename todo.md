@@ -5,11 +5,10 @@ MOODLE version 3.1.3 !!
 
 
 #backlog
-- upload: location, filetype restriction, poster  
-- form 
+- upload: poster  
+- form
  - save form data 
  - validate data
- - file upload
 - Startseite inkl. Erklärung der Anwendung, Link zum Lehrplan
 - video logging
 - video annotation
@@ -17,14 +16,7 @@ MOODLE version 3.1.3 !!
 
 
 # nth
-- pagination
-- bread crumb
-- vote
-- player loop
-- player zoom
-- Video mit Wasserzeichen versehen
-- Settings-Page:  
-- multi-language
+
 
 
 

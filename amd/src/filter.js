@@ -19,6 +19,10 @@ define([
     '/moodle/mod/videodatabase/amd/src/vue.js', 
     '/moodle/mod/videodatabase/amd/src/vue-router.js', 
     '/moodle/mod/videodatabase/amd/src/vuex.js',
+    '/moodle/mod/videodatabase/amd/src/vfg.js',
+    '/moodle/mod/videodatabase/amd/src/axios.min.js',
+    //'/moodle/mod/videodatabase/amd/src/dropzone.js',
+    //'/moodle/mod/videodatabase/amd/src/vue2Dropzone.js',
    // '/moodle/mod/videodatabase/amd/src/vue-paginate.min.js',
     
     'js/vi-two.js'
@@ -29,9 +33,12 @@ define([
         ajax, 
         Vue, 
         VueRouter, 
-        Vuex, 
+        Vuex,
+        VueFormGenerator,
+        Axios,
+       // dropzone, 
+      //  Vue2Dropzone,
         //VuePaginate, 
-      
         Vi2
     ) {
 
@@ -87,6 +94,8 @@ define([
         // setup
         Vue.use(Vuex);
         Vue.use(VueRouter);
+        Vue.use(VueFormGenerator);
+        //Vue.use(Vue2Dropzone);
         //Vue.use(VuePaginate); // vue-bs-pagination
         
 
@@ -95,26 +104,24 @@ define([
             state: {
                 myValue: 0,
                 videos: data,
-                mouse: {}
+                mouse: {},
+                showForm: false
             },
             getters: {
                 videoById(state) {
                     var self = this;
                     return function (id) {
+                        //state.videos[id].rating = Math.floor(Math.random()*5);
                         return state.videos[id];
-                    };
-                },
-                imageAniById(state) {
-                    var self = this;
-                    return function (id) {
-                        return state.mouse[id];
                     };
                 }
             },
             mutations: {
+                
+                // tests
                 mouseOver(state, id) {
                     state.mouse[id] = 1;
-                    console.log(id+'__'+ state.mouse[id])
+                    console.log(id+'__'+ state.mouse[id]);
                 },
                 mouseOut(state, id) {
                     state.mouse[id] = 0;
@@ -130,8 +137,11 @@ define([
 
         
         const Video = //new Vue.component('videoplayer', 
-            {
-            template: '#app-videoplayer',//'<div>Video {{ $route.params.id }}: {{ video.title }}</div>', 
+        {
+            template: '#app-video-template',//'<div>Video {{ $route.params.id }}: {{ video.title }}</div>', 
+            data: {
+                hello:'world'
+            },
             computed: {
                 video() {
                     // data mapping
@@ -165,24 +175,175 @@ define([
             }
         };
 
+        const Form = {
+            //el: '#form-data',
+            template: '<vue-form-generator :schema="schema" :model="model" :options="formOptions"></vue-form-generator>',
+            computed: {
+                model() { return store.getters.videoById(this.$route.params.id); },
+                schema() { return datamodel.data;},
+                formOptions() {
+                    return { 
+                        validateAfterLoad: true,
+                        validateAfterChanged: true
+                    }
+                }
+            }
+        };
+
+        
+      
+        const STATUS_INITIAL = 0, STATUS_SAVING = 1, STATUS_SUCCESS = 2, STATUS_FAILED = 3;
+
+        var Main2 = new Vue({
+            el: '#form-upload',
+            template: '#form-upload-template',
+            data: {
+                error: '',
+                advancedUpload: false,
+                uploadedFiles: [],
+                fileCount:0,
+                uploadError: null,
+                currentStatus: null,
+                uploadFieldName: 'videouploads[]'
+                
+            },
+            computed: {
+                isInitial() {
+                    return this.currentStatus === STATUS_INITIAL;
+                },
+                isSaving() {
+                    return this.currentStatus === STATUS_SAVING;
+                },
+                isSuccess() {
+                    return this.currentStatus === STATUS_SUCCESS;
+                },
+                isFailed() {
+                    return this.currentStatus === STATUS_FAILED;
+                }
+            },
+            methods: {
+                isAdvancedUpload() {
+                    var div = document.createElement('div');
+                    return (('draggable' in div) || ('ondragstart' in div && 'ondrop' in div)) && 'FormData' in window && 'FileReader' in window;
+                },
+                reset() {
+                    // reset form to initial state
+                    this.currentStatus = STATUS_INITIAL;
+                    this.uploadedFiles = [];
+                    this.uploadError = null;
+                    this.advancedUpload = this.isAdvancedUpload();
+                },
+                save(formData) {
+                    // upload data to the server
+                    this.currentStatus = STATUS_SAVING;
+                    upload(formData, this.updateSelectedFiles);
+                },
+                filesChange(fieldName, fileList) {
+                    if (!fileList.length) return;
+                    const formData = new FormData();
+                    for(var i=0,len=fileList.length; i < len; i++){
+                        formData.append('videofiles[]', fileList[i]);
+                        this.uploadedFiles.push({ 
+                            name: fileList[i].name, 
+                            type: fileList[i].type, 
+                            size: fileList[i].size, 
+                            location:'',
+                            status:'selected'
+                        })
+                    }
+                    // save it
+                    this.save(formData);
+                }, 
+                updateSelectedFiles(data){
+                    if( data.error ){
+                        this.currentStatus === STATUS_FAILED;
+                        this.error = data.error;
+                    }else{
+                        this.uploadedFiles = data.files;
+                        return this.currentStatus === STATUS_SUCCESS;
+                    }
+                }
+            },
+            mounted() {
+                this.reset();
+            }
+        });
+
+        
+        const SERVICE_URL = 'http://localhost/videos/php-video-upload-chain/upload.php';
+        const BASE_URL = 'http://localhost/videos/';
+
+        function upload(formData, callback) {
+            
+            $.ajax({
+                url: SERVICE_URL,//window.location.pathname,
+                type: 'POST',
+                data: formData,
+                success: function (data) {
+                    console.log(data);
+                    data = JSON.parse(data.toString());
+                    if(data.error !== ''){
+                        console.log('ERROR: ' + data.error)
+                        callback(data);
+                    }else{
+                        callback(data);
+                    }
+                },
+                error: function (data) {
+                    console.log('upload error:' + data)
+                },
+                cache: false,
+                contentType: false,
+                processData: false
+            });
+            /*
+            var data = new FormData();
+
+            data.append('file', formData[0]);
+            var config = {
+                onUploadProgress: function (progressEvent) {
+                    var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                    console.log("Progress:-" + percentCompleted);
+                }
+            };
+            Axios.post(SERVICE_URL, data, config)
+                .then(function (res) {
+                    console.log(res)
+                })
+                .catch(function (err) {
+                    console.log(err.message);
+                });
+
+            return Axios.post(SERVICE_URL, formData)
+                // get data
+                .then(x => x.data)
+                // add url field
+                .then(x => x.map(img => Object.assign({},
+                    img, { url: `${BASE_URL}/images/${img.id}` })
+                ).catch(function(err){
+                    console.log(err)
+                })
+            );
+            */
+        }
+
         // init router
         const router = new VueRouter({
             routes: [
                 { path: '/videos', component: Video },
                 { path: '/videos/:id/view', component: Video },
-                { path: '/videos/:id/edit', component: Video }
+                { path: '/videos/:id/edit', component: Form }
             ]
         });
 
 
-        var app4 = new Vue({
+        var Main = new Vue({
             el: '#app-videomanager',
             router,
             data: {
                 paginate: ['videolist'],
-                mouseOverCheck:'',
-                openerText: 'Filter öffnen',
-                isOpen: false
+                mouseOverCheck: '',
+                show: false
             },
             computed: {
                 columnObject: function () { //console.log(JSON.stringify(this.videos))
@@ -197,137 +358,28 @@ define([
                     return store.state.videos;
                 }
             },
-            methods:{    
-                videoItemClass: function(id){
+            methods: {
+                toogleForm: function (id) {
+                    store.commit('toggleForm', id);
+                },
+                videoItemClass: function (id) {
                     var video = store.getters.videoById(id);
-                    
+
                     return [
                         // multi
                         video['klasse'].split(' ').join('class-'),
                         //'competencies-' + video.compentencies.replace(/\ /g, ''),
                         // single
-                        'actors-'+video.actors.replace(/\//g, ''),
+                        'actors-' + video.actors.replace(/\//g, ''),
                         'location-' + video.location,
                         'sports-' + video.sports.replace(/,\ /g, ''),
                         'movements-' + video.movements.replace(/, /g, ''),
                         ''
                     ].join(' ');
-                },
-                open() {
-                    this.openerText = 'Filter schließen';
-                    this.isOpen = true;
-                },
-                close() {
-                    this.openerText = 'Filter öffnen';
-                    this.isOpen = false;
-                },
-                toggle() { 
-                    if (this.isOpen) {
-                        this.close();
-                    } else {
-                        this.open();
-                    }
                 }
             }
         });
-
-
-        /*
-                var form = new Vue({
-                    el: '#app-form',
-                    //router,
-                    data: { videos: data, form_schema: filterSchema },
-                    // computed: {
-                    render: function (createElement) {
-                        var form_elements = [];
-                        // consider dublin core meta data
-                        var meta = [['title', 'Titel'],
-                        ['description', 'Beschreibung'],
-                        ['subject', 'Fach'],
-                        ['tags', 'Schlüsselwörter'],
-                        ['Creator', 'Ersteller'],
-                        ['publisher', 'Herausgeber'],
-                        ['institution', 'Institution'],
-                        ['source', 'Quelle'],
-                        ['language', 'Sprache'],
-                        ['license', 'Lizenz'],
-                        ['rights', 'Urheberrechte'],
-                        ['relation', 'Relation'],
-                        ['coverage', 'Bereich']];
-                        for (var i = 0, len = meta.length; i < len; i++) {
-                            form_elements.push(createElement(
-                                'label',
-                                {
-                                    attrs:
-                                        {
-                                            for: 'text',
-                                        }
-                                },
-                                meta[i][1]
-                            )
-                            );
-                            form_elements.push(createElement(
-                                'input',
-                                {
-                                    attrs:
-                                        {
-                                            type: 'text',
-                                            id: meta[i][0],
-                                            'v-model': meta[i][0]
-                                        }
-                                }
-                            )
-                            );
-                            form_elements.push(createElement('br'));
-                        }
-                        // consider categories
-                        for (var i = 0, len = this.form_schema.data.length; i < len; i++) {
-                            var items = [];
-                            // h
-                            items.push(createElement('h4', {}, this.form_schema.data[i].name));
-                            for (var j = 0, len2 = this.form_schema.data[i].items.length; j < len2; j++) {
-                                var combi = [];
-                                // input
-                                combi.push(
-                                    createElement(
-                                        'input',
-                                        {
-                                            attrs:
-                                                {
-                                                    type: this.form_schema.data[i].type === 'single' ? "radio" : "checkbox",
-                                                    id: this.form_schema.data[i].id + '-' + j,
-                                                    name: this.form_schema.data[i].id,
-                                                    value: this.form_schema.data[i].items[j],
-                                                    'v-model': this.form_schema.data[i].id
-                                                }
-                                        },
-                                        this.form_schema.data[i].items[j]
-                                    )
-                                );
-                                // label
-                                combi.push(
-                                    createElement(
-                                        'label',
-                                        {
-                                            attrs: { for: this.form_schema.data[i].id }
-                                        },
-                                        this.form_schema.data[i].items[j]
-                                    )
-                                );
-                                items.push(createElement('div', { class: { 'col-md-4': true } }, combi));
-                            }
-                            var el = createElement('div', { class: { 'row': true, 'col-md-8': true } }, items);
-                            form_elements.push(el);
-                        }
-                        // consider video data
         
-                        // done
-                        return createElement('div', form_elements);
-                    }
-                    //}
-                });
-        
-        */
     } // end con()
 
 
@@ -336,165 +388,338 @@ define([
     //get_ws('videodatabase_video', { 'courseid': 2, 'videoid':165 }, con);
 
 
-    /************************/
 
-    var filterSchema = {
+    var datamodel = {
         "language": "de",
         "version": 1,
-        "data": [
-            {
-                "id": "sports",
-                "name": "Sportart",
-                "type": "single",
-                "level": 1,
-                "items": [
-                    "Fußball",
-                    "Handball",
-                    "Barren",
-                    "Judo",
-                    "Handball",
-                    "Volleyball"
-                ]
-            },
-            {
-                "id": "movements",
-                "name": "Bewegungsfelder",
-                "type": "single",
-                "level": 1,
-                "items": [
-                    "Laufen, Springen, Werfen, Stoßen",
-                    "Spiele",
-                    "Bewegung an Geräten",
-                    "Kämpfen nach Regeln",
-                    "Bewegungsfolgen gestalten und darstellen",
-                    "Bewegen im Wasser",
-                    "Fahren, Rollen, Gleiten"
-                ]
-            },
-            {
-                "id": "class",
-                "name": "Lerngruppe",
-                "type": "multi",
-                "level": 1,
-                "items": [
-                    "Eingangsstufe",
-                    "Unterstufe",
-                    "Mittelstufe",
-                    "Werkstufe",
-                    "Klassenstufe 1",
-                    "Klassenstufe 2",
-                    "Klassenstufe 3",
-                    "Klassenstufe 4",
-                    "Klassenstufe 5",
-                    "Klassenstufe 6",
-                    "Klassenstufe 7",
-                    "Klassenstufe 8",
-                    "Klassenstufe 9",
-                    "Klassenstufe 10",
-                    "Klassenstufe 11",
-                    "Klassenstufe 12",
-                    "Klassenstufe 13"
-                ]
-            },
-            {
-                "id": "actors",
-                "name": "Akteure",
-                "type": "single",
-                "level": 2,
-                "items": [
-                    "Lehrer/in",
-                    "Schüler/in"
-                ]
-            },
-            {
-                "id": "location",
-                "name": "Ort",
-                "type": "single",
-                "level": 2,
-                "items": [
-                    "Sporthalle",
-                    "Schwimmhalle",
-                    "Outdoor"
-                ]
-            },
-            {
-                "id": "compentencies",
-                "name": "Fachbezogene Kompetenzen",
-                "type": "multi",
-                "level": 2,
-                "items": [
-                    "Bewegen und Handeln",
-                    "Reflektieren und Urteilen",
-                    "Interagieren",
-                    "Methoden anwenden"
-                ]
-            },
-            {
-                "id": "activities",
-                "name": "Aktivitäten",
-                "type": "multi",
-                "level": 2,
-                "items": [
-                    "Abbauen",
-                    "Aufbauen",
-                    "Begründen",
-                    "Beraten",
-                    "Beschreiben",
-                    "Besprechen",
-                    "Beurteilen",
-                    "Demonstrieren",
-                    "Disziplinieren",
-                    "Erklären",
-                    "Feedback, Korrektur",
-                    "Gesprächsrunde",
-                    "Gruppenbildung",
-                    "Helfen",
-                    "Kooperieren",
-                    "Medieneinsatz",
-                    "Motivieren",
-                    "Organisieren",
-                    "Präsentieren",
-                    "Sichern",
-                    "Störung",
-                    "Üben"
-                ]
-            },
-            {
-                "id": "perspectives",
-                "name": "Pädagogische Perspektiven",
-                "type": "multi",
-                "level": 2,
-                "items": [
-                    "Leistung",
-                    "Wagnis",
-                    "Gestaltung",
-                    "Körpererfahrung",
-                    "Kooperation",
-                    "Gesundheit"
-                ]
-            }
-        ]
+        "data": {
+            fields: [],
+            groups: [
+                {
+                    legend: "Allgemeines",
+                    fields: [
+                        {
+                            type: "input",
+                            inputType: "text",
+                            label: "Titel",
+                            model: "title",
+                            featured: true,
+                            required: true,
+                            validator: VueFormGenerator.validators.string
+                        },
+                        {
+                            type: "input",
+                            inputType: "text",
+                            label: "Beschreibung",
+                            model: "description",
+                            featured: true,
+                            required: true,
+                            min: 4,
+                            validator: VueFormGenerator.validators.string
+                        },
+                        {
+                            type: "input",
+                            inputType: "text",
+                            label: "Schlüsselwörter",
+                            model: "tags",
+                            featured: true,
+                            required: true,
+                            validator: VueFormGenerator.validators.string
+                        }
+
+                    ]// end fields
+                },
+                {
+                    legend: "Video",
+                    fields: [
+                        {
+                            type: "input",
+                            inputType: "text",
+                            label: "Dateiname",
+                            model: "filename",
+                            diabled: true
+                        },
+                        {
+                            type: "input",
+                            inputType: "text",
+                            label: "Länge",
+                            model: "length",
+                            diabled: true
+                        },
+                        {
+                            type: "input",
+                            inputType: "text",
+                            label: "Dateigröße",
+                            model: "size",
+                            diabled: true
+                        },
+                        {
+                            type: "input",
+                            inputType: "text",
+                            label: "Videoformat",
+                            model: "format",
+                            diabled: true
+                        },
+                        {
+                            type: "input",
+                            inputType: "text",
+                            label: "Mime",
+                            model: "mimetype",
+                            diabled: true
+                        }
+                    ]
+                },
+                {
+                    legend: "Dublin Core Metadaten",
+                    fields:[
+                        {
+                            type: "input",
+                            inputType: "text",
+                            label: "Fach",
+                            model: "subject",
+                            validator: VueFormGenerator.validators.string
+                        },
+                        {
+                            type: "input",
+                            inputType: "text",
+                            label: "Ersteller",
+                            model: "Creator",
+                            validator: VueFormGenerator.validators.string
+                        },
+                        {
+                            type: "input",
+                            inputType: "text",
+                            label: "Herausgeber",
+                            model: "publisher",
+                            validator: VueFormGenerator.validators.string
+                        },
+                        {
+                            type: "input",
+                            inputType: "text",
+                            label: "Institution",
+                            model: "institution",
+                            validator: VueFormGenerator.validators.string
+                        },
+                        {
+                            type: "input",
+                            inputType: "text",
+                            label: "Quelle",
+                            model: "source",
+                            featured: true,
+                            validator: VueFormGenerator.validators.string
+                        },
+                        {
+                            type: "input",
+                            inputType: "text",
+                            label: "Sprache",
+                            model: "language",
+                            validator: VueFormGenerator.validators.string
+                        },
+                        {
+                            type: "input",
+                            inputType: "text",
+                            label: "Lizenz",
+                            model: "license",
+                            validator: VueFormGenerator.validators.string
+                        },
+                        {
+                            type: "input",
+                            inputType: "text",
+                            label: "Urheberrechte",
+                            model: "rights",
+                            validator: VueFormGenerator.validators.string
+                        },
+                        {
+                            type: "input",
+                            inputType: "text",
+                            label: "Relation",
+                            model: "relation",
+                            validator: VueFormGenerator.validators.string
+                        },
+                        {
+                            type: "input",
+                            inputType: "text",
+                            label: "Bereich",
+                            model: "coverage",
+                            validator: VueFormGenerator.validators.string
+                        }
+                    ]// end fields
+                },
+                {
+                    legend: "Didaktische Einordnung",
+                    fields: [
+                        {
+                            model: "sports",
+                            label: "Sportart",
+                            type: "select",
+                            filterable: true,
+                            "level": 1,
+                            values: [
+                                "Fußball",
+                                "Handball",
+                                "Barren",
+                                "Judo",
+                                "Handball",
+                                "Volleyball"
+                            ]
+                        },
+                        {
+                            model: "movements",
+                            label: "Bewegungsfelder",
+                            type: "select",
+                            multi: false,
+                            filterable: true,
+                            "level": 1,
+                            values: [
+                                "Laufen, Springen, Werfen, Stoßen",
+                                "Spiele",
+                                "Bewegung an Geräten",
+                                "Kämpfen nach Regeln",
+                                "Bewegungsfolgen gestalten und darstellen",
+                                "Bewegen im Wasser",
+                                "Fahren, Rollen, Gleiten"
+                            ]
+                        },
+                        {
+                            model: "class",
+                            label: "Lerngruppe",
+                            type: "checklist",
+                            multi: true,
+                            filterable: true,
+                            "level": 1,
+                            values: [
+                                "Eingangsstufe",
+                                "Unterstufe",
+                                "Mittelstufe",
+                                "Werkstufe",
+                                "Klassenstufe 1",
+                                "Klassenstufe 2",
+                                "Klassenstufe 3",
+                                "Klassenstufe 4",
+                                "Klassenstufe 5",
+                                "Klassenstufe 6",
+                                "Klassenstufe 7",
+                                "Klassenstufe 8",
+                                "Klassenstufe 9",
+                                "Klassenstufe 10",
+                                "Klassenstufe 11",
+                                "Klassenstufe 12",
+                                "Klassenstufe 13"
+                            ]
+                        },
+                        {
+                            model: "actors",
+                            label: "Akteure",
+                            type: "select",
+                            multi: false,
+                            filterable: true,
+                            "level": 2,
+                            values: [
+                                "Lehrer/in",
+                                "Schüler/in"
+                            ]
+                        },
+                        {
+                            model: "location",
+                            label: "Ort",
+                            "type": "checklist",
+                            filterable: true,
+                            "level": 2,
+                            values: [
+                                "Sporthalle",
+                                "Schwimmhalle",
+                                "Outdoor"
+                            ]
+                        },
+                        {
+                            model: "compentencies",
+                            label: "Fachbezogene Kompetenzen",
+                            type: "checklist",
+                            multi: true,
+                            filterable: true,
+                            "level": 2,
+                            values: [
+                                "Bewegen und Handeln",
+                                "Reflektieren und Urteilen",
+                                "Interagieren",
+                                "Methoden anwenden"
+                            ]
+                        },
+                        {
+                            model: "activities",
+                            label: "Aktivitäten",
+                            type: "checklist",
+                            multi: true,
+                            filterable: true,
+                            "level": 2,
+                            values: [
+                                "Abbauen",
+                                "Aufbauen",
+                                "Begründen",
+                                "Beraten",
+                                "Beschreiben",
+                                "Besprechen",
+                                "Beurteilen",
+                                "Demonstrieren",
+                                "Disziplinieren",
+                                "Erklären",
+                                "Feedback, Korrektur",
+                                "Gesprächsrunde",
+                                "Gruppenbildung",
+                                "Helfen",
+                                "Kooperieren",
+                                "Medieneinsatz",
+                                "Motivieren",
+                                "Organisieren",
+                                "Präsentieren",
+                                "Sichern",
+                                "Störung",
+                                "Üben"
+                            ]
+                        },
+                        {
+                            model: "perspectives",
+                            label: "Pädagogische Perspektiven",
+                            type: "checklist",
+                            listBox: true,
+                            multi: true,
+                            filterable: true,
+                            "level": 2,
+                            values: [
+                                "Leistung",
+                                "Wagnis",
+                                "Gestaltung",
+                                "Körpererfahrung",
+                                "Kooperation",
+                                "Gesundheit"
+                            ]
+                        }
+                    ]// end fields
+                }
+            ]
+        }     
     };
-    // console.log(JSON.stringify(json));
+   
 
+    /**
+     * Filter
+     */
     $(document).ready(function () {
-
         // render filter
         var arr = [];
-        $.each(filterSchema.data, function (j, val) {
-            arr = [
-                // '<label>'+ val.name +'</label>',
-                '<select id="filter_' + val.id + '" class="sel2 ' + (val.type === 'multi' ? 'multi-filter' : 'single-filter') + '" ' + (val.type === 'multi' ? ' multiple="multiple" ' : '') + '>',
-                '<option class="option-head" value="" selected>' + val.name + ' (alle)</option>'
-            ];
-            for (var i = 0; i < val.items.length; i++) {
-                arr.push('<option value="' + val.id + '-' + val.items[i].replace(/\//g, '').replace(/,\ /g, '').replace(/\ /g, '') + '">' + val.items[i] + '</option>');
+        $.each(datamodel.data.groups[3].fields, function (j, val) {
+            if(val.filterable){
+                arr = [
+                    // '<label>'+ val.name +'</label>',
+                    '<select id="filter_' + val.model + '" class="sel2 ' + (val.multi ? 'multi-filter' : 'single-filter') + '" ' + (val.multi ? ' multiple="multiple" ' : '') + '>',
+                    '<option class="option-head" value="" selected>' + val.label + ' (alle)</option>'
+                ];
+                for (var i = 0; i < val.values.length; i++) {
+                    arr.push('<option value="' + val.model + '-' + val.values[i].replace(/\//g, '').replace(/,\ /g, '').replace(/\ /g, '') + '">' + val.values[i] + '</option>');
+                }
+                arr.push('</select>');
+                $('#filter1').append(arr.join(''));
             }
-            arr.push('</select>');
-            if (j === 1 || j === 4) {
-                arr.push('<br>');
-            }
-            $('#filter' + val.level).append(arr.join(''));
         });
 
         var filters = {};
@@ -528,43 +753,7 @@ define([
             });
             applyFilter();
         });
-/*
-        $('#filter_compentencies').change(function () { // alert($(this).val())
-            // reset
-            $(this).find('option').each(function (i, val) {
-                filters['compentencies_' + $(val).attr('value')] = 'null';
-            });
-            // set
-            $('#filter_compentencies :selected').each(function (i) {
-                filters['compentencies_' + $(this).attr('value')] = $(this).attr('value');
-            });
-            applyFilter();
-        });
 
-        $('#filter_perspectives').change(function () { //alert($(this).val())
-            // reset
-            $(this).find('option').each(function (i, val) {
-                filters['perspectives_' + $(val).attr('value')] = 'null';
-            });
-            // set
-            $('#filter_perspectives :selected').each(function (i, val) {
-                filters['perspectives_' + $(this).attr('value')] = $(this).attr('value');
-            });
-            applyFilter();
-        });
-
-        $('#filter_group').change(function () { // alert($(this).val())
-            // reset
-            $(this).find('option').each(function (i, val) {
-                filters['group_' + $(val).attr('value')] = 'null';
-            });
-            // set
-            $('#filter_group :selected').each(function (i, val) {
-                filters['group_' + $(this).attr('value')] = $(this).attr('value');
-            });
-            applyFilter();
-        });
-*/
         function applyFilter() {
             var filter_str = 'div.video-item';
             $('.video-item').hide();
