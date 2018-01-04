@@ -188,16 +188,11 @@ echo '
 echo '<div id="debug" hidden class="alert alert-success" role="alert"></div>';
 
 
-echo '<div id="form-data">
-  <div class="panel-body">
-    
-  </div>
-</div>';
 
 echo '
 <div v-cloak id="form-upload-template">
-	<div class="container">
-		<form 
+	<div>
+	<form 
 			enctype="multipart/form-data" 
 			novalidate 
 			v-if="isInitial || isSaving"
@@ -212,12 +207,11 @@ echo '
 				<p v-if="isSaving">
 					Uploading {{ fileCount }} files
 					<div class="row">
-						<div v-cloak v-for="file in uploadedFiles" class="col-md-4">{{ file.name }} ({{ Math.round( file.size / 1024 / 1024 ) }}MB)
-						
-						<video width="100%" height="auto" controls>
-							<source :src="file.location" :type="file.type">
-							<!--<source src="movie.ogg" type="video/ogg">-->
-							Your browser does not support the video tag.
+						<div v-cloak v-for="file in uploadedFiles" class="col-md-4">{{ file.name }} ({{ Math.round( file.size / 1024 / 1024 ) }}MB)					
+							<video width="100%" height="auto" controls>
+								<source v-bind:src="file.location" :type="file.type" >
+								<!--<source src="movie.ogg" type="video/ogg">-->
+								Your browser does not support the video tag.
 							</video>
 						</div> 
 					</div>
@@ -245,12 +239,22 @@ echo '
         </p>
         <pre>{{ uploadError }}</pre>
       </div>
-    </div>
+	</div>
+	</div>
   </div>
-</div>
+
 <div v-cloak id="form-upload"></div>
 ';
 
+
+echo '
+<div v-cloak id="form-submit-template">
+	<div>
+		<input v-on:click="submitForm" type="submit" value="speichern" />
+		<a class="right" href="#/videos">cancel</a>
+	</div>
+</div>
+';
 
 
 // video manager

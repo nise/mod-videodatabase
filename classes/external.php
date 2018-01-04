@@ -61,7 +61,7 @@ class mod_videodatabase_videos_external extends external_api {
 }
 
 
-class mod_videodatabase_video_external extends external_api {
+class mod_videodatabase_get_video_external extends external_api {
     public static function get_video_parameters() {
         return new external_function_parameters(
             array(
@@ -89,6 +89,40 @@ class mod_videodatabase_video_external extends external_api {
         return array('data'=> json_encode($res));
     } 
 }
+
+
+/**
+ * Make video metadata persistent
+ */
+class mod_videodatabase_set_video_external extends external_api {
+    public static function set_video_parameters() {
+        return new external_function_parameters(
+            array(
+                'data' => 
+                    new external_single_structure(
+                        array(
+                            'courseid' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL),
+                            'videoid' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL)
+                        )
+                )
+            )
+        );
+    }
+    public static function set_video_returns() {
+        return new external_single_structure(
+                array( 'data' => new external_value(PARAM_RAW, 'data') )
+        );
+    }
+    public static function set_video() {
+        global $CFG, $DB;
+        $transaction = $DB->start_delegated_transaction(); //If an exception is thrown in the below code, all DB queries in this code will be rollback.
+        $table = "videodatabase_videos";
+        $res = $DB->update_records($table, array('id'=>165 ), $sort = '', $fields = '*', $limitfrom = 0, $limitnum = 0);
+        $transaction->allow_commit();
+        return array('data'=> json_encode($res));
+    } 
+}
+
 class mod_videodatabase_comments_external extends external_api {
     public static function get_all_comments_parameters() {
         return new external_function_parameters(

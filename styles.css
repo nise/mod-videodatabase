@@ -43,17 +43,28 @@ label{
     display:inline-block;
     vertical-align: middle;
     font-weight: normal !important;
-    margin: 0 4px 0 4px !important;
+    margin: 0 4px 0 4px;
     word-wrap: break-word;
     max-width:80% !important;
+}
+
+.form-group label{
+    font-size: 0.8em;
 }
 
 input {
     display:inline-block;
     vertical-align: middle;
-    margin: 0 !important; 
+    margin: 0; 
 }
 
+.vue-form-generator .form-control:not([class*=" col-"]) {
+    min-width:300px;
+}
+
+.list-row > label > input[type="checkbox"] {
+    margin-right:10px !important;
+}
 
 .video-item {
 margin: 0 10px 12px 0;
@@ -143,28 +154,27 @@ div.link{
  .dropbox {
     outline: 2px dashed grey; /* the dash box */
     margin:20px;
-    width:100%;
+    width:80%;
     outline-offset: 10px;
     background: lightcyan;
     color: dimgray;
     padding: 6px 10px;
-    min-height: 200px;
-    position: relative;
+    min-height: 100px;
+   position: relative;
     cursor: pointer;
   }
 
  .dropbox label {
-     font-size:2em;
+     font-size:1em;
      font-weight:700;
      align-content: center;
      cursor: pointer;
-     width:100%;
+     width:80%;
  }
 
   .dropbox label p{
       align-content: center;
       text-align: center;
-    padding: 50px 0;
     width:100%;
       
   }

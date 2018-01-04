@@ -19,11 +19,19 @@ $functions = array(
                 'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
         ),
         'videodatabase_video' => array(
-                'classname'   => 'mod_videodatabase_video_external',
+                'classname'   => 'mod_videodatabase_get_video_external',
                 'methodname'  => 'get_video',
                 'classpath'   => 'mod/videodatabase/classes/external.php',
                 'description' => 'Getter a video',
                 'type'        => 'read',
+                'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
+        ),
+         'videodatabase_store_video' => array( // store video metadata
+                'classname'   => 'mod_videodatabase_set_video_external',
+                'methodname'  => 'set_video',
+                'classpath'   => 'mod/videodatabase/classes/external.php',
+                'description' => 'Setter for a video',
+                'type'        => 'write',
                 'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
         ),
         'videodatabase_comments' => array(

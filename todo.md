@@ -5,18 +5,11 @@ MOODLE version 3.1.3 !!
 
 
 #backlog
-- upload: poster  
-- form
- - save form data 
- - validate data
-- Startseite inkl. Erklärung der Anwendung, Link zum Lehrplan
-- video logging
-- video annotation
-
-
+https://github.com/nise/vi-moodle/issues
 
 # nth
 
+- collaps/expand form groups
 
 
 
