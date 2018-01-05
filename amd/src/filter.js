@@ -125,7 +125,11 @@ define([
                         var self = this;
                         return function (id) {
                             //state.videos[id].rating = Math.floor(Math.random()*5);
-                            return state.videos[id];
+                            if (state.videos[id] !== undefined && id !== undefined){
+                                return state.videos[id];
+                            }else{
+                                console.log('id missing '+id)
+                            }
                         };
                     },
                     currentVideoData(state) {
@@ -176,18 +180,43 @@ define([
 
             store.commit('getFormDataModel');
 
-
+           
 
             const Video = //new Vue.component('videoplayer', 
                 {
                     template: '#app-video-template',//'<div>Video {{ $route.params.id }}: {{ video.title }}</div>', 
-                    data: {
-                        hello: 'world'
+                    data: function () {
+                        return {
+                            video_selector: 'seq'
+                        }
                     },
                     computed: {
                         video() {
-                            // data mapping
-                            const video_data = store.getters.videoById(this.$route.params.id);
+                            var id = this.$route.params.id;
+                            if (id === undefined){
+                                id=1;
+                            }
+                            var video_data = store.getters.videoById( id );
+                            if (video_data !== undefined ){
+                                video_data.metadata = [];
+                                video_data.metadata[0] = {};
+                                video_data.metadata[0].author = video_data['contributor'];
+                                video_data.metadata[0].title = video_data['title'];
+                                video_data.metadata[0].abstract = video_data['description'];
+                                video_data.metadata[0].thumbnail = "still-" + video_data.filename.replace('.mp4', '_comp.jpg');
+                                video_data.video = '/videos/' + video_data.filename.replace('.mp4', '.webm');
+
+                                //startVi2(video_data);
+
+                                return video_data;//store.getters.videoById( this.$route.params.id );
+                            }else{
+                                return null;
+                            }
+                        }
+                    },
+                    updated() {
+                        var video_data = store.getters.videoById(this.$route.params.id);
+                        if (video_data !== undefined) {
                             video_data.metadata = [];
                             video_data.metadata[0] = {};
                             video_data.metadata[0].author = video_data['contributor'];
@@ -195,25 +224,11 @@ define([
                             video_data.metadata[0].abstract = video_data['description'];
                             video_data.metadata[0].thumbnail = "still-" + video_data.filename.replace('.mp4', '_comp.jpg');
                             video_data.video = '/videos/' + video_data.filename.replace('.mp4', '.webm');
-
-                            //startVi2(video_data);
-
-                            return video_data;//store.getters.videoById( this.$route.params.id );
-                        }
-                    },
-                    updated() {
-                        video_data = store.getters.videoById(this.$route.params.id);
-                        video_data.metadata = [];
-                        video_data.metadata[0] = {};
-                        video_data.metadata[0].author = video_data['contributor'];
-                        video_data.metadata[0].title = video_data['title'];
-                        video_data.metadata[0].abstract = video_data['description'];
-                        video_data.metadata[0].thumbnail = "still-" + video_data.filename.replace('.mp4', '_comp.jpg');
-                        video_data.video = '/videos/' + video_data.filename.replace('.mp4', '.webm');
-                        //video_data.id = 'test';
-                        startVi2(video_data);
-                        //console.log(window.vi2.observer.current_stream);
-                        //console.log(window.vi2.db.json_data);
+                            //video_data.id = 'test';
+                            startVi2(video_data);
+                            //console.log(window.vi2.observer.current_stream);
+                            //console.log(window.vi2.db.json_data);
+                        }    
                     }
                 };
 
@@ -366,9 +381,12 @@ define([
                 //el: '#form-data',
                 template: '<vue-form-generator :schema="schema" :model="model" :options="formOptions"></vue-form-generator>',
                 computed: {
-                    model() { 
-                        store.commit('setCurrentVideo', this.$route.params.id);
-                        return store.getters.videoById(this.$route.params.id); },
+                    model() {
+                        if (this.$route.params.id != undefined ){
+                            store.commit('setCurrentVideo', this.$route.params.id);
+                            return store.getters.videoById(this.$route.params.id);         
+                        }
+                    },
                     schema() { return datamodel.data; },
                     formOptions() {
                         return {
@@ -406,9 +424,10 @@ define([
             // init router
             const router = new VueRouter({
                 routes: [
-                    { path: '/videos', component: Video },
+                    { path: '/videos' },
                     { path: '/videos/:id/view', component: Video },
-                    { path: '/videos/:id/edit', component: Form }
+                    { path: '/videos/:id/edit', component: Form },
+                    { path: '/videos/new', component: Form }
                 ]
             });
 
@@ -419,7 +438,9 @@ define([
                 data: {
                     paginate: ['videolist'],
                     mouseOverCheck: '',
-                    show: false
+                    show: false,
+                    isEditor: true,
+                    listView: true
                 },
                 computed: {
                     columnObject: function () { //console.log(JSON.stringify(this.videos))
@@ -435,6 +456,8 @@ define([
                     }
                 },
                 methods: {
+                    setListView: function(){ this.listView = true; },
+                    setTableView: function () { this.listView = false; },
                     toogleForm: function (id) {
                         store.commit('toggleForm', id);
                     },
@@ -474,7 +497,7 @@ define([
         $(document).ready(function () {
             // render filter
             var arr = [];
-            $.each(datamodel.data.groups[3].fields, function (j, val) {
+            $.each(datamodel.data.groups[2].fields, function (j, val) {
                 if (val.filterable) {
                     arr = [
                         // '<label>'+ val.name +'</label>',

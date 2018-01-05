@@ -1,5 +1,9 @@
 @charset 'UTF-8';
 
+h1 {
+    display:block;
+}
+
 h2 {
 	color:#444;
 }
@@ -59,7 +63,7 @@ input {
 }
 
 .vue-form-generator .form-control:not([class*=" col-"]) {
-    min-width:300px;
+    min-width:200px;
 }
 
 .list-row > label > input[type="checkbox"] {
@@ -67,11 +71,27 @@ input {
 }
 
 .video-item {
-margin: 0 10px 12px 0;
-padding:0 !important;
+margin: 0;
+padding:0 10px 18px 0 !important;
 min-height:100px !important;
 display:block;
 /*border:solid 1px red;*/
+}
+
+.video-table {
+    
+}
+
+.video-table tbody tr td {
+    word-wrap: break-word;
+    
+}
+
+.video-table thead tr {
+    border-bottom: solid 1px #222;
+}
+.video-table thead tr th{    
+    padding-bottom: 13px;
 }
 
 #filter1 {
@@ -123,17 +143,41 @@ a {
 }
 
 div.link{
-    color:blue;
+    color:#167ac6;
     cursor: pointer;
     text-decoration: none;
     margin-bottom: 10px;
     display:block;
 }
 
+.link {
+    color:#167ac6;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.link:hover, a:hover {
+    color:#0c4a75;
+}    
+
+
+
+
 
 .mega{
     font-size: 100px;
 }
+
+.large {
+    font-size: 1.5em;
+    margin-left: 8px;
+}
+
+.block {
+    display:block;
+    width:100%;
+}
+
 
 .row .coll, thumbnail{
     display:inline;
@@ -153,8 +197,8 @@ div.link{
 /* drop box file upload */
  .dropbox {
     outline: 2px dashed grey; /* the dash box */
-    margin:20px;
-    width:80%;
+    margin:20px 0;
+    width:100%;
     outline-offset: 10px;
     background: lightcyan;
     color: dimgray;

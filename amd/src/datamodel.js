@@ -6,40 +6,8 @@ define(['/moodle/mod/videodatabase/amd/src/vfg.js'], function (VueFormGenerator)
             "data": {
                 "groups": [
                     {
-                        "legend": "Allgemeines",
-                        "fields": [
-                            {
-                                "type": "input",
-                                "inputType": "text",
-                                "label": "Titel",
-                                "model": "title",
-                                "featured": true,
-                                "required": true,
-                                "validator": VueFormGenerator.validators.string
-                            },
-                            {
-                                "type": "input",
-                                "inputType": "text",
-                                "label": "Beschreibung",
-                                "model": "description",
-                                "featured": true,
-                                "required": true,
-                                "min": 4,
-                                "validator": VueFormGenerator.validators.string
-                            },
-                            {
-                                "type": "input",
-                                "inputType": "text",
-                                "label": "Schlüsselwörter",
-                                "model": "tags",
-                                "featured": true,
-                                "required": true,
-                                "validator": VueFormGenerator.validators.string
-                            }
-                        ]
-                    },
-                    {
                         "legend": "Video",
+                        "styleClasses":"col-md-4",
                         "fields": [
                             {
                                 "type": "input",
@@ -79,83 +47,43 @@ define(['/moodle/mod/videodatabase/amd/src/vfg.js'], function (VueFormGenerator)
                         ]
                     },
                     {
-                        "legend": "Dublin Core Metadaten",
+                        "legend": "Allgemeines",
+                        "styleClasses": "col-md-12",
                         "fields": [
                             {
                                 "type": "input",
                                 "inputType": "text",
-                                "label": "Fach",
-                                "model": "subject",
-                                "validator": VueFormGenerator.validators.string
-                            },
-                            {
-                                "type": "input",
-                                "inputType": "text",
-                                "label": "Ersteller",
-                                "model": "Creator",
-                                "validator": VueFormGenerator.validators.string
-                            },
-                            {
-                                "type": "input",
-                                "inputType": "text",
-                                "label": "Herausgeber",
-                                "model": "publisher",
-                                "validator": VueFormGenerator.validators.string
-                            },
-                            {
-                                "type": "input",
-                                "inputType": "text",
-                                "label": "Institution",
-                                "model": "institution",
-                                "validator": VueFormGenerator.validators.string
-                            },
-                            {
-                                "type": "input",
-                                "inputType": "text",
-                                "label": "Quelle",
-                                "model": "source",
+                                "label": "Titel",
+                                "model": "title",
                                 "featured": true,
+                                "required": true,
                                 "validator": VueFormGenerator.validators.string
                             },
                             {
                                 "type": "input",
                                 "inputType": "text",
-                                "label": "Sprache",
-                                "model": "language",
+                                "label": "Beschreibung",
+                                "model": "description",
+                                "featured": true,
+                                "required": true,
+                                "min": 4,
                                 "validator": VueFormGenerator.validators.string
                             },
                             {
                                 "type": "input",
                                 "inputType": "text",
-                                "label": "Lizenz",
-                                "model": "license",
-                                "validator": VueFormGenerator.validators.string
-                            },
-                            {
-                                "type": "input",
-                                "inputType": "text",
-                                "label": "Urheberrechte",
-                                "model": "rights",
-                                "validator": VueFormGenerator.validators.string
-                            },
-                            {
-                                "type": "input",
-                                "inputType": "text",
-                                "label": "Relation",
-                                "model": "relation",
-                                "validator": VueFormGenerator.validators.string
-                            },
-                            {
-                                "type": "input",
-                                "inputType": "text",
-                                "label": "Bereich",
-                                "model": "coverage",
+                                "label": "Schlüsselwörter",
+                                "model": "tags",
+                                "featured": true,
+                                "required": true,
                                 "validator": VueFormGenerator.validators.string
                             }
                         ]
                     },
+                   
                     {
                         "legend": "Didaktische Einordnung",
+                        "styleClasses": "col-md-12",
                         "fields": [
                             {
                                 "model": "sports",
@@ -304,9 +232,87 @@ define(['/moodle/mod/videodatabase/amd/src/vfg.js'], function (VueFormGenerator)
                                 ]
                             }
                         ]
+                    },
+                    {
+                        "legend": "Dublin Core Metadaten",
+                        "styleClasses": "col-md-12",
+                        "fields": [
+                            {
+                                "type": "input",
+                                "inputType": "text",
+                                "label": "Fach",
+                                "model": "subject",
+                                "validator": VueFormGenerator.validators.string
+                            },
+                            {
+                                "type": "input",
+                                "inputType": "text",
+                                "label": "Ersteller",
+                                "model": "Creator",
+                                "validator": VueFormGenerator.validators.string
+                            },
+                            {
+                                "type": "input",
+                                "inputType": "text",
+                                "label": "Herausgeber",
+                                "model": "publisher",
+                                "validator": VueFormGenerator.validators.string
+                            },
+                            {
+                                "type": "input",
+                                "inputType": "text",
+                                "label": "Institution",
+                                "model": "institution",
+                                "validator": VueFormGenerator.validators.string
+                            },
+                            {
+                                "type": "input",
+                                "inputType": "text",
+                                "label": "Quelle",
+                                "model": "source",
+                                "featured": true,
+                                "validator": VueFormGenerator.validators.string
+                            },
+                            {
+                                "type": "input",
+                                "inputType": "text",
+                                "label": "Sprache",
+                                "model": "language",
+                                "validator": VueFormGenerator.validators.string
+                            },
+                            {
+                                "type": "input",
+                                "inputType": "text",
+                                "label": "Lizenz",
+                                "model": "license",
+                                "validator": VueFormGenerator.validators.string
+                            },
+                            {
+                                "type": "input",
+                                "inputType": "text",
+                                "label": "Urheberrechte",
+                                "model": "rights",
+                                "validator": VueFormGenerator.validators.string
+                            },
+                            {
+                                "type": "input",
+                                "inputType": "text",
+                                "label": "Relation",
+                                "model": "relation",
+                                "validator": VueFormGenerator.validators.string
+                            },
+                            {
+                                "type": "input",
+                                "inputType": "text",
+                                "label": "Bereich",
+                                "model": "coverage",
+                                "validator": VueFormGenerator.validators.string
+                            }
+                        ]
                     }
                 ]
             }
         }
+        
     };
 });
