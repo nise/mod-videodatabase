@@ -118,7 +118,7 @@ define(['/moodle/mod/videodatabase/amd/src/vfg.js'], function (VueFormGenerator)
                                 ]
                             },
                             {
-                                "model": "class",
+                                "model": "courselevel",
                                 "label": "Lerngruppe",
                                 "type": "checklist",
                                 "multi": true,
@@ -169,7 +169,7 @@ define(['/moodle/mod/videodatabase/amd/src/vfg.js'], function (VueFormGenerator)
                                 ]
                             },
                             {
-                                "model": "compentencies",
+                                "model": "competencies",
                                 "label": "Fachbezogene Kompetenzen",
                                 "type": "checklist",
                                 "multi": true,
@@ -216,7 +216,7 @@ define(['/moodle/mod/videodatabase/amd/src/vfg.js'], function (VueFormGenerator)
                             },
                             {
                                 "model": "perspectives",
-                                "label": "Pädagogische Perspektiven",
+                                "label": "Päd. Perspektiven",
                                 "type": "checklist",
                                 listBox: true,
                                 "multi": true,

@@ -52,6 +52,63 @@ function xmldb_videodatabase_upgrade($oldversion) {
     $dbman = $DB->get_manager();
 
 
+    //if ($oldversion < 2017064102) {
+
+// Rename field compentencies on table videodatabase_videos to NEWNAMEGOESHERE.
+        $table = new xmldb_table('videodatabase_videos');
+        $field = new xmldb_field('compentencies', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'timemodified');
+
+        // Launch rename field compentencies.
+        $dbman->rename_field($table, $field, 'competencies');
+
+        // Videodatabase savepoint reached.
+        upgrade_mod_savepoint(true, 2017064103, 'videodatabase');
+    //}
+       
+       
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+      if ($oldversion < 0) {// 2017064101
+
+        // Define field id to be added to videodatabase_annotations.
+        $table = new xmldb_table('videodatabase_annotations');
+        $field = new xmldb_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null, null);
+
+        // Conditionally launch add field id.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Videodatabase savepoint reached.
+        upgrade_mod_savepoint(true, 2017064101, 'videodatabase');
+
+
+        /*******************/
+          
+        // Define field id to be added to videodatabase_videos.
+        $table = new xmldb_table('videodatabase_videos');
+        $field = new xmldb_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null, null);
+
+        // Conditionally launch add field id.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Videodatabase savepoint reached.
+        upgrade_mod_savepoint(true, 2017064101, 'videodatabase');
+    }
     // Moodle v2.2.0 release upgrade line
     // Put any upgrade step following this
 

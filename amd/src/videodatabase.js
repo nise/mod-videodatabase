@@ -19,6 +19,7 @@ define([
     '/moodle/mod/videodatabase/amd/src/vue.js',
     '/moodle/mod/videodatabase/amd/src/vue-router.js',
     '/moodle/mod/videodatabase/amd/src/vuex.js',
+    //'/moodle/mod/videodatabase/amd/src/vue-uniq-ids.min.js',
     '/moodle/mod/videodatabase/amd/src/vfg.js',
     '/moodle/mod/videodatabase/amd/src/axios.min.js',
     '/moodle/mod/videodatabase/amd/src/datamodel.js',
@@ -26,8 +27,8 @@ define([
     //'/moodle/mod/videodatabase/amd/src/dropzone.js',
     //'/moodle/mod/videodatabase/amd/src/vue2Dropzone.js',
     // '/moodle/mod/videodatabase/amd/src/vue-paginate.min.js',
-
-    'js/vi-two.js'
+    //'js/vi-two-lib.js',
+    'js/vi2.main.js'
 ],
     function (
         $,
@@ -36,12 +37,14 @@ define([
         Vue,
         VueRouter,
         Vuex,
+       // VueUniqIds,
         VueFormGenerator,
         Axios,
         Datamodel,
         // dropzone, 
         //  Vue2Dropzone,
-        //VuePaginate, 
+        //VuePaginate,
+      //  Vi2Lib, 
         Vi2
     ) {
 
@@ -105,6 +108,7 @@ define([
             Vue.use(Vuex);
             Vue.use(VueRouter);
             Vue.use(VueFormGenerator);
+            //Vue.use(VueUniqIds);
             
             //Vue.use(Vue2Dropzone);
             //Vue.use(VuePaginate); // vue-bs-pagination
@@ -141,7 +145,7 @@ define([
                 },
                 mutations: {
                     getFormDataModel(){ 
-                        console.log('mutatio')
+                        //console.log('mutatio')
                         /*$.ajax({
                             method: 'GET',
                             url: '/moodle/mod/videodatabase/data/category-schema-de.json',
@@ -161,14 +165,6 @@ define([
                     },
                     setCurrentVideo(state, id) {
                         state.currentVideo = id;
-                    },
-                    // tests
-                    mouseOver(state, id) {
-                        state.mouse[id] = 1;
-                        console.log(id + '__' + state.mouse[id]);
-                    },
-                    mouseOut(state, id) {
-                        state.mouse[id] = 0;
                     }
                 }
             });
@@ -177,26 +173,23 @@ define([
             //console.log(store.state.videos[165].title);
             //store.commit('increment', 10);
             // console.log(store.getters.videoById(165));
-
-            store.commit('getFormDataModel');
+            //store.commit('getFormDataModel');
 
            
-
             const Video = //new Vue.component('videoplayer', 
                 {
                     template: '#app-video-template',//'<div>Video {{ $route.params.id }}: {{ video.title }}</div>', 
                     data: function () {
                         return {
-                            video_selector: 'seq'
+                            vi2_player_id: 'vi2-1',
+                            video_selector: 'seq',
+                            video_overlay_selector: 'overlay'
                         }
                     },
-                    computed: {
+                    computed: { 
                         video() {
                             var id = this.$route.params.id;
-                            if (id === undefined){
-                                id=1;
-                            }
-                            var video_data = store.getters.videoById( id );
+                           var video_data = store.getters.videoById( id );
                             if (video_data !== undefined ){
                                 video_data.metadata = [];
                                 video_data.metadata[0] = {};
@@ -205,17 +198,19 @@ define([
                                 video_data.metadata[0].abstract = video_data['description'];
                                 video_data.metadata[0].thumbnail = "still-" + video_data.filename.replace('.mp4', '_comp.jpg');
                                 video_data.video = '/videos/' + video_data.filename.replace('.mp4', '.webm');
-
-                                //startVi2(video_data);
-
                                 return video_data;//store.getters.videoById( this.$route.params.id );
                             }else{
-                                return null;
+                                //return null;
                             }
                         }
                     },
                     updated() {
-                        var video_data = store.getters.videoById(this.$route.params.id);
+                       var id = this.$route.params.id;
+                        if (id === undefined) {
+                            id = 1;
+                        }
+                        var video_data = store.getters.videoById(id);
+                        
                         if (video_data !== undefined) {
                             video_data.metadata = [];
                             video_data.metadata[0] = {};
@@ -224,11 +219,27 @@ define([
                             video_data.metadata[0].abstract = video_data['description'];
                             video_data.metadata[0].thumbnail = "still-" + video_data.filename.replace('.mp4', '_comp.jpg');
                             video_data.video = '/videos/' + video_data.filename.replace('.mp4', '.webm');
-                            //video_data.id = 'test';
-                            startVi2(video_data);
-                            //console.log(window.vi2.observer.current_stream);
-                            //console.log(window.vi2.db.json_data);
-                        }    
+                            Vi2.update(video_data);
+                        }
+                        //return video_data;    
+                    },
+                    mounted() { 
+                        var id = this.$route.params.id;
+                        if (id === undefined) {
+                            id = 1;
+                        }
+                        var video_data = store.getters.videoById(id);
+
+                        if (video_data !== undefined) {
+                            video_data.metadata = [];
+                            video_data.metadata[0] = {};
+                            video_data.metadata[0].author = video_data['contributor'];
+                            video_data.metadata[0].title = video_data['title'];
+                            video_data.metadata[0].abstract = video_data['description'];
+                            video_data.metadata[0].thumbnail = "still-" + video_data.filename.replace('.mp4', '_comp.jpg');
+                            video_data.video = '/videos/' + video_data.filename.replace('.mp4', '.webm');
+                            Vi2.start(video_data);
+                        }   
                     }
                 };
 
@@ -237,9 +248,7 @@ define([
 
             const STATUS_INITIAL = 0, STATUS_SAVING = 1, STATUS_SUCCESS = 2, STATUS_FAILED = 3;
 
-            var UploadForm = //new Vue(
-                {
-                    //el: '#form-upload',
+            var UploadForm = {
                     template: '#form-upload-template',
                     data: function () {
                         return {
@@ -440,7 +449,7 @@ define([
                     mouseOverCheck: '',
                     show: false,
                     isEditor: true,
-                    listView: true
+                    listView: false
                 },
                 computed: {
                     columnObject: function () { //console.log(JSON.stringify(this.videos))
@@ -463,11 +472,22 @@ define([
                     },
                     videoItemClass: function (id) {
                         var video = store.getters.videoById(id);
-
+                        
+                        var ffn = function(key){
+                            var arr = video[key].split(';');
+                            var out ='';
+                            for(var i=0, len=arr.length;i<len;i++){
+                                out += ' '+key+'-'+arr[i].replace(/\ /g, '');
+                            }
+                            return out;
+                        };
                         return [
                             // multi
-                            video['klasse'].split(' ').join('class-'),
-                            //'competencies-' + video.compentencies.replace(/\ /g, ''),
+                            ffn('courselevel'),
+                            ffn('competencies'),
+                            ffn('activities'),
+                            ffn('perspectives'),
+                            
                             // single
                             'actors-' + video.actors.replace(/\//g, ''),
                             'location-' + video.location,
@@ -487,20 +507,23 @@ define([
         //get_ws('videodatabase_video', { 'courseid': 2, 'videoid':165 }, con);
 
 
-
-
+        function initFilter() {
+            
+        }
 
 
         /**
          * Filter
          */
-        $(document).ready(function () {
+        //$(document).ready(function () {
             // render filter
+        $(function () {
+            
+            
             var arr = [];
             $.each(datamodel.data.groups[2].fields, function (j, val) {
                 if (val.filterable) {
                     arr = [
-                        // '<label>'+ val.name +'</label>',
                         '<select id="filter_' + val.model + '" class="sel2 ' + (val.multi ? 'multi-filter' : 'single-filter') + '" ' + (val.multi ? ' multiple="multiple" ' : '') + '>',
                         '<option class="option-head" value="" selected>' + val.label + ' (alle)</option>'
                     ];
@@ -511,12 +534,10 @@ define([
                     $('#filter1').append(arr.join(''));
                 }
             });
-
             var filters = {};
 
-
-            $('.single-filter').change(function () {
-                //console.log('__'+this.value)
+            // single filter
+            $(document.body).on('change', '.single-filter', function () {  
                 var filter_id = $(this).attr('id').replace('filter_', '');
                 var value = this.value;
                 if (value === '') {
@@ -528,10 +549,10 @@ define([
                 //console.log(filters[filter_id]);
                 applyFilter();
             });
-
-
+                
+            
             // multi
-            $('.multi-filter').change(function () { // alert($(this).attr('))
+            $(document.body).on('change', '.multi-filter', function () {  
                 var filter_id = $(this).attr('id').replace('filter_', '');
                 // reset
                 $(this).find('option').each(function (i, val) {
@@ -544,13 +565,20 @@ define([
                 applyFilter();
             });
 
+            //
             function applyFilter() {
-                var filter_str = 'div.video-item';
+                var 
+                    filter_str = 'div.video-item'
+                    selected = []
+                    ;
+
                 $('.video-item').hide();
+                console.log(filters);
                 // apply logical AND 
                 for (var f in filters) {
                     if (filters.hasOwnProperty(f) && filters[f] !== 'null' && filters[f] !== '') {
                         filter_str += '.' + filters[f] + '';
+                        $('#videomanager').find('.'+filters[f]).show();
                     }
                 }
                 //console.log(filter_str)
@@ -558,6 +586,7 @@ define([
             }
 
         }); // end documents ready
+
+
         return Filters;
-    }); // end define
-    /* jshint ignore:end */
+    }); 
