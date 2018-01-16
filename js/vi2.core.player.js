@@ -276,7 +276,7 @@ define([
                 for (var i = 0, len = this.player_plugins.length; i < len; i++) {
                     require([this.player_plugins[i].path], function (Plugin) {
                         var options = {};//plugins[i]['options'] !== undefined ? plugins[i].options : {};
-                        var p = new Plugin(); 
+                        var p = new Plugin('#video1'); 
                         vi2.observer.addWidget( p );
                     });
                 }
@@ -628,7 +628,7 @@ define([
                 return this.video.duration; //$(this.options.selector).attr('duration');
             },
 
-            
+
             /* return current playback time or set the time */
             currentTime: function (x) {
                 if (x === undefined) {

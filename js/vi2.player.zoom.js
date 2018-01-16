@@ -3,11 +3,9 @@
 * author: niels.seidel@nise81.com
 * license: MIT License
 * description: Allows to zoom the video in and out.
-* dependencies:
-*  - jquery.panzoom.js
 * todo:
 *  - needs event logging
-*  - diaplay zoom level
+*  - reset position after using pan and zoom out.
 */
 
 
@@ -39,6 +37,7 @@ define(['jquery', 'js/jquery.panzoom.min.js'], function ($, PanZoom) {
             steps: 0.25
         },
 
+        element:'',
         scaledisplay: null,
 
         /**
@@ -95,7 +94,7 @@ define(['jquery', 'js/jquery.panzoom.min.js'], function ($, PanZoom) {
             }
 
             // start panzoom with the given options
-            var panzoom = $( vi2.observer.options.videoSelector).panzoom({
+            this.element = $( vi2.observer.options.videoSelector).panzoom({
                 cursor: "move",
                 increment: this.options.steps,
                 minScale: this.options.min,
@@ -111,27 +110,21 @@ define(['jquery', 'js/jquery.panzoom.min.js'], function ($, PanZoom) {
                 focal: {
                     clientX: 108,
                     clientY: 132
-                },
-                $panzoomzoom : function(e){
-                    console.log(e);
                 }
             });
-
-            panzoom.on("change", function (e) {
-                console.log(e);
-            });
-            
-            
+        
         },
 
 
         /**
-         * 
+         * Displays a short text about the current zoom level 
          */
-        showScale: function(value){
+        showScale: function () { 
+            var num = this.element.panzoom("getMatrix")[0];
+            num = Math.round(4*num)/4;
             var _this = this;
             this.scaledisplay
-                .text(value+'x')
+                .text(num+'x')
                 .addClass('vi2-zoom-flash')
                 .show()
                 ;
