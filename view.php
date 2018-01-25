@@ -303,11 +303,13 @@ echo '
 	<router-view></router-view>
 	</div>	
 	<div class="page-item">
-		<router-link v-if="isEditor" class="title" :to="{ path: \'/videos/new\'}">
-			<span title="Video hinzufügen" class="fa fa-plus large right"></span>	
-		</router-link>
-		<span @click="setTableView()" title="" class="fa fa-th large right link"></span>
-		<span @click="setListView()" title="" class="fa fa-list large right link"></span>
+		<div class="page-controls">
+			<router-link v-if="isEditor" class="title" :to="{ path: \'/videos/new\'}">
+				<span title="Video hinzufügen" class="fa fa-plus large right"></span>	
+			</router-link>
+			<span @click="setTableView()" title="" class="fa fa-th large right link"></span>
+			<span @click="setListView()" title="" class="fa fa-list large right link"></span>
+		</div>
 		<h1>Videos</h1>
 		<div>
 			<div id="videomanager" class="video-manager">
@@ -315,7 +317,7 @@ echo '
 						<table class="video-table table-sm table-striped table-hover table-responsive">
 							<thead>
 								<tr>
-									<th v-if="isEditor"></th>
+									<th></th>
 									<th>Titel</th>
 									<th>Sportart</th>
 									<th>Klassenstufe</th>
@@ -329,13 +331,13 @@ echo '
 								</tr>
 							</thead>
 							<tbody>
-								<tr
-									v-for="video in videos" 
-									>
-									<td v-if="isEditor">
-										<router-link v-if="isEditor" class="title" :to="{ path: \'/videos/\' + video.id + \'/edit\'}">
-											<span class="fa fa-pencil right"></span>
-										</router-link>
+								<tr v-for="video in videos">
+									<td>
+										<div v-if="isEditor">
+											<router-link v-if="isEditor" class="" :to="{ path: \'/videos/\' + video.id + \'/edit\'}">
+												<span class="fa fa-pencil"></span>
+											</router-link>
+										</div>
 									</td>
 									<td>
 										<router-link class="title" :to="{ path: \'/videos/\' + video.id + \'/view\'}">

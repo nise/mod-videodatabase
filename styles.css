@@ -30,7 +30,11 @@ select option:disabled, .option-head {
     display:block;
 }
 
-.container-fluid {
+#videomanager .container-fluid {
+    margin-right:0;
+    margin-left:0;
+    padding-right:0;
+    padding-left:0;
 }
 
 .sorting_asc:after {
@@ -85,6 +89,7 @@ display:block;
 
 .video-table tbody tr td {
     word-wrap: break-word;
+    vertical-align: top;
     
 }
 
@@ -167,7 +172,9 @@ div.link{
 
 
 
-
+.page-controls{
+    margin-right:10px;
+}
 
 .mega{
     font-size: 100px;
@@ -175,7 +182,7 @@ div.link{
 
 .large {
     font-size: 1.5em;
-    margin-left: 8px;
+    margin-right:2px;
 }
 
 .block {
@@ -278,6 +285,94 @@ div.link{
     font-size:0.8em !important;
 }
 
+
+
+
+@media all and (max-width: 575px) {
+
+    body{
+        font-size:0.9em;
+    }
+
+    h1{
+        font-size:1.4em;
+        font-weight:bold;
+    }
+
+    h2{
+        font-size:1.2em;
+    }
+
+    h3{
+        font-size:1em;
+    }
+
+    h4, .video-item .title{
+        font-size:0.9em;
+    }
+
+    .video-item {
+        padding:0 0px 18px 0 !important;
+    }
+
+    #nav-drawer, #page-footer, #page-wrapper, #page-mod-videodatabase-view {
+        width:98% !important;
+    }
+    .col-xs-12{
+        padding-right:4px;
+        padding-left:4px;
+    }
+
+    .card-block{
+        padding:0;
+    }
+
+    table, thead, tbody, th, td, tr { 
+		display: block; 
+	}
+	
+	/* Hide table headers (but not display: none;, for accessibility) */
+	thead tr { 
+		position: absolute;
+		top: -9999px;
+		left: -9999px;
+	}
+	
+	tr { border: none; }
+	
+	td { 
+		/* Behave  like a "row" */
+		border: none;
+		border-bottom: 1px solid #eee; 
+		position: relative;
+        padding-left: 50% !important;
+        min-height:20px; 
+	}
+	
+	td:before { 
+		/* Now like a table header */
+		position: absolute;
+		/* Top/left values mimic padding */
+		top: 3px;
+		left: 4px;
+		width: 45%; 
+		padding-right: 10px; 
+		white-space: nowrap;
+	}
+	
+	/*
+	Label the data
+	*/
+	td:nth-of-type(2):before { content: "Titel"; }
+	td:nth-of-type(3):before { content: "Sportart"; }
+	td:nth-of-type(4):before { content: "Klasse"; }
+	td:nth-of-type(5):before { content: "Fachbez. Komp."; }
+	td:nth-of-type(6):before { content: "Bewegungsfelder"; }
+	td:nth-of-type(7):before { content: "Aktivitäten"; }
+	td:nth-of-type(8):before { content: "Akteure"; }
+	td:nth-of-type(9):before { content: "Päd. Persp."; }
+	td:nth-of-type(10):before { content: "Ort"; }
+}
 
 
 
