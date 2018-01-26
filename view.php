@@ -289,8 +289,8 @@ echo '
 echo '
 <div v-cloak id="form-submit-template">
 	<div class="col-md-12">
-		<input v-on:click="submitForm" type="submit" value="speichern" />
-		<a class="right" href="#/videos">cancel</a>
+		<button v-on:click="submitForm" class="btn btn-primary">Speichern</button>
+		<a class="btn btn-link" href="#/videos">cancel</a>
 	</div>
 </div>
 ';
@@ -299,8 +299,8 @@ echo '
 // video manager
 echo '
 <div id="app-videomanager" v-cloak>
-	<div class="page-item">
-	<router-view></router-view>
+	<div class="page-item row">
+		<router-view></router-view>
 	</div>	
 	<div class="page-item">
 		<div class="page-controls">

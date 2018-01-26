@@ -5,22 +5,13 @@ defined('MOODLE_INTERNAL') || die;
 require_once($CFG->libdir . '/externallib.php');
 //require_once($CFG->dirroot . '/mod/chat/lib.php');
 
-  /**
-     * Trigger the course module viewed event and update the module completion status.
-     *
-     * @return array of warnings and status result
-     * @since Moodle 3.0
-     * @throws moodle_exception
-     */
+
+/**
+ * Get the metadata of videos that are related to a course
+ */
 class mod_videodatabase_videos_external extends external_api {
 
-
-    // get all videos
-    // get all comments
-    // get comments of video
-    // save comment
-    // https://www.npmjs.com/package/require-vuejs
-
+    
      public static function get_all_videos_parameters() {
         //  VALUE_REQUIRED, VALUE_OPTIONAL, or VALUE_DEFAULT. If not mentioned, a value is VALUE_REQUIRED 
         return new external_function_parameters(
@@ -50,45 +41,18 @@ class mod_videodatabase_videos_external extends external_api {
             //)
         );
     }
-    public static function get_all_videos() {
+    public static function get_all_videos($data) {
         global $CFG, $DB;
         $transaction = $DB->start_delegated_transaction(); 
         $table = "videodatabase_videos";
-        $res = $DB->get_records($table, $conditions = null, $sort = '', $fields = '*', $limitfrom = 0, $limitnum = 0);
+        $res = $DB->get_records($table); //, array('courseid'=>$data['courseid']));
         $transaction->allow_commit();
         return array('data'=> json_encode($res));
     }
 }
 
 
-class mod_videodatabase_get_video_external extends external_api {
-    public static function get_video_parameters() {
-        return new external_function_parameters(
-            array(
-                'data' => 
-                    new external_single_structure(
-                        array(
-                            'courseid' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL),
-                            'videoid' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL)
-                        )
-                )
-            )
-        );
-    }
-    public static function get_video_returns() {
-        return new external_single_structure(
-                array( 'data' => new external_value(PARAM_RAW, 'data') )
-        );
-    }
-    public static function get_video() {
-        global $CFG, $DB;
-        $transaction = $DB->start_delegated_transaction(); //If an exception is thrown in the below code, all DB queries in this code will be rollback.
-        $table = "videodatabase_videos";
-        $res = $DB->get_records($table, array('id'=>165 ), $sort = '', $fields = '*', $limitfrom = 0, $limitnum = 0);
-        $transaction->allow_commit();
-        return array('data'=> json_encode($res));
-    } 
-}
+
 
 
 /**
@@ -101,8 +65,9 @@ class mod_videodatabase_set_video_external extends external_api {
                 'data' => 
                     new external_single_structure(
                         array(
-                            'courseid' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL),
-                            'videoid' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL)
+                            //'courseid' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL),
+                            'id' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL),
+                            'data' => new external_value(PARAM_RAW, 'video data', VALUE_OPTIONAL)
                         )
                 )
             )
@@ -113,16 +78,21 @@ class mod_videodatabase_set_video_external extends external_api {
                 array( 'data' => new external_value(PARAM_RAW, 'data') )
         );
     }
-    public static function set_video() {
+    public static function set_video($data) {
         global $CFG, $DB;
         $transaction = $DB->start_delegated_transaction(); //If an exception is thrown in the below code, all DB queries in this code will be rollback.
         $table = "videodatabase_videos";
-        $res = $DB->update_records($table, array('id'=>165 ), $sort = '', $fields = '*', $limitfrom = 0, $limitnum = 0);
+        $metadata = json_decode($data['data']);
+        $res = $DB->update_record($table, $metadata);
         $transaction->allow_commit();
-        return array('data'=> json_encode($res));
+        return array('data'=> '{ "status":"ok", "msg":"Successfully saved meta data of video with id '.$metadata->id.'."}');
     } 
 }
 
+
+/**
+ * Get or set video comments
+ */
 class mod_videodatabase_comments_external extends external_api {
     public static function get_all_comments_parameters() {
         return new external_function_parameters(
@@ -179,5 +149,43 @@ class mod_videodatabase_video_comments_external extends external_api {
         return array('data'=> json_encode($res));
     }        
 } 
+
+
+
+
+
+/**
+ * NOT NEEDED ?
+ */
+
+
+class mod_videodatabase_get_video_external extends external_api {
+    public static function get_video_parameters() {
+        return new external_function_parameters(
+            array(
+                'data' => 
+                    new external_single_structure(
+                        array(
+                            'courseid' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL),
+                            'videoid' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL)
+                        )
+                )
+            )
+        );
+    }
+    public static function get_video_returns() {
+        return new external_single_structure(
+                array( 'data' => new external_value(PARAM_RAW, 'data') )
+        );
+    }
+    public static function get_video() {
+        global $CFG, $DB;
+        $transaction = $DB->start_delegated_transaction(); //If an exception is thrown in the below code, all DB queries in this code will be rollback.
+        $table = "videodatabase_videos";
+        $res = $DB->get_records($table, array('id'=>165 ), $sort = '', $fields = '*', $limitfrom = 0, $limitnum = 0);
+        $transaction->allow_commit();
+        return array('data'=> json_encode($res));
+    } 
+}
 
 ?>

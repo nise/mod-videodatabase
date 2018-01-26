@@ -25,10 +25,6 @@ select option:disabled, .option-head {
   display: none;
 }
 
-.page-item{
-    margin-bottom:100px;
-    display:block;
-}
 
 #videomanager .container-fluid {
     margin-right:0;
@@ -67,9 +63,28 @@ input {
     margin: 0; 
 }
 
-.vue-form-generator .form-control:not([class*=" col-"]) {
-    min-width:200px;
+.vue-form-generator .form-control:not([class*=" col-"]), select.combobox, .vue-form-generator .combobox {
+    width:200px;
+    max-width:300px;
 }
+
+ select.combobox{
+     padding:6px 12px;
+     height: 20px;
+ }
+
+.vue-form-generator .form-control {
+     padding:0px 12px !important;
+     margin:0;
+     min-height: 30px;
+     
+ }
+
+  .vue-form-generator .field-checklist .combobox .dropList{
+      margin-top:4px;
+  }
+
+    
 
 .list-row > label > input[type="checkbox"] {
     margin-right:10px !important;
@@ -83,9 +98,7 @@ display:block;
 /*border:solid 1px red;*/
 }
 
-.video-table {
-    
-}
+
 
 .video-table tbody tr td {
     word-wrap: break-word;
@@ -205,6 +218,14 @@ div.link{
 [v-cloak] {
     display:none;
 }
+
+.page-item {
+    margin-bottom:50px;
+    margin-top:50px;
+    display:block;
+    clear:both;
+}
+
 
 /* drop box file upload */
  .dropbox {

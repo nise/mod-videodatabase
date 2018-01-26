@@ -86,12 +86,12 @@ define([
                 },
                 dataType: "json"
             })
-                .done(function (msg) {
-                    cb(msg);
-                })
-                .fail(function (data) {
-                    console.log(data);
-                });
+            .done(function (msg) {
+                cb(msg);
+            })
+            .fail(function (data) {
+                console.log(data);
+            });
         }
 
 
@@ -100,7 +100,8 @@ define([
          * @param {*} msg 
          */
         function con(msg) {
-            //console.log(JSON.parse(msg.data)['165'].title);
+            console.log(msg.data);
+
             var data = JSON.parse(msg.data);
 
 
@@ -406,15 +407,18 @@ define([
                 }
             };
 
+            
             const SubmitForm = {
                 template: '#form-submit-template',
                 methods: {
                     submitForm() {
-                        get_ws('videodatabase_store_video', "POST", { id: store.getters.currentVideoData() }, this.response);
-                        console.log(store.getters.currentVideoData().title);
+                        get_ws('videodatabase_store_video', "POST", {
+                            'id': store.getters.currentVideoData().id,
+                            'data': JSON.stringify( store.getters.currentVideoData() )
+                        }, this.response);
                     },
                     response(res) {
-                        console(res);
+                        console.log(res);
                     }
 
                 }
@@ -518,7 +522,7 @@ define([
         // render filter
         $(function () {
 
-            // xxx remoce for production
+            // xxx remove for production
             var overflowing = [];
             jQuery(':not(script)').filter(function () {
                 return jQuery(this).width() > jQuery(window).width();
@@ -589,7 +593,7 @@ define([
              * 
              */
             function applyFilter() {
-                
+
                 var contains = function (obj, arr2) {
                     var val = false;
                     Object.keys(obj).forEach(function (n) {

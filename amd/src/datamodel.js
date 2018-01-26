@@ -7,7 +7,7 @@ define(['/moodle/mod/videodatabase/amd/src/vfg.js'], function (VueFormGenerator)
                 "groups": [
                     {
                         "legend": "Video",
-                        "styleClasses":"col-md-4",
+                        "styleClasses":"col-md-12",
                         "fields": [
                             {
                                 "type": "input",
