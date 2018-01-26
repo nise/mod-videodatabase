@@ -6,14 +6,14 @@ define([
 	'js/vi2.core.database.js',
 	'js/vi2.core.log.js',
 	'js/vi2.core.utils.js'
-], function (
-	$,
-	inherit,
-	Observer,
-	Database,
-	Log,
-	Utils
-) {
+	], function (
+		$,
+		inherit,
+		Observer,
+		Database,
+		Log,
+		Utils
+	) {
 
 		var
 			vi2 = {}, // global variable				
@@ -28,26 +28,27 @@ define([
 			vi2.db = db;
 			vi2.dom = "#vi2";
 			var videoData = vi2.db.getStreamById('test');
-			
+
 			var viLog = new Vi2.Log({ logger_path: '/log' });
 			$(this).bind('log', function (e, msg) { viLog.add(msg); });
 
 			vi2.utils = new Vi2.Utils();
-			
-			vi2.observer = new Vi2.Observer( {
+
+			vi2.observer = new Vi2.Observer({
 				id: 'test',
 				embed: false,
 				selector: 'seq'
 			});
 			vi2.observer.init(0);
 			loadAnnotationPlugins()
-			vi2.observer.parse( videoData );
-			
+			vi2.observer.parse(videoData);
+
 		};
 
 
-		Vi2.start = function (video_data) {
+		Vi2.start = function (video_data, user_data) {
 			vi2.db = new Vi2.Database({ modus: 'native', data: video_data, path: '' }, 'window');
+			vi2.db.currentUser(user_data);
 			vi2.db.init(Vi2.initVideo);
 		};
 

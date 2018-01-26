@@ -5,7 +5,8 @@ define(['jquery'], function ($) {
     *		@param {object} options An object containing the parameters
     *		@param {function} call_back Function that will be called after relevant data is available 
     */
-    function Database(options, call_back) { 
+    function Database(options, call_back) {
+        vi2.db = this; 
         this.call_back = call_back;
         var _this = this;
         this.options = $.extend(this.options, options);
@@ -373,6 +374,15 @@ define(['jquery'], function ($) {
             return false;
         },
 
+
+        theCurrentuser: {},
+        currentUser: function(user){
+            if(user === undefined){
+                return this.theCurrentUser;
+            }else{
+                this.theCurrentUser = user;
+            }
+        },
 
         /**
     	

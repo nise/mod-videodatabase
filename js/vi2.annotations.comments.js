@@ -74,7 +74,7 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
         /*
         *
         **/
-        createMenu: function (commentData) {
+        createMenu: function (commentData) { console.log(vi2.db.currentUser())
             var _this = this;
             var tmp_t = -1;
 

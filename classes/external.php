@@ -10,44 +10,46 @@ require_once($CFG->libdir . '/externallib.php');
  * Get the metadata of videos that are related to a course
  */
 class mod_videodatabase_videos_external extends external_api {
-
     
      public static function get_all_videos_parameters() {
         //  VALUE_REQUIRED, VALUE_OPTIONAL, or VALUE_DEFAULT. If not mentioned, a value is VALUE_REQUIRED 
         return new external_function_parameters(
             array(
-                'data' => //new external_multiple_structure(
-                    new external_single_structure(
-                        array(
-                            'courseid' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL),
-                           // 'name' => new external_value(PARAM_TEXT, 'multilang compatible name, course unique', VALUE_OPTIONAL),
-                            //'description' => new external_value(PARAM_RAW, 'group description text', VALUE_OPTIONAL)
-                        )
-                    //)
+                'data' => new external_single_structure(
+                    array(
+                        'courseid' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL),
+                    )
                 )
             )
         );
     }
+
     public static function get_all_videos_returns() {
-        return //new external_multiple_structure(
-            new external_single_structure(
+        return new external_single_structure(
                 array(
-                    //'id' => new external_value(PARAM_INT, 'group record id'),
-                    //'courseid' => new external_value(PARAM_INT, 'id of course'),
-                    //'name' => new external_value(PARAM_TEXT, 'multilang compatible name, course unique'),
                     'data' => new external_value(PARAM_RAW, 'data'),
-                    //'enrolmentkey' => new external_value(PARAM_RAW, 'group enrol secret phrase'),
+                    'username' => new external_value(PARAM_TEXT, 'username'),
+                    'firstname' => new external_value(PARAM_TEXT, 'lastname'),
+                    'lastname' => new external_value(PARAM_TEXT, 'lastname'),
+                    'userimage' => new external_value(PARAM_TEXT, 'userimage')
                 )
-            //)
         );
     }
+
     public static function get_all_videos($data) {
-        global $CFG, $DB;
+        global $CFG, $DB, $USER;
         $transaction = $DB->start_delegated_transaction(); 
         $table = "videodatabase_videos";
-        $res = $DB->get_records($table); //, array('courseid'=>$data['courseid']));
+        $res = $DB->get_records($table); 
         $transaction->allow_commit();
-        return array('data'=> json_encode($res));
+        return array(
+            'data' => json_encode($res),
+            'username' => $USER->username,
+            'firstname' =>  $USER->firstname,
+            'lastname' =>  $USER->lastname,
+            'userid' =>  $USER->id,
+            'userimage' => '/moodle/user/pix.php/'.$USER->id.'/f1.jpg' 
+        );
     }
 }
 

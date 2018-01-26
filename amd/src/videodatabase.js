@@ -50,30 +50,16 @@ define([
 
         var Filters = function () { };
 
-        var datamodel = Datamodel();
+        var datamodel = new Datamodel();
 
+    
         /**
-         * AJAX
-         
-        var promises = ajax.call([
-            { methodname: 'core_get_string', args: { component: 'mod_videodatabase', stringid: 'pluginname' } },
-            { methodname: 'core_get_string', args: { component: 'mod_videodatabase', stringid: 'changerate' } }
-        ]);
-         
-        promises[0].done(function(response) {
-           console.log('mod_wiki/pluginname is' + response);
-        }).fail(function(ex) {
-           // do something with the exception
-        });
-         
-        promises[1].done(function(response) {
-           console.log('mod_wiki/changerate is ' + response);
-        }).fail(function(ex) {
-           // do something with the exception
-        });
-        */
-
-
+         * Obtains data from a moodle webservice
+         * @param {*} ws: Name of the web service 
+         * @param {*} method: GET or POST 
+         * @param {*} params: Parameter to transfer 
+         * @param {*} cb: Callback function 
+         */
         function get_ws(ws, method, params, cb) {
             $.ajax({
                 method: method,
@@ -100,11 +86,18 @@ define([
          * @param {*} msg 
          */
         function con(msg) {
-            console.log(msg.data);
+            //console.log(msg.username);
 
-            var data = JSON.parse(msg.data);
-
-
+            var 
+                data = JSON.parse(msg.data),
+                user = {
+                    username: msg.username,
+                    firstname: msg.firstname,
+                    lastname: msg.lastname,
+                    id: msg.userid,
+                    image: msg.userimage
+                };
+               
             // setup
             Vue.use(Vuex);
             Vue.use(VueRouter);
@@ -146,23 +139,7 @@ define([
                 },
                 mutations: {
                     getFormDataModel() {
-                        //console.log('mutatio')
-                        /*$.ajax({
-                            method: 'GET',
-                            url: '/moodle/mod/videodatabase/data/category-schema-de.json',
-                            dataType: "json",
-                            success: function (response) {
-                                //response = JSON.parse(response.data);
-                                console.log(response);
-                                //this.state.formDataModel = response.data;
-                            }, 
-                            error: function(e){
-                                
-                                console.log(e)
-                            }
-                        })
-                        */
-
+                        
                     },
                     setCurrentVideo(state, id) {
                         state.currentVideo = id;
@@ -239,7 +216,7 @@ define([
                             video_data.metadata[0].abstract = video_data['description'];
                             video_data.metadata[0].thumbnail = "still-" + video_data.filename.replace('.mp4', '_comp.jpg');
                             video_data.video = '/videos/' + video_data.filename.replace('.mp4', '.webm');
-                            Vi2.start(video_data);
+                            Vi2.start(video_data, user);
                         }
                     }
                 };
@@ -407,7 +384,7 @@ define([
                 }
             };
 
-            
+
             const SubmitForm = {
                 template: '#form-submit-template',
                 methods: {
