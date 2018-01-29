@@ -1,131 +1,98 @@
-/* 
-		*	name: Vi2.Log
-		*	author: niels.seidel@nise81.com
-		* license: MIT License
-		*	description: 
-		* dependencies:
-		*  - jquery-1.11.2.min.js
-		*  - jquery.inherit-1.1.1.js
-		*	todo:
-		 further options:
-			** standardisazion:
-			* https://sites.google.com/site/camschema/home
-			* http://sourceforge.net/p/role-project/svn/HEAD/tree/trunk/gadgets/cam_sjtu/CamInstance.js
-			* http://sourceforge.net/p/role-project/svn/HEAD/tree/trunk/gadgets/html5Video/videoGadget.xml
-			*/
+/**
+ * name: Vi2.Log
+ * author: niels.seidel@nise81.com
+ * license: MIT License
+ * description:
+ * todo:
+ * - validation of incomming messages (especially filter commas)
+ ** standardisazion:
+ * https://sites.google.com/site/camschema/home
+ * http://sourceforge.net/p/role-project/svn/HEAD/tree/trunk/gadgets/cam_sjtu/CamInstance.js
+ * http://sourceforge.net/p/role-project/svn/HEAD/tree/trunk/gadgets/html5Video/videoGadget.xml
+ */
+
 
 define(['jquery'], function ($) {
-    /** 
-    *	Input:
-    * 	client IP Adress via server side request
-    * 	client browser, operating system, 
-    * 	time in ms since 1970	
-    * 	clicks: tags, category, startpage, lecture 
-    * 	search terms
-    * 	video: seek on timeline, link clicks, seek2link, toc clicks
-    * 
-    * Output options:
-    * 	dom #debug
-    * 	log.txt via PHP
-    * 	console.log (default)
-    *
-    *		@constructs 
-    *		@param {object} options An object containing the parameters
-    *		@param {String} options.output Output channel that could be a 'logfile' or a 'debug' panel
-    *		@param {Selector} options.debug_selector If options.output is set to debug at following DOM selector will used to output log data
-    *		@param {String} options.logfile If options.output is set to logfile that option indicates the filename of the logfile
-    *		@param {String} options.parameter Its a comma separated list of data parameters that should be logged. Possible values are: time, ip, msg, user
-    *		@param {object} options.logger_path Relative path to a remote script that writes text messages to options.file
-    */
+
     function Log(options) {
-        var _this = this;
-        this.options = $.extend(this.options, options);
+        this.options = Object.assign(this.options, options);
         this.userAgent = this.getUserAgent();
-        // get client IP xxx 
-        /*if(this.options.logger_path !== '-1'){ 
-            $.ajax({
-                url: this.options.logger_path,
-                    success: function(res){ 
-                    _this.ip = res.ip;
-                },
-                dataType: 'json'
-            });
-        }				
-        // clear
-        $('#debug').html('');*/
-    };
+    }
 
     Log.prototype = {
         name: 'log',
         options: {
-            output: 'logfile',
-            debug_selector: '#debug',
+            output_type: 0, // 0: console.log(), 1: server log, 
             prefix: '',
-            logfile: 'log.txt',
-            parameter: 'time,ip,msg,user',
-            logger_path: '-1'//'../php/ip.php'
-        }, // output: debug/logfile
-        bucket: '',
+            logger_service_url: null,
+            logger_service_params: { "data": 0 }
+        },
+
         ip: '',
 
-        /* ... */
+        /**
+         * 
+         */
         init: function () { },
 
-        /* -- */
+
+        /**
+         * Adds a message to the log by constructing a log entry
+         */
         add: function (msg) {
-            //var logEntry = this.getLogTime()+', '+this.options.prefix+', '+this.getIP()+', '+msg+', '+this.getUserAgent()+'\n';
-
-            //var logEntry = this.getLogTime()+', '+vi2.currentVideo+', '+', '+vi2.currentGroup+', '+vi2.userData.id+', '+msg+', '+this.getUserAgent()+'\n'; 
-            //'clickcommentfromlist:'+val.name +' '+val.author+' '+ val.time 
             if (typeof msg === 'string') {
-                console.log('warning: uncaptured log emtrie: ' + msg);
+                console.log('warning: uncaptured log entrie: ' + msg);
                 return;
-            } else {
-                //console.log(msg.context);
             }
-            var
-                pt = vi2.observer.player.currentTime();
-            t = new Date()
-                ;
-            t = t.getTime();
 
-            var logEntry = {
-                utc: t,
-                //phase: 						vi2.current,
-                //date:  						String, 
-                //time:  						String, 
-                //group:  					vi2.currentGroup, 
-                user: vi2.userData.id,
-                //user_name:  			String,
-                //user_gender:			String,
-                //user_culture:			String,
-                //user_session:			Number,
-                video_id: vi2.currentVideo,
-                //video_file:  			String,
-                //video_length:  		String,
-                //video_language:  	String,
-                action: msg,  /*{
-					context: msg.context,
-					action: msg.action,
-					values: msg.values
-				},						*/
-                playback_time: pt === undefined ? -1 : pt,
-                user_agent: this.getUserAgent()
-                //ip: 							String,
+            var logEntry = {};
 
-            };
+            // add date and time information
+            var t = new Date();
+            logEntry.utc = t.getTime();
+            logEntry = this.getLogTime();
+            //logEntry.phase: 						vi2.current,
+            //logEntry.date:  						String,
+            //logEntry.time:  						String,
 
-            this.writeLog(logEntry);
+            // add user information
+            var user = vi2.db.currentUser();
+            if (user !== undefined) {
+                logEntry.user = user.id;
+                logEntry.user_name = user.username;
+                //logEntry.user_gender:			String,
+                //logEntry.user_culture:			String,
+                //logEntry.user_session:			Number,
+            }
 
-            return;
+            // add video and playback information
+            var pt = vi2.observer.player.currentTime();
+            logEntry.playback_time = pt === undefined ? -1 : pt;
+            logEntry.video_id = vi2.observer.player.currentVideoFile().replace(/,/g, '');
+            //logEntry.video_file: String,
+            //logEntry.video_length: String,
+            //logEntry.video_language: String,
+            logEntry.action = this.validate(msg); /* context: msg.context, action: msg.action, values: msg.values */
+
+            // add misc information
+            logEntry.user_agent = this.getUserAgent();
+            //group: vi2.currentGroup,
+
+            this.output(logEntry);
         },
 
-        /* -- */
-        getLogs: function () {
-            return this.bucket;
+
+        /**
+         * Validates the msg against illegal characters etc.
+         */
+        validate: function (msg) {
+            return msg;
         },
 
-        /* -- */
+
+        /**
+         * Returs structured time information
+         */
         getLogTime: function () {
             var date = new Date();
             var s = date.getSeconds();
@@ -134,7 +101,7 @@ define(['jquery'], function ($) {
             var d = date.getDate();
             var m = date.getMonth() + 1;
             var y = date.getFullYear();
-            //return date.getTime()+', ' + y +'-'+ (m<=9?'0'+m:m) +'-'+ (d<=9?'0'+d:d)+', '+(h<=9?'0'+h:h)+':'+(mi<=9?'0'+mi:mi)+':'+(s<=9?'0'+s:s)+':'+date.getMilliseconds();
+
             return {
                 utc: date.getTime(),
                 date: y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d),
@@ -142,25 +109,49 @@ define(['jquery'], function ($) {
             };
         },
 
-        /* -- */
-        getIP: function () {
-            return this.ip;
-        },
 
-        /* -- */
+        /**
+         * Returns the user agent.
+         * todo: This data could betters structured 
+         */
         getUserAgent: function () {
-            var ua = $.browser;
             return navigator.userAgent.replace(/,/g, ';');
         },
 
-        /* -- */
-        writeLog: function (entry) {
-            //$.post('php/log.php', { entry:entry });
-            if (this.options.logger_path !== '-1') {
-                $.post(this.options.logger_path, { data: entry }, function (data) { });
+
+        /**
+         * 
+         */
+        output: function (logEntry) {
+            // output
+            if (this.options.output_type === 0) {
+                console.log(logEntry);
+            } else if (this.options.output_type === 1) {
+                this.sendLog(logEntry);
             }
+        },
+
+        /**
+         * Makes an AJAX call to send the log data set to the server
+         */
+        sendLog: function (entry) {
+            this.options.logger_service_params.data = {data: JSON.stringify(entry) }; 
+            $.ajax({
+                method: 'POST',
+                url: this.options.logger_service_url,
+                data: this.options.logger_service_params,
+                dataType: "json"
+            })
+            .done(function (msg) {
+                console.log(msg);
+            })
+            .fail(function (msg) {
+                console.log(msg);
+            });
         }
 
     };
+
     return Log;
-}); // end class Log
+
+});

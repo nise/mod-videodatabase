@@ -29,9 +29,6 @@ define([
 			vi2.dom = "#vi2";
 			var videoData = vi2.db.getStreamById('test');
 
-			var viLog = new Vi2.Log({ logger_path: '/log' });
-			$(this).bind('log', function (e, msg) { viLog.add(msg); });
-
 			vi2.utils = new Vi2.Utils();
 
 			vi2.observer = new Vi2.Observer({
@@ -40,7 +37,18 @@ define([
 				selector: 'seq'
 			});
 			vi2.observer.init(0);
-			loadAnnotationPlugins()
+			var viLog = new Vi2.Log({ 
+				output_type: 1, // 0: console log: 1: server log
+				logger_service_url: '/moodle/webservice/rest/server.php',
+				logger_service_params: {
+					wstoken: 'e321c48e338fc44830cda07824833944',
+					moodlewsrestformat: 'json',
+					wsfunction: 'videodatabase_logging',
+					data: {}
+				}
+			}); 
+			vi2.observer.addWidget(viLog);
+			loadAnnotationPlugins();
 			vi2.observer.parse(videoData);
 
 		};

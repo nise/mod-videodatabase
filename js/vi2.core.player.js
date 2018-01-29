@@ -100,7 +100,7 @@ define([
 
         function Player(options) {
             vi2.observer.player = this;
-            this.options = $.extend(this.options, options);
+            this.options = Object.assign(this.options, options);
             //this.video = document.getElementById((this.options.selector).replace(/\#/, ''));
             this.supportedMime = this.detectVideoSupport();
             this.loadUI();
@@ -626,6 +626,13 @@ define([
             /* returns duration of video */
             duration: function () {
                 return this.video.duration; //$(this.options.selector).attr('duration');
+            },
+
+            /**
+             * Returns the current videofile
+             */
+            currentVideoFile: function(){
+                return this.url;
             },
 
 

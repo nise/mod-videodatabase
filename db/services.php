@@ -26,11 +26,19 @@ $functions = array(
                 'type'        => 'read',
                 'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
         ),
-         'videodatabase_store_video' => array( // store video metadata
+         'videodatabase_store_video' => array( 
                 'classname'   => 'mod_videodatabase_set_video_external',
                 'methodname'  => 'set_video',
                 'classpath'   => 'mod/videodatabase/classes/external.php',
                 'description' => 'Setter for a video',
+                'type'        => 'write',
+                'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
+        ),
+          'videodatabase_logging' => array( 
+                'classname'   => 'mod_videodatabase_logging',
+                'methodname'  => 'log',
+                'classpath'   => 'mod/videodatabase/classes/external.php',
+                'description' => 'Obtains log data from the client',
                 'type'        => 'write',
                 'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
         ),

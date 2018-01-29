@@ -31,6 +31,7 @@ class mod_videodatabase_videos_external extends external_api {
                     'username' => new external_value(PARAM_TEXT, 'username'),
                     'firstname' => new external_value(PARAM_TEXT, 'lastname'),
                     'lastname' => new external_value(PARAM_TEXT, 'lastname'),
+                    'userid' => new external_value(PARAM_INT, 'user id'),
                     'userimage' => new external_value(PARAM_TEXT, 'userimage')
                 )
         );
@@ -47,7 +48,7 @@ class mod_videodatabase_videos_external extends external_api {
             'username' => $USER->username,
             'firstname' =>  $USER->firstname,
             'lastname' =>  $USER->lastname,
-            'userid' =>  $USER->id,
+            'userid' =>  $USER->id, // or idnumber
             'userimage' => '/moodle/user/pix.php/'.$USER->id.'/f1.jpg' 
         );
     }
@@ -88,6 +89,64 @@ class mod_videodatabase_set_video_external extends external_api {
         $res = $DB->update_record($table, $metadata);
         $transaction->allow_commit();
         return array('data'=> '{ "status":"ok", "msg":"Successfully saved meta data of video with id '.$metadata->id.'."}');
+    } 
+}
+
+
+/**
+ * Takes video player log data form the client
+ */
+class mod_videodatabase_logging extends external_api {
+    
+    public static function log_parameters() {
+        return new external_function_parameters(
+            array(
+                'data' => 
+                    new external_single_structure(
+                        array(
+                            //'courseid' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL),
+                            //'id' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL),
+                            'data' => new external_value(PARAM_RAW, 'video data', VALUE_OPTIONAL)
+                        )
+                )
+            )
+        );
+    }
+    
+    public static function log_returns() {
+        return new external_single_structure(
+                array( 'response' => new external_value(PARAM_RAW, 'Server respons to the incomming log') )
+        );
+    }
+
+    public static function log($data) {
+        global $CFG, $DB;
+        $logfile= '/home/abb/Documents/www/videodb.log';//$CFG->dirroot.'/mod/videodatabase/videodatabase.log';
+        // Append to the log file
+        if($fd = @fopen($logfile, "a")) {
+            $message = $data['data'];//json_decode($data['data']);
+            // convert json to csv
+            // xxx
+            $result = fputs($fd, $messsage);
+            fclose($fd);
+        
+            if($result > 0){
+                return array('response'=> 'Wrote log to file');
+            }else{                
+                return array('response'=> 'Unable to write to '.$logfile.'!');
+            } 
+        }
+        else {
+             return array('response'=> 'Unable to open logfile '.$logfile.'!');
+        }
+        /*
+        $transaction = $DB->start_delegated_transaction(); //If an exception is thrown in the below code, all DB queries in this code will be rollback.
+        $table = "videodatabase_videos";
+        $metadata = json_decode($data['data']);
+        $res = $DB->update_record($table, $metadata);
+        $transaction->allow_commit();
+        */
+        return array('response'=> "Could not write log");
     } 
 }
 

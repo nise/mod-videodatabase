@@ -86,8 +86,8 @@ define([
          * @param {*} msg 
          */
         function con(msg) {
-            //console.log(msg.username);
-
+            
+            // map data on internal model
             var 
                 data = JSON.parse(msg.data),
                 user = {
@@ -97,18 +97,18 @@ define([
                     id: msg.userid,
                     image: msg.userimage
                 };
+            
                
-            // setup
+            // setup vue
             Vue.use(Vuex);
             Vue.use(VueRouter);
             Vue.use(VueFormGenerator);
             //Vue.use(VueUniqIds);
-
             //Vue.use(Vue2Dropzone);
             //Vue.use(VuePaginate); // vue-bs-pagination
 
 
-            // init store
+            // init vue store
             const store = new Vuex.Store({
                 state: {
                     myValue: 0,
