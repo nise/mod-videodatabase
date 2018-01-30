@@ -22,7 +22,7 @@ define(['jquery'], function ($) {
     Log.prototype = {
         name: 'log',
         options: {
-            output_type: 0, // 0: console.log(), 1: server log, 
+            output_type: 0, // -1: no logging, 0: console.log(), 1: server log, 
             prefix: '',
             logger_service_url: null,
             logger_service_params: { "data": 0 }

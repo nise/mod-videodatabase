@@ -7,6 +7,13 @@ MOODLE version 3.1.3 !!
 #backlog
 https://github.com/nise/vi-moodle/issues
 
+- Sportlehrer dürfen Videos hochladen
+- Admin gibt Videos frei
+- Rating
+- Suche
+
+- Kommentare on/off
+
 # nth
 
 - collaps/expand form groups

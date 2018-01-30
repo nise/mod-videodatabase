@@ -38,7 +38,7 @@ define([
 			});
 			vi2.observer.init(0);
 			var viLog = new Vi2.Log({ 
-				output_type: 1, // 0: console log: 1: server log
+				output_type: -1, // 0: console log: 1: server log
 				logger_service_url: '/moodle/webservice/rest/server.php',
 				logger_service_params: {
 					wstoken: 'e321c48e338fc44830cda07824833944',

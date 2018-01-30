@@ -22,6 +22,7 @@ define([
     //'/moodle/mod/videodatabase/amd/src/vue-uniq-ids.min.js',
     '/moodle/mod/videodatabase/amd/src/vfg.js',
     '/moodle/mod/videodatabase/amd/src/axios.min.js',
+
     '/moodle/mod/videodatabase/amd/src/datamodel.js',
 
     //'/moodle/mod/videodatabase/amd/src/dropzone.js',
@@ -40,7 +41,9 @@ define([
         // VueUniqIds,
         VueFormGenerator,
         Axios,
+
         Datamodel,
+
         // dropzone, 
         //  Vue2Dropzone,
         //VuePaginate,
@@ -52,7 +55,7 @@ define([
 
         var datamodel = new Datamodel();
 
-    
+
         /**
          * Obtains data from a moodle webservice
          * @param {*} ws: Name of the web service 
@@ -72,12 +75,12 @@ define([
                 },
                 dataType: "json"
             })
-            .done(function (msg) {
-                cb(msg);
-            })
-            .fail(function (data) {
-                console.log(data);
-            });
+                .done(function (msg) {
+                    cb(msg);
+                })
+                .fail(function (data) {
+                    console.log(data);
+                });
         }
 
 
@@ -86,9 +89,9 @@ define([
          * @param {*} msg 
          */
         function con(msg) {
-            
+
             // map data on internal model
-            var 
+            var
                 data = JSON.parse(msg.data),
                 user = {
                     username: msg.username,
@@ -97,15 +100,19 @@ define([
                     id: msg.userid,
                     image: msg.userimage
                 };
-            
-               
+
+
             // setup vue
             Vue.use(Vuex);
             Vue.use(VueRouter);
             Vue.use(VueFormGenerator);
+
             //Vue.use(VueUniqIds);
             //Vue.use(Vue2Dropzone);
             //Vue.use(VuePaginate); // vue-bs-pagination
+
+
+            
 
 
             // init vue store
@@ -116,13 +123,13 @@ define([
                     mouse: {},
                     showForm: false,
                     formDataModel: {},
-                    currentVideo: 0
+                    currentVideo: 0, 
+                    //currentVideoRating: 0
                 },
                 getters: {
                     videoById(state) {
                         var self = this;
                         return function (id) {
-                            //state.videos[id].rating = Math.floor(Math.random()*5);
                             if (state.videos[id] !== undefined && id !== undefined) {
                                 return state.videos[id];
                             } else {
@@ -139,10 +146,14 @@ define([
                 },
                 mutations: {
                     getFormDataModel() {
-                        
+
                     },
                     setCurrentVideo(state, id) {
                         state.currentVideo = id;
+                    },
+                    setCurrentVideoRating(state, rating) {
+                        //state.currentVideoRating = rating;
+                        state.videos[state.currentVideo].rating = rating;
                     }
                 }
             });
@@ -154,7 +165,54 @@ define([
             //store.commit('getFormDataModel');
 
 
-            const Video = //new Vue.component('videoplayer', 
+
+            const Rating = {
+                //name: 'rate',
+                template: '#rating',
+                props: {
+                    value: { type: [Number, String] },
+                    name: { type: String, default: 'rate' },
+                    length: { type: Number },
+                    showcount: { type: Boolean },
+                    required: { type: Boolean },
+                    ratedesc: { type: Array, default() { return [] } },
+                    disabled: { type: Boolean, default: false },
+                    readonly: { type: Boolean, default: false }
+                },
+                data() {
+                    return {
+                        over: 0,
+                        rate: 0
+                    }
+                },
+                methods: {
+                    onOver(index) { if (!this.readonly) this.over = index },
+                    onOut() { if (!this.readonly) this.over = this.rate },
+                    setRate(index) {
+                        if (this.readonly) return false
+                        this.$emit('beforeRate', this.rate)
+                        this.rate = index
+                        this.$emit('input', this.rate)
+                        this.$emit('after-rate', this.rate)
+                    },
+                    isFilled(index) { return index <= this.over },
+                    isEmpty(index) {
+                        return index > this.over || !this.value && !this.over
+                    }
+                },
+                created() {
+                    if (this.value >= this.length) {
+                        this.value = this.length
+                    } else if (this.value < 0) {
+                        this.value = 0
+                    }
+                    this.value = 4//store.getters.currentVideoData().rating || 4;
+                    this.rate = this.value
+                    this.over = this.value
+                }
+            };
+
+            const Video = 
                 {
                     template: '#app-video-template',//'<div>Video {{ $route.params.id }}: {{ video.title }}</div>', 
                     data: function () {
@@ -218,10 +276,16 @@ define([
                             video_data.video = '/videos/' + video_data.filename.replace('.mp4', '.webm');
                             Vi2.start(video_data, user);
                         }
+                    },
+                    methods: {
+                        onAfterRate(rate) {
+                            alert(rate)
+                        }
+                    },
+                    components: {
+                        'rating': Rating
                     }
                 };
-
-
 
 
             const STATUS_INITIAL = 0, STATUS_SAVING = 1, STATUS_SUCCESS = 2, STATUS_FAILED = 3;
@@ -365,11 +429,10 @@ define([
 
 
             const MetadataForm = {
-                //el: '#form-data',
                 template: '<vue-form-generator :schema="schema" :model="model" :options="formOptions"></vue-form-generator>',
                 computed: {
                     model() {
-                        if (this.$route.params.id != undefined) {
+                        if (this.$route.params.id !== undefined) {
                             store.commit('setCurrentVideo', this.$route.params.id);
                             return store.getters.videoById(this.$route.params.id);
                         }
@@ -391,7 +454,7 @@ define([
                     submitForm() {
                         get_ws('videodatabase_store_video', "POST", {
                             'id': store.getters.currentVideoData().id,
-                            'data': JSON.stringify( store.getters.currentVideoData() )
+                            'data': JSON.stringify(store.getters.currentVideoData())
                         }, this.response);
                     },
                     response(res) {
@@ -437,12 +500,7 @@ define([
                         return "col-xs-12 col-sm-5 col-md-2 video-item ";
                     },
                     videos() {
-                        /*return store.state.videos.filter((item) => 
-                            item.name.includes(this.search_by_name) 
-                            && item.email.includes(this.search_by_email) 
-                            && item.status === this.pending_or_completed);
-                            */
-                        return store.state.videos;
+                       return store.state.videos;
                     }
                 },
                 methods: {
@@ -488,10 +546,6 @@ define([
         //get_ws('videodatabase_video', { 'courseid': 2, 'videoid':165 }, con);
 
 
-        function initFilter() {
-
-        }
-
 
         /**
          * Filter
@@ -511,7 +565,6 @@ define([
                 });
             });
             console.table(overflowing);
-
 
             function createXPathFromElement(e) { for (var t = document.getElementsByTagName("*"), a = []; e && 1 == e.nodeType; e = e.parentNode)if (e.hasAttribute("id")) { for (var s = 0, l = 0; l < t.length && (t[l].hasAttribute("id") && t[l].id == e.id && s++ , !(s > 1)); l++); if (1 == s) return a.unshift('id("' + e.getAttribute("id") + '")'), a.join("/"); a.unshift(e.localName.toLowerCase() + '[@id="' + e.getAttribute("id") + '"]') } else if (e.hasAttribute("class")) a.unshift(e.localName.toLowerCase() + '[@class="' + e.getAttribute("class") + '"]'); else { for (i = 1, sib = e.previousSibling; sib; sib = sib.previousSibling)sib.localName == e.localName && i++; a.unshift(e.localName.toLowerCase() + "[" + i + "]") } return a.length ? "/" + a.join("/") : null }
 
@@ -544,7 +597,6 @@ define([
                     filters['s_' + filter_id][filter_id] = this.value;
 
                 }
-                //console.log(filters[filter_id]);
                 applyFilter();
             });
 
@@ -552,7 +604,6 @@ define([
             // multi
             $(document.body).on('change', '.multi-filter', function () {
                 var filter_id = $(this).attr('id').replace('filter_', '');
-                console.log(filter_id)
                 filters['m_' + filter_id] = {} || filters['m_' + filter_id];
                 // reset
                 $(this).find('option').each(function (i, val) {
@@ -595,7 +646,7 @@ define([
                                         // logical OR
                                         result[cat] = contains(filters[cat], cl);
                                     } else if (filters[cat][f] && (filters[cat][f] != 'none') && (filters[cat][f] != 'all')) {
-                                        result[cat] = self.hasClass(filters[cat][f]); // self.data(filter)
+                                        result[cat] = self.hasClass(filters[cat][f]); 
                                     }
                                 });
                             }
@@ -607,12 +658,11 @@ define([
                         if (result.hasOwnProperty(i)) {
                             res = result[i] && res;
                         }
-                    };
+                    }
                     return res;
                 }).show();
             }
-
-        }); // end documents ready
+        }); 
 
 
         return Filters;
