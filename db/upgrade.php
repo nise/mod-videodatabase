@@ -82,7 +82,7 @@ function xmldb_videodatabase_upgrade($oldversion) {
 
  // Changing the default of field courseid on table videodatabase_videos to 2.
         $table = new xmldb_table('videodatabase_videos');
-        $field = new xmldb_field('courseid', XMLDB_TYPE_INTEGER, '10', null, null, null, 2, 'id');
+        $field = new xmldb_field('rating', XMLDB_TYPE_INTEGER, '10', null, null, null, 0);
 
         // Launch change of default for field courseid.
         $dbman->add_field($table, $field);
@@ -94,6 +94,32 @@ function xmldb_videodatabase_upgrade($oldversion) {
 */
 
 
+
+/*
+ // Define field rating to be added to videodatabase_videos.
+        $table = new xmldb_table('videodatabase_videos');
+        $field = new xmldb_field('rating', XMLDB_TYPE_INTEGER, '255', null, null, null, '0', 'status');
+
+        // Conditionally launch add field rating.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Videodatabase savepoint reached.
+        //upgrade_mod_savepoint(true, 2017064113, 'videodatabase');
+
+         // Define field status to be added to videodatabase_videos.
+        $table = new xmldb_table('videodatabase_videos');
+        $field = new xmldb_field('status', XMLDB_TYPE_INTEGER, '255', null, null, null, '0', 'courseid');
+
+        // Conditionally launch add field status.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Videodatabase savepoint reached.
+        upgrade_mod_savepoint(true, 2017064113, 'videodatabase');
+*/
 
 
 

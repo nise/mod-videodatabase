@@ -112,7 +112,7 @@ define([
             //Vue.use(VuePaginate); // vue-bs-pagination
 
 
-            
+
 
 
             // init vue store
@@ -123,7 +123,7 @@ define([
                     mouse: {},
                     showForm: false,
                     formDataModel: {},
-                    currentVideo: 0, 
+                    currentVideo: 0//,
                     //currentVideoRating: 0
                 },
                 getters: {
@@ -131,7 +131,9 @@ define([
                         var self = this;
                         return function (id) {
                             if (state.videos[id] !== undefined && id !== undefined) {
-                                return state.videos[id];
+                                var d = state.videos[id];
+                                //d.rating = 3;
+                                return d
                             } else {
                                 console.log('id missing ' + id)
                             }
@@ -152,6 +154,7 @@ define([
                         state.currentVideo = id;
                     },
                     setCurrentVideoRating(state, rating) {
+                        
                         //state.currentVideoRating = rating;
                         state.videos[state.currentVideo].rating = rating;
                     }
@@ -167,7 +170,6 @@ define([
 
 
             const Rating = {
-                //name: 'rate',
                 template: '#rating',
                 props: {
                     value: { type: [Number, String] },
@@ -188,43 +190,82 @@ define([
                 methods: {
                     onOver(index) { if (!this.readonly) this.over = index },
                     onOut() { if (!this.readonly) this.over = this.rate },
-                    setRate(index) {
-                        if (this.readonly) return false
-                        this.$emit('beforeRate', this.rate)
-                        this.rate = index
-                        this.$emit('input', this.rate)
-                        this.$emit('after-rate', this.rate)
+                    setRate(index) { 
+                        if(index === undefined){ index=0; }
+                        if (this.readonly){ 
+                            return false;
+                        }    
+                        this.$emit('readonly', true); // set readonly after giving a vote
+                        this.$emit('beforeRate', this.rate);
+                        this.rate = index;
+                        this.$emit('input', this.rate);
+                        this.$emit('value', this.rate);
+                        this.$emit('after-rate', this.rate);
+                        // save vote
+                        var data = store.getters.currentVideoData();
+                        get_ws('videodatabase_store_video', "POST", {
+                            'id': data.id,
+                            'data': JSON.stringify(data)
+                        }, function(e){
+                            console.log(e);
+                        });
                     },
                     isFilled(index) { return index <= this.over },
                     isEmpty(index) {
-                        return index > this.over || !this.value && !this.over
+                        return index > this.over || !this.value && !this.over;
+                    },
+                    // http://www.evanmiller.org/how-not-to-sort-by-average-rating.html
+                    // http://julesjacobs.github.io/2015/08/17/bayesian-scoring-of-ratings.html
+                    /*
+In your case calculating mean is simple. It is the mean of ratings itself. Assume p1 is the fraction of 1-star rating, p2,..., p5. p1+p2+...+p5 = 1. And assume you are calculating these stats using n samples. mean of your data is 1*p1+2*p2+...+5*p5.
+
+The variance of your data is ( E(x^2)-(E(x))^2 )/n = ( (p1*1^2 + p2*2^2..+p5*5^2) - (1*p1+2*p2+..+5*p5)^2 )/n
+
+Since std = sqrt(var), it is pretty straightforward to calculate Normal approximation interval. I will let you work on extending this to WCI.
+                    */
+                    wilsonScore: function (pos, n){
+                        if (n === 0){
+                            return 0;
+                        }
+                        const z = 1.96; //Statistics2.pnormaldist(1 - (1 - confidence) / 2)
+                        const phat = 1.0 * pos / n;
+                        return (phat + z * z / (2 * n) - z * Math.sqrt((phat * (1 - phat) + z * z / (4 * n)) / n)) / (1 + z * z / n);
                     }
                 },
                 created() {
                     if (this.value >= this.length) {
-                        this.value = this.length
+                        this.value = this.length;
                     } else if (this.value < 0) {
-                        this.value = 0
-                    }
-                    this.value = 4//store.getters.currentVideoData().rating || 4;
-                    this.rate = this.value
-                    this.over = this.value
+                        this.value = 0;
+                    } 
+                    this.rate = this.value;
+                    this.over = this.value;
+                }, 
+                updated: function () {
+                    var d = store.getters.currentVideoData().rating;
+                    if(d===undefined){ d=0;}
+                    this.rate = d;
+                    this.hover = d;
+                    this.$emit('value', d);
+                    this.onOut();
                 }
             };
 
-            const Video = 
+            const Video =
                 {
                     template: '#app-video-template',//'<div>Video {{ $route.params.id }}: {{ video.title }}</div>', 
                     data: function () {
                         return {
                             vi2_player_id: 'vi2-1',
                             video_selector: 'seq',
-                            video_overlay_selector: 'overlay'
+                            video_overlay_selector: 'overlay'//,
+                            //getRating: store.getters.currentVideoData().rating
                         }
                     },
                     computed: {
-                        video() {
+                        video: function() {
                             var id = this.$route.params.id;
+                            store.commit('setCurrentVideo', this.$route.params.id);
                             var video_data = store.getters.videoById(id);
                             if (video_data !== undefined) {
                                 video_data.metadata = [];
@@ -240,13 +281,13 @@ define([
                             }
                         }
                     },
-                    updated() {
+                    updated: function() {
                         var id = this.$route.params.id;
                         if (id === undefined) {
                             id = 1;
                         }
                         var video_data = store.getters.videoById(id);
-
+                        this.$refs.childRating.setRate(video_data.rating);
                         if (video_data !== undefined) {
                             video_data.metadata = [];
                             video_data.metadata[0] = {};
@@ -259,27 +300,27 @@ define([
                         }
                         //return video_data;    
                     },
-                    mounted() {
+                    mounted: function() {
                         var id = this.$route.params.id;
                         if (id === undefined) {
                             id = 1;
                         }
                         var video_data = store.getters.videoById(id);
-
+                        
                         if (video_data !== undefined) {
                             video_data.metadata = [];
                             video_data.metadata[0] = {};
-                            video_data.metadata[0].author = video_data['contributor'];
-                            video_data.metadata[0].title = video_data['title'];
-                            video_data.metadata[0].abstract = video_data['description'];
+                            video_data.metadata[0].author = video_data.contributor;
+                            video_data.metadata[0].title = video_data.title;
+                            video_data.metadata[0].abstract = video_data.description;
                             video_data.metadata[0].thumbnail = "still-" + video_data.filename.replace('.mp4', '_comp.jpg');
                             video_data.video = '/videos/' + video_data.filename.replace('.mp4', '.webm');
                             Vi2.start(video_data, user);
                         }
                     },
                     methods: {
-                        onAfterRate(rate) {
-                            alert(rate)
+                        onAfterRate: function(rate) {
+                            store.commit('setCurrentVideoRating', rate);
                         }
                     },
                     components: {
@@ -500,7 +541,7 @@ define([
                         return "col-xs-12 col-sm-5 col-md-2 video-item ";
                     },
                     videos() {
-                       return store.state.videos;
+                        return store.state.videos;
                     }
                 },
                 methods: {
@@ -595,7 +636,6 @@ define([
                     filters['s_' + filter_id][filter_id] = 'null';
                 } else {
                     filters['s_' + filter_id][filter_id] = this.value;
-
                 }
                 applyFilter();
             });
@@ -646,7 +686,7 @@ define([
                                         // logical OR
                                         result[cat] = contains(filters[cat], cl);
                                     } else if (filters[cat][f] && (filters[cat][f] != 'none') && (filters[cat][f] != 'all')) {
-                                        result[cat] = self.hasClass(filters[cat][f]); 
+                                        result[cat] = self.hasClass(filters[cat][f]);
                                     }
                                 });
                             }
@@ -662,7 +702,7 @@ define([
                     return res;
                 }).show();
             }
-        }); 
+        });
 
 
         return Filters;

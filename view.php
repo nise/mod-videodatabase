@@ -106,7 +106,7 @@ echo '
 				<a href="#/videos" class="right large"><span class="fa fa-close video-close"></span></a>
 				<!-- Main -->
 				<div :id="vi2_player_id" class="container-fluid">
-					<h2>{{ video.title }}</h2>
+					<h2>{{ video.title }} {{video.rating}}</h2>
 					<div class="row">
 						<div id="videowrapper" class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
 							<div :id="video_selector"></div>
@@ -188,7 +188,7 @@ echo '
 							</div>
 							<div class="vi2-volume-controls right"></div>
 							<div class="vi2-video-timer right"></div>
-							<rating class="right" :value="video.rating" :length="5" @after-rate="onAfterRate" :ratedesc="[\'Very bad\', \'bad\', \'Normal\', \'Good\', \'Very good\']"></rating>
+							<rating class="right" ref="childRating" v-bind:value="video.rating" :length="5" @after-rate="onAfterRate" :ratedesc="[\'Very bad\', \'bad\', \'Normal\', \'Good\', \'Very good\']"></rating>
 						</div>
 					</div>
 				</div>
@@ -251,7 +251,6 @@ echo '
 							<div v-cloak v-for="file in uploadedFiles" class="col-md-4">{{ file.name }} ({{ Math.round( file.size / 1024 / 1024 ) }}MB)					
 								<video width="100%" height="auto" controls>
 									<source v-bind:src="file.location" :type="file.type" >
-									<!--<source src="movie.ogg" type="video/ogg">-->
 									Your browser does not support the video tag.
 								</video>
 							</div> 
@@ -562,6 +561,7 @@ function dummyComments(){
 
 /*********************************/
 echo $OUTPUT->footer();
+die();
 /*********************************/
 
 
