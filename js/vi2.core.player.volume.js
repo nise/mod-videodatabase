@@ -27,6 +27,8 @@ define(['jquery'], function ($) {
         tmp_volume: 0,
 
         init: function () {
+            $(this.options.selector).empty();
+            //$(this.options.selector + '> .vi2-volume-button').remove();
             var template = [
                 '<div class="vi2-volume-slider"></div>',
                 '<span class="vi2-volume-button vi2-btn" title="Mute/Unmute"></span>',
