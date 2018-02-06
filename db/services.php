@@ -57,7 +57,15 @@ $functions = array(
                 'description' => 'Getter for all comments related to a video',
                 'type'        => 'read',
                 'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
-        )
+        ),
+        'videodatabase_ratings' => array(
+                'classname'   => 'mod_videodatabase_ratings_external',
+                'methodname'  => 'ratings',
+                'classpath'   => 'mod/videodatabase/classes/external.php',
+                'description' => 'Getter for video-related ratings',
+                'type'        => 'write',
+                'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
+        ),
 );
 
 // http://localhost/moodle/webservice/rest/server.php?wstoken=e321c48e338fc44830cda07824833944&wsfunction=local_wstemplate_hello_world

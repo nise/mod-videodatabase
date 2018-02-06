@@ -212,14 +212,59 @@ class mod_videodatabase_video_comments_external extends external_api {
 } 
 
 
-
-
-
 /**
- * NOT NEEDED ?
+ * Get or set video comments
  */
+class mod_videodatabase_ratings_external extends external_api {
+    public static function ratings_parameters() {
+        return new external_function_parameters(
+            array(
+                'data' => 
+                    new external_single_structure(
+                        array(
+                            'courseid' => new external_value(PARAM_INT, 'id of the course', VALUE_OPTIONAL),
+                            'videoid' => new external_value(PARAM_INT, 'id of the video', VALUE_OPTIONAL),
+                            'userid' => new external_value(PARAM_INT, 'id of the user', VALUE_OPTIONAL),
+                            'rating' => new external_value(PARAM_INT, 'user rating', VALUE_OPTIONAL),
+                        )
+                )
+            )
+        );
+    }
+    public static function ratings_returns() {
+        return new external_single_structure(
+                array( 'data' => new external_value(PARAM_RAW, 'data') )
+        );
+    }
+    public static function ratings($data) {
+        global $CFG, $DB;
+        $transaction = $DB->start_delegated_transaction(); //If an exception is thrown in the below code, all DB queries in this code will be rollback.
+        $table = "videodatabase_ratingss";
+        $res = '';
+    
+        if(isset($data['rating'])){
+            // set value
+            $r = new stdClass();
+            $r->rating = $data['rating'];
+            $r->videoid = $data['videoid'];
+            $r->userid = $data['userid'];
+            $r->courseid = $data['courseid'];
+            $res = $DB->insert_records($table, array($r));
+        }else{
+            // get value
+            $res = $DB->get_records($table, array('videoid'=>$data['videoid'], 'userid'=>$data['userid']));
+        }
+        $transaction->allow_commit();
+    
+        return array('data'=> json_encode($res));
+    }    
+}
 
 
+
+
+/*
+ 
 class mod_videodatabase_get_video_external extends external_api {
     public static function get_video_parameters() {
         return new external_function_parameters(
@@ -248,5 +293,7 @@ class mod_videodatabase_get_video_external extends external_api {
         return array('data'=> json_encode($res));
     } 
 }
+*/
+
 
 ?>

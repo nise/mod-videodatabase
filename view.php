@@ -348,6 +348,9 @@ echo '
 			<span @click="setListView()" title="" class="fa fa-list large right link"></span>
 		</div>
 		<h1>Videos</h1>
+		
+		
+
 		<div>
 			<div id="videomanager" class="video-manager">
 					<div v-if="listView">
@@ -407,7 +410,7 @@ echo '
 						</div>
 						<div 
 							v-for="video in videos" 
-							v-bind:class="\'col-xs-12 col-sm-5 col-md-2 video-item \'+ videoItemClass(video.id)"
+							v-bind:class="\' col-xs-12 col-sm-5 col-md-2 video-item \'+ videoItemClass(video.id)"
 							>
 							<router-link class="title" :to="{ path: \'/videos/\' + video.id + \'/view\'}">
 								<img 

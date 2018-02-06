@@ -27,7 +27,7 @@ define([
 
     //'/moodle/mod/videodatabase/amd/src/dropzone.js',
     //'/moodle/mod/videodatabase/amd/src/vue2Dropzone.js',
-    // '/moodle/mod/videodatabase/amd/src/vue-paginate.min.js',
+   // '/moodle/mod/videodatabase/amd/src/vuejs-paginator.js',
     //'js/vi-two-lib.js',
     'js/vi2.main.js'
 ],
@@ -46,7 +46,7 @@ define([
 
         // dropzone, 
         //  Vue2Dropzone,
-        //VuePaginate,
+       // VuePaginator,
         //  Vi2Lib, 
         Vi2
     ) {
@@ -107,14 +107,14 @@ define([
             Vue.use(VueRouter);
             Vue.use(VueFormGenerator);
 
+
             //Vue.use(VueUniqIds);
             //Vue.use(Vue2Dropzone);
-            //Vue.use(VuePaginate); // vue-bs-pagination
+           // Vue.use(VuePaginator); 
 
+            //Vue.component('paginate', VuePaginate);
 
-
-
-
+        
             // init vue store
             const store = new Vuex.Store({
                 state: {
@@ -123,17 +123,14 @@ define([
                     mouse: {},
                     showForm: false,
                     formDataModel: {},
-                    currentVideo: 0//,
-                    //currentVideoRating: 0
+                    currentVideo: 0
                 },
                 getters: {
                     videoById(state) {
                         var self = this;
                         return function (id) {
                             if (state.videos[id] !== undefined && id !== undefined) {
-                                var d = state.videos[id];
-                                //d.rating = 3;
-                                return d
+                                return state.videos[id];
                             } else {
                                 console.log('id missing ' + id)
                             }
@@ -154,8 +151,6 @@ define([
                         state.currentVideo = id;
                     },
                     setCurrentVideoRating(state, rating) {
-                        
-                        //state.currentVideoRating = rating;
                         state.videos[state.currentVideo].rating = rating;
                     }
                 }
@@ -190,30 +185,69 @@ define([
                 methods: {
                     onOver(index) { if (!this.readonly) this.over = index },
                     onOut() { if (!this.readonly) this.over = this.rate },
-                    setRate(index) { 
+                    setRate(index) {
+                        var _this = this; 
                         if(index === undefined){ index=0; }
-                        if (this.readonly){ 
-                            return false;
-                        }    
-                        this.$emit('readonly', true); // set readonly after giving a vote
-                        this.$emit('beforeRate', this.rate);
-                        this.rate = index;
-                        this.$emit('input', this.rate);
-                        this.$emit('value', this.rate);
-                        this.$emit('after-rate', this.rate);
-                        // save vote
-                        var data = store.getters.currentVideoData();
-                        get_ws('videodatabase_store_video', "POST", {
-                            'id': data.id,
-                            'data': JSON.stringify(data)
-                        }, function(e){
-                            console.log(e);
+                        
+                        this.userHasRatedVideo(function(hasRated){
+                            if(hasRated){
+                                // not allowed to rate anymore
+                            }else{
+                                if (_this.rate !== index) {
+                                    _this.$emit('beforeRate', _this.rate);
+                                    var data = store.getters.currentVideoData();
+                                    _this.storeRating(function (e) {
+                                        _this.$emit('readonly', true); // xxx bug // set readonly after giving a vote
+                                    });
+                                }
+                                _this.rate = index;
+                                _this.$emit('input', _this.rate);
+                                _this.$emit('value', _this.rate);
+                                _this.$emit('after-rate', _this.rate);
+                            }
+                        });
+                        
+                    },
+                    isFilled: function(index) { 
+                        return index <= this.over; 
+                    },
+                    isEmpty: function(index) { 
+                        return index > this.over || !this.value && !this.over; 
+                    },
+                    getRatingsOfVideo: function (callback){
+                        get_ws('videodatabase_ratings', "POST", {
+                            'videoid': 1,
+                            'courseid': 2,
+                        }, function (e) {
+                            //console.log(e);
+                            callback(e);
                         });
                     },
-                    isFilled(index) { return index <= this.over },
-                    isEmpty(index) {
-                        return index > this.over || !this.value && !this.over;
+                    userHasRatedVideo: function(callback){
+                        get_ws('videodatabase_ratings', "POST", {
+                            'videoid': 1,
+                            'courseid': 2,
+                            'userid': 20
+                        }, function (e) {
+                            var data = JSON.parse(e.data);
+                            if ( typeof data === 'array' && data.length === 0){
+                                callback(false);
+                            }else {
+                                callback(true)
+                            }
+                        });
                     },
+                    storeRating: function (rating, callback){
+                        get_ws('videodatabase_ratings', "POST", {
+                            'videoid': 1,
+                            'courseid': 2,
+                            'userid': 2,
+                            'rating': rating
+                        }, function (e) {
+                            callback(e);
+                        });
+                    },
+
                     // http://www.evanmiller.org/how-not-to-sort-by-average-rating.html
                     // http://julesjacobs.github.io/2015/08/17/bayesian-scoring-of-ratings.html
                     /*
@@ -232,7 +266,7 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                         return (phat + z * z / (2 * n) - z * Math.sqrt((phat * (1 - phat) + z * z / (4 * n)) / n)) / (1 + z * z / n);
                     }
                 },
-                created() {
+                created: function() {
                     if (this.value >= this.length) {
                         this.value = this.length;
                     } else if (this.value < 0) {
@@ -241,15 +275,18 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                     this.rate = this.value;
                     this.over = this.value;
                 }, 
-                updated: function () {
+                updated: function () { 
                     var d = store.getters.currentVideoData().rating;
-                    if(d===undefined){ d=0;}
+                    if(d === undefined){ d=0;}
                     this.rate = d;
                     this.hover = d;
                     this.$emit('value', d);
                     this.onOut();
                 }
             };
+
+
+            
 
             const Video =
                 {
@@ -287,7 +324,7 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                             id = 1;
                         }
                         var video_data = store.getters.videoById(id);
-                        this.$refs.childRating.setRate(video_data.rating);
+                        //this.$refs.childRating.setRate(video_data.rating);
                         if (video_data !== undefined) {
                             video_data.metadata = [];
                             video_data.metadata[0] = {};
@@ -530,17 +567,17 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                 el: '#app-videomanager',
                 router,
                 data: {
-                    paginate: ['videolist'],
+                  //  paginate: ['videolist'],
                     mouseOverCheck: '',
                     show: false,
                     isEditor: true,
-                    listView: false
+                    listView: false,
                 },
                 computed: {
                     columnObject: function () { //console.log(JSON.stringify(this.videos))
                         return "col-xs-12 col-sm-5 col-md-2 video-item ";
                     },
-                    videos() {
+                    videos: function() {
                         return store.state.videos;
                     }
                 },
@@ -576,6 +613,9 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                             ''
                         ].join(' ');
                     }
+                },
+                components: {
+                    
                 }
             });
 
