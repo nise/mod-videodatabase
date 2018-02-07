@@ -57,7 +57,9 @@ define(['/moodle/mod/videodatabase/amd/src/vfg.js'], function (VueFormGenerator)
                                 "model": "title",
                                 "featured": true,
                                 "required": true,
-                                "validator": VueFormGenerator.validators.string
+                                "validator": VueFormGenerator.validators.string.locale({
+                                    "fieldIsRequired": "Bitte geben Sie unbedingt einen Titel für das Video an."
+                                })
                             },
                             {
                                 "type": "input",
@@ -66,8 +68,11 @@ define(['/moodle/mod/videodatabase/amd/src/vfg.js'], function (VueFormGenerator)
                                 "model": "description",
                                 "featured": true,
                                 "required": true,
-                                "min": 4,
-                                "validator": VueFormGenerator.validators.string
+                                "min": 10,
+                                "validator": VueFormGenerator.validators.string.locale({
+                                    "fieldIsRequired": "The password is required!",
+                                    "textTooSmall": "Diese Beschreibung ist sehr kurz. Sie sollte mindestens {1} Zeichen umfassen, um den Inhalt des Videos zu beschreiben."
+                                })
                             },
                             {
                                 "type": "input",
@@ -76,7 +81,9 @@ define(['/moodle/mod/videodatabase/amd/src/vfg.js'], function (VueFormGenerator)
                                 "model": "tags",
                                 "featured": true,
                                 "required": true,
-                                "validator": VueFormGenerator.validators.string
+                                "validator": VueFormGenerator.validators.string.locale({
+                                    "fieldIsRequired": "Bitte beschreiben Sie das Video mit mindestens einem Schlüsselwort."
+                                })
                             }
                         ]
                     },
@@ -312,7 +319,6 @@ define(['/moodle/mod/videodatabase/amd/src/vfg.js'], function (VueFormGenerator)
                     }
                 ]
             }
-        }
-        
+        };      
     };
 });
