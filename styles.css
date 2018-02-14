@@ -421,7 +421,7 @@ div.link{
 .Rate__star{
   color: #b5b5b5;
   display: inline-block;
-  padding: 7px;
+  padding: 0 7px;
   text-decoration: none;
   cursor: pointer;
   background: transparent none;
@@ -433,8 +433,8 @@ div.link{
   vertical-align: middle;
 }
 
-.Rate__star.hover{color: #efc20f;}
-.Rate__star.filled{color: #efc20f;}
+.Rate__star.hover{color: #167ac6;}
+.Rate__star.filled{color: #167ac6;}
 
 .Rate__star:hover, 
 .Rate__star:focus{text-decoration: none;}
@@ -447,8 +447,8 @@ div.link{
 }
 
 .Rate.has-error .Rate__star{color: #f37a77;}
-.Rate.has-error .Rate__star.hover{color: #efc20f;}
-.Rate.has-error .Rate__star.filled{color: #efc20f;}
+.Rate.has-error .Rate__star.hover{color: #167ac6;}
+.Rate.has-error .Rate__star.filled{color: #167ac6;}
 
 .Rate__star[disabled]{
   color: #CCC;
