@@ -106,7 +106,7 @@ define([
         }
 
         Player.prototype = {
-            name: 'video player',
+            name: 'player',
             // defaults
             options: {
                 observer: null,
@@ -473,6 +473,7 @@ define([
             * event handler: on can play. Notifies the observer about a new video.
             */
             readyStateHandler: function (e) {
+                console.log(e);
                 vi2.observer.updateVideo(this.seqList[this.seqNum].id, this.seqNum);
             },
 
