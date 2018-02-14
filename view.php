@@ -348,11 +348,12 @@ echo '
 	</div>	
 	<div class="page-item">
 		<div class="page-controls">
+			<span title="Logdaten des Kurses herunterladen" v-if="isEditor" @click="downloadLogData()" title="" class="fa fa-download large right link"></span>
 			<router-link v-if="isEditor" class="title" :to="{ path: \'/videos/new\'}">
 				<span title="Video hinzufügen" class="fa fa-plus large right"></span>	
 			</router-link>
-			<span @click="setTableView()" title="" class="fa fa-th large right link"></span>
-			<span @click="setListView()" title="" class="fa fa-list large right link"></span>
+			<span @click="setTableView()" title="Tabellenansicht" class="fa fa-th large right link"></span>
+			<span @click="setListView()" title="Kachelansicht" class="fa fa-list large right link"></span>
 		</div>
 		<h1>Videos</h1>
 		
@@ -485,7 +486,6 @@ function bulkVideoImport($PAGE) {
 		 	$row++;
 			$record = new stdClass();
 			$record->id = (int)$row;
-			//$record->video_db = $row;
 			$record->courselevel = $data[0];  // multi
 			$record->title = (string)$data[2];
 			$record->creator = $data[3];
