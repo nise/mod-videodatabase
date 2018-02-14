@@ -38,8 +38,16 @@ $functions = array(
                 'classname'   => 'mod_videodatabase_logging',
                 'methodname'  => 'log',
                 'classpath'   => 'mod/videodatabase/classes/external.php',
-                'description' => 'Obtains log data from the client',
+                'description' => 'Store log to DB',
                 'type'        => 'write',
+                'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
+        ),
+          'videodatabase_get_log' => array( 
+                'classname'   => 'mod_videodatabase_get_log',
+                'methodname'  => 'get_log',
+                'classpath'   => 'mod/videodatabase/classes/external.php',
+                'description' => 'Obtains log data from the client',
+                'type'        => 'read',
                 'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
         ),
         'videodatabase_comments' => array(

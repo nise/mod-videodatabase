@@ -104,9 +104,8 @@ class mod_videodatabase_logging extends external_api {
                 'data' => 
                     new external_single_structure(
                         array(
-                            //'courseid' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL),
-                            //'id' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL),
-                            'data' => new external_value(PARAM_RAW, 'video data', VALUE_OPTIONAL)
+                            'courseid' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL),
+                            'entry' => new external_value(PARAM_RAW, 'video data', VALUE_OPTIONAL)
                         )
                 )
             )
@@ -121,6 +120,7 @@ class mod_videodatabase_logging extends external_api {
 
     public static function log($data) {
         global $CFG, $DB;
+        /*
         $logfile= '/home/abb/Documents/www/videodb.log';//$CFG->dirroot.'/mod/videodatabase/videodatabase.log';
         // Append to the log file
         if($fd = @fopen($logfile, "a")) {
@@ -139,20 +139,58 @@ class mod_videodatabase_logging extends external_api {
         else {
              return array('response'=> 'Unable to open logfile '.$logfile.'!');
         }
-        /*
-        $transaction = $DB->start_delegated_transaction(); //If an exception is thrown in the below code, all DB queries in this code will be rollback.
-        $table = "videodatabase_videos";
-        $metadata = json_decode($data['data']);
-        $res = $DB->update_record($table, $metadata);
-        $transaction->allow_commit();
         */
-        return array('response'=> "Could not write log");
+
+        $transaction = $DB->start_delegated_transaction(); //If an exception is thrown in the below code, all DB queries in this code will be rollback.
+        $r = new stdClass();
+        $r->courseid = (int)$data['courseid'];
+        $r->entry = $data['entry'];
+        $res = $DB->insert_records("videodatabase_logs", array($r));
+        $transaction->allow_commit();
+        
+        return array('response'=> json_encode($res));
     } 
 }
 
 
 /**
- * Get or set video comments
+ * Takes video player log data form the client
+ */
+class mod_videodatabase_get_log extends external_api {
+    
+    public static function get_log_parameters() {
+        return new external_function_parameters(
+            array(
+                'data' => 
+                    new external_single_structure(
+                        array(
+                            'courseid' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL)
+                        )
+                )
+            )
+        );
+    }
+    
+    public static function get_log_returns() {
+        return new external_single_structure(
+                array( 'response' => new external_value(PARAM_RAW, 'Server respons to the incomming log') )
+        );
+    }
+
+    public static function get_log($data) {
+        global $CFG, $DB;
+        $transaction = $DB->start_delegated_transaction(); //If an exception is thrown in the below code, all DB queries in this code will be rollback.
+        $table = "videodatabase_logs";
+        $res = $DB->get_records_list($table, 'courseid', array($data['courseid']));
+        $transaction->allow_commit();
+        
+        return array('response'=> json_encode($res));
+    } 
+}
+
+
+/**
+ * Get the entiry log of the course
  */
 class mod_videodatabase_comments_external extends external_api {
     public static function get_all_comments_parameters() {
@@ -181,6 +219,7 @@ class mod_videodatabase_comments_external extends external_api {
         return array('data'=> json_encode($res));
     }    
 }
+
 
 class mod_videodatabase_video_comments_external extends external_api {
     public static function get_video_comments_parameters() {

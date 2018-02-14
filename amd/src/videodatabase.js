@@ -1,15 +1,12 @@
 /**
  * Javascript controller for Vue.js and Vi-Two
  *
- * @module     mod_videodatabase/filters
+ * @module     mod_videodatabase/videodatabase
  * @package    mod_videodatabase
  * @class      Videodatabase
  * @copyright  2017 Niels Seidel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since      3.1
- * https://unpkg.com/vue
- * http://localhost/moodle/mod/videodatabase/
- * https://unpkg.com/vue-router/dist/vue-router.js
  * 
  */
 define([
@@ -23,7 +20,7 @@ define([
     '/moodle/mod/videodatabase/amd/src/axios.min.js',
 
     '/moodle/mod/videodatabase/amd/src/datamodel.js',
-   // '/moodle/mod/videodatabase/amd/src/vuejs-paginator.js',
+    // '/moodle/mod/videodatabase/amd/src/vuejs-paginator.js',
     'js/vi2.main.js'
 ],
     function (
@@ -37,7 +34,7 @@ define([
         Axios,
 
         Datamodel,
-       // VuePaginator,
+        // VuePaginator,
         Vi2
     ) {
 
@@ -57,7 +54,7 @@ define([
             $.ajax({
                 method: method,
                 url: "/moodle/webservice/rest/server.php",
-                data: {
+                data: { // xxx get token: https://www.yourmoodle.com/login/token.php?username=USERNAME&password=PASSWORD&service=SERVICESHORTNAME
                     wstoken: 'e321c48e338fc44830cda07824833944',
                     moodlewsrestformat: 'json',
                     wsfunction: ws,
@@ -100,11 +97,11 @@ define([
 
             //Vue.use(VueUniqIds);
             //Vue.use(Vue2Dropzone);
-           // Vue.use(VuePaginator); 
+            // Vue.use(VuePaginator); 
 
             //Vue.component('paginate', VuePaginate);
 
-        
+
             // init vue store
             const store = new Vuex.Store({
                 state: {
@@ -143,7 +140,7 @@ define([
                     setCurrentVideoRating(state, rating) {
                         state.videos[state.currentVideo].rating = rating;
                     },
-                    setVideoFileData(state, data){
+                    setVideoFileData(state, data) {
                         console.log(data.files);
                         state.videos[state.currentVideo].mimetype = data.files[0].type;
                         state.videos[state.currentVideo].size = data.files[0].size;
@@ -182,13 +179,13 @@ define([
                     onOver(index) { if (!this.readonly) this.over = index },
                     onOut() { if (!this.readonly) this.over = this.rate },
                     setRate(index) {
-                        var _this = this; 
-                        if(index === undefined){ index=0; }
-                        
-                        this.userHasRatedVideo(function(hasRated){
-                            if(hasRated){
+                        var _this = this;
+                        if (index === undefined) { index = 0; }
+
+                        this.userHasRatedVideo(function (hasRated) {
+                            if (hasRated) {
                                 // not allowed to rate anymore
-                            }else{
+                            } else {
                                 if (_this.rate !== index) {
                                     _this.$emit('beforeRate', _this.rate);
                                     var data = store.getters.currentVideoData();
@@ -202,15 +199,15 @@ define([
                                 _this.$emit('after-rate', _this.rate);
                             }
                         });
-                        
+
                     },
-                    isFilled: function(index) { 
-                        return index <= this.over; 
+                    isFilled: function (index) {
+                        return index <= this.over;
                     },
-                    isEmpty: function(index) { 
-                        return index > this.over || !this.value && !this.over; 
+                    isEmpty: function (index) {
+                        return index > this.over || !this.value && !this.over;
                     },
-                    getRatingsOfVideo: function (callback){
+                    getRatingsOfVideo: function (callback) {
                         get_ws('videodatabase_ratings', "POST", {
                             'videoid': 1,
                             'courseid': 2,
@@ -219,21 +216,21 @@ define([
                             callback(e);
                         });
                     },
-                    userHasRatedVideo: function(callback){
+                    userHasRatedVideo: function (callback) {
                         get_ws('videodatabase_ratings', "POST", {
                             'videoid': 1,
                             'courseid': 2,
                             'userid': 20
                         }, function (e) {
                             var data = JSON.parse(e.data);
-                            if ( typeof data === 'array' && data.length === 0){
+                            if (typeof data === 'array' && data.length === 0) {
                                 callback(false);
-                            }else {
+                            } else {
                                 callback(true)
                             }
                         });
                     },
-                    storeRating: function (rating, callback){
+                    storeRating: function (rating, callback) {
                         get_ws('videodatabase_ratings', "POST", {
                             'videoid': 1,
                             'courseid': 2,
@@ -253,8 +250,8 @@ The variance of your data is ( E(x^2)-(E(x))^2 )/n = ( (p1*1^2 + p2*2^2..+p5*5^2
 
 Since std = sqrt(var), it is pretty straightforward to calculate Normal approximation interval. I will let you work on extending this to WCI.
                     */
-                    wilsonScore: function (pos, n){
-                        if (n === 0){
+                    wilsonScore: function (pos, n) {
+                        if (n === 0) {
                             return 0;
                         }
                         const z = 1.96; //Statistics2.pnormaldist(1 - (1 - confidence) / 2)
@@ -262,18 +259,18 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                         return (phat + z * z / (2 * n) - z * Math.sqrt((phat * (1 - phat) + z * z / (4 * n)) / n)) / (1 + z * z / n);
                     }
                 },
-                created: function() {
+                created: function () {
                     if (this.value >= this.length) {
                         this.value = this.length;
                     } else if (this.value < 0) {
                         this.value = 0;
-                    } 
+                    }
                     this.rate = this.value;
                     this.over = this.value;
-                }, 
-                updated: function () { 
+                },
+                updated: function () {
                     var d = store.getters.currentVideoData().rating;
-                    if(d === undefined){ d=0;}
+                    if (d === undefined) { d = 0; }
                     this.rate = d;
                     this.hover = d;
                     this.$emit('value', d);
@@ -282,7 +279,7 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
             };
 
 
-            
+
 
             const Video =
                 {
@@ -296,7 +293,7 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                         }
                     },
                     computed: {
-                        video: function() {
+                        video: function () {
                             var id = this.$route.params.id;
                             store.commit('setCurrentVideo', this.$route.params.id);
                             var video_data = store.getters.videoById(id);
@@ -314,7 +311,7 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                             }
                         }
                     },
-                    updated: function() {
+                    updated: function () {
                         var id = this.$route.params.id;
                         if (id === undefined) {
                             id = 1;
@@ -333,13 +330,13 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                         }
                         //return video_data;    
                     },
-                    mounted: function() {
+                    mounted: function () {
                         var id = this.$route.params.id;
                         if (id === undefined) {
                             id = 1;
                         }
                         var video_data = store.getters.videoById(id);
-                        
+
                         if (video_data !== undefined) {
                             video_data.metadata = [];
                             video_data.metadata[0] = {};
@@ -352,7 +349,7 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                         }
                     },
                     methods: {
-                        onAfterRate: function(rate) {
+                        onAfterRate: function (rate) {
                             store.commit('setCurrentVideoRating', rate);
                         }
                     },
@@ -360,7 +357,7 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                         'rating': Rating
                     }
                 };
-            
+
 
             const STATUS_INITIAL = 0, STATUS_SAVING = 1, STATUS_SUCCESS = 2, STATUS_FAILED = 3;
 
@@ -409,27 +406,27 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                     }
                 },
                 methods: {
-                    isAdvancedUpload: function() {
+                    isAdvancedUpload: function () {
                         var div = document.createElement('div');
                         return (('draggable' in div) || ('ondragstart' in div && 'ondrop' in div)) && 'FormData' in window && 'FileReader' in window;
                     },
-                    reset: function() {
+                    reset: function () {
                         // reset form to initial state
                         this.currentStatus = STATUS_INITIAL;
                         this.uploadedFiles = [];
                         this.uploadError = null;
                         this.advancedUpload = this.isAdvancedUpload();
                     },
-                    save: function(formData) {
+                    save: function (formData) {
                         // upload data to the server
                         this.currentStatus = STATUS_SAVING;
                         upload(formData, this.updateSelectedFiles);
                     },
-                    filesChange: function(fieldName, fileList) {
-                        if (!fileList.length){
+                    filesChange: function (fieldName, fileList) {
+                        if (!fileList.length) {
                             return;
                         }
-                        this.currentStatus = STATUS_INITIAL; 
+                        this.currentStatus = STATUS_INITIAL;
                         this.uploadedFiles = [];
                         document.getElementById("file").value = "";
                         const formData = new FormData();
@@ -442,11 +439,11 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                                 location: '',
                                 status: 'selected'
                             });
-                        } 
+                        }
                         // save it
                         this.save(formData);
                     },
-                    updateSelectedFiles: function(data) {
+                    updateSelectedFiles: function (data) {
                         if (data.error.length > 0) {
                             this.currentStatus === STATUS_FAILED;
                             this.error = data.error;
@@ -457,7 +454,7 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                         }
                     }
                 },
-                mounted: function() {
+                mounted: function () {
                     this.reset();
                 }
             };
@@ -561,7 +558,7 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
 
             // combine the parts of the form
             const Form = {
-                
+
                 render(h) {
                     const upload = h(UploadForm);
                     const meta = h(MetadataForm);
@@ -585,7 +582,7 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                 el: '#app-videomanager',
                 router,
                 data: {
-                  //  paginate: ['videolist'],
+                    //  paginate: ['videolist'],
                     mouseOverCheck: '',
                     show: false,
                     isEditor: true,
@@ -595,7 +592,7 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                     columnObject: function () { //console.log(JSON.stringify(this.videos))
                         return "col-xs-12 col-sm-5 col-md-2 video-item ";
                     },
-                    videos: function() {
+                    videos: function () {
                         return store.state.videos;
                     }
                 },
@@ -630,10 +627,27 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                             'movements-' + video.movements.replace(/, /g, ''),
                             ''
                         ].join(' ');
+                    },
+                    downloadLogData: function(){
+                        get_ws('videodatabase_get_log', "POST", {
+                            'courseid': 2,
+                        }, function (data) {
+                            // extract log entries form result set
+                            var json = Object.values(JSON.parse(data.response)).map(function(d){ return JSON.parse(d.entry); });
+                            // convert json to csv
+                            var fields = Object.keys(json[0]);
+                            var replacer = function (key, value) { return value === null ? '' : value }
+                            var csv = json.map(function (row) {
+                                return Object.values(row);
+                            });
+                            csv.unshift(fields); // add header column
+                            // export
+                            exportToCsv('moodle-videodatabase-log-data-.csv', csv);
+                        });
                     }
                 },
                 components: {
-                    
+
                 }
             });
 
@@ -644,6 +658,52 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
         get_ws('videodatabase_videos', "POST", { 'courseid': 2 }, con);
         //get_ws('videodatabase_video', { 'courseid': 2, 'videoid':165 }, con);
 
+
+
+
+        /**
+         * CSV Export
+         */
+        function exportToCsv(filename, rows) {
+            var processRow = function (row) {
+                var finalVal = '';
+                for (var j = 0; j < row.length; j++) {
+                    var innerValue = row[j] === null ? '' : row[j].toString();
+                    if (row[j] instanceof Date) {
+                        innerValue = row[j].toLocaleString();
+                    };
+                    var result = innerValue.replace(/"/g, '""');
+                    if (result.search(/("|,|\n)/g) >= 0)
+                        result = '"' + result + '"';
+                    if (j > 0)
+                        finalVal += ',';
+                    finalVal += result;
+                }
+                return finalVal + '\n';
+            };
+
+            var csvFile = '';
+            for (var i = 0; i < rows.length; i++) {
+                csvFile += processRow(rows[i]);
+            }
+
+            var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
+            if (navigator.msSaveBlob) { // IE 10+
+                navigator.msSaveBlob(blob, filename);
+            } else {
+                var link = document.createElement("a");
+                if (link.download !== undefined) { // feature detection
+                    // Browsers that support HTML5 download attribute
+                    var url = URL.createObjectURL(blob);
+                    link.setAttribute("href", url);
+                    link.setAttribute("download", filename);
+                    link.style.visibility = 'hidden';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            }
+        }
 
 
         /**

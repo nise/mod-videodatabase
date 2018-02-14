@@ -1,7 +1,7 @@
 
 /* 
 * name: Vi2.VideoPlayer 
-*	author: niels.seidel@nise81.com
+* author: 2018 Niels Seidel, niels.seidel@nise81.com
 * license: MIT License
 * description: 
 *	todo:
@@ -96,7 +96,7 @@ define([
             vi2 = window.vi2 || {},
             Vi2 = window.Vi2 || {}
             ;
-
+        //vi2.debug = function(str){ return 0; }
 
         function Player(options) {
             vi2.observer.player = this;
@@ -124,6 +124,7 @@ define([
             observer: null,
             url: '',
             player_plugins: [],
+            video_source:'',
 
             /* selectors */
             video_container: null,
@@ -200,7 +201,7 @@ define([
                 });
 
                 this.video.addEventListener('playing', function () {
-                    console.log('networkstate code: ' + _this.video.networkState)
+                    //vi2.debug('networkstate code: ' + _this.video.networkState)
                     /*     
                         0 = NETWORK_EMPTY - audio/video has not yet been initialized
                         1 = NETWORK_IDLE - audio/video is active and has selected a resource, but is not using the network
@@ -208,7 +209,7 @@ define([
                         3 = NETWORK_NO_SOURCE - no audio/video source found
                     */
                     if (_this.video.error) {
-                        console.log('error code: ' + _this.video.error.code);
+                        //vi2.debug('error code: ' + _this.video.error.code);
                     }
                     /*
                         1 = MEDIA_ERR_ABORTED - fetching process aborted by user
@@ -218,19 +219,33 @@ define([
                     */
 
                     _this.video.onstalled = function () {
-                        console.log("Media data is not available");
+                        //vi2.debug("Media not available");
                         _this.startSpinning();
-                    }; 
+                    };
 
                     _this.video.onsuspend = function () {
-                        console.log("Loading of the media is suspended");
+                        //vi2.debug("Media load suspended");
                         _this.startSpinning();
-                    }; 
+                    };
 
                     _this.video.onwaiting = function () {
-                        console.log("Wait! I need to buffer the next frame");
+                        //vi2.debug("Video on waiting");
                         _this.startSpinning();
-                    }; 
+                    };
+
+                    /*
+                        * 0 = HAVE_NOTHING - no information whether or not the audio/video is ready
+                        * 1 = HAVE_METADATA - metadata for the audio/video is ready
+                        * 2 = HAVE_CURRENT_DATA - data for the current playback position is available, but not enough data to play next frame/millisecond
+                        * 3 = HAVE_FUTURE_DATA - data for the current and at least the next frame is available
+                        * 4 = HAVE_ENOUGH_DATA - enough data available to start playing
+                    */
+                    if (_this.video.readyState < 3) {
+                        _this.startSpinning();
+                    } else if (_this.video.readyState === 4) {
+                        _this.stopSpinning();
+                    }
+
 
 
                 });
@@ -256,7 +271,7 @@ define([
 
                 // event binding: on time update
                 this.video.addEventListener('timeupdate', function (e) {
-                    _this.timeUpdateHandler(e);
+                    //_this.timeUpdateHandler(e);
                 });
 
                 // event binding: on ended
@@ -348,7 +363,7 @@ define([
             *	@returns: video source element including src and type attribute
             */
             createSource: function (src) {
-
+                this.video_source = src;
                 var
                     mime_type = this.supportedMime,
                     ext = '.mp4',
@@ -512,23 +527,7 @@ define([
 
 
 
-            /** 
-             * event handler: on time update
-             * readyState:
-             * 0 = HAVE_NOTHING - no information whether or not the audio/video is ready
-             * 1 = HAVE_METADATA - metadata for the audio/video is ready
-             * 2 = HAVE_CURRENT_DATA - data for the current playback position is available, but not enough data to play next frame/millisecond
-             * 3 = HAVE_FUTURE_DATA - data for the current and at least the next frame is available
-             * 4 = HAVE_ENOUGH_DATA - enough data available to start playing
-             * */
-            timeUpdateHandler: function (e) {
-                console.log(this.video.readyState)
-                if (this.video.readyState < 3) {
-                    this.startSpinning();
-                } else if (this.video.readyState === 4) {
-                    this.stopSpinning();
-                }
-            },
+
 
 
             /*
@@ -641,7 +640,7 @@ define([
              * Returns the current videofile
              */
             currentVideoFile: function () {
-                return this.video.src;
+                return this.video_source;
             },
 
 
@@ -679,8 +678,8 @@ define([
 
             /* prints errors */
             errorHandling: function (e) {
-                //		console.log('Error - Media Source not supported: ' + this.video.error.code == this.video.error.MEDIA_ERR_SRC_NOT_SUPPORTED); // true
-                //	 	console.log('Error - Network No Source: ' + this.video.networkState == this.video.NETWORK_NO_SOURCE); // true
+                //vi2.debug('Error - Media Source not supported: ' + this.video.error.code == this.video.error.MEDIA_ERR_SRC_NOT_SUPPORTED); // true
+                //vi2.debug('Error - Network No Source: ' + this.video.networkState == this.video.NETWORK_NO_SOURCE); // true
             }
 
 

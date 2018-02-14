@@ -1,11 +1,10 @@
 /**
  * name: Vi2.Log
- * author: niels.seidel@nise81.com
+ * author: 2018 Niels Seidel, niels.seidel@nise81.com
  * license: MIT License
  * description:
  * todo:
- * - validation of incomming messages (especially filter commas)
- ** standardisazion:
+ * * standardisazion:
  * https://sites.google.com/site/camschema/home
  * http://sourceforge.net/p/role-project/svn/HEAD/tree/trunk/gadgets/cam_sjtu/CamInstance.js
  * http://sourceforge.net/p/role-project/svn/HEAD/tree/trunk/gadgets/html5Video/videoGadget.xml
@@ -68,12 +67,13 @@ define(['jquery'], function ($) {
             // add video and playback information
             var pt = vi2.observer.player.currentTime();
             logEntry.playback_time = pt === undefined ? -1 : pt;
-            logEntry.video_id = vi2.observer.player.currentVideoFile().replace(/,/g, '');
-            //logEntry.video_file: String,
+            //logEntry.video_id = vi2.observer.player.currentVideoFile();
+            logEntry.video_file = vi2.observer.player.currentVideoFile();
             //logEntry.video_length: String,
             //logEntry.video_language: String,
-            logEntry.action = this.validate(msg); /* context: msg.context, action: msg.action, values: msg.values */
-
+            logEntry.context = msg.context;
+            logEntry.action = msg.action;//this.validate(msg); /* context: msg.context, action: msg.action, values: msg.values */
+            logEntry.value = msg.values;
             // add misc information
             logEntry.user_agent = this.getUserAgent();
             //group: vi2.currentGroup,
@@ -135,7 +135,7 @@ define(['jquery'], function ($) {
          * Makes an AJAX call to send the log data set to the server
          */
         sendLog: function (entry) {
-            this.options.logger_service_params.data = {data: JSON.stringify(entry) }; 
+            this.options.logger_service_params.data = { entry: JSON.stringify(entry), courseid: 2 }; 
             $.ajax({
                 method: 'POST',
                 url: this.options.logger_service_url,
@@ -143,10 +143,10 @@ define(['jquery'], function ($) {
                 dataType: "json"
             })
             .done(function (msg) {
-                console.log(msg);
+                //console.log(msg);
             })
             .fail(function (msg) {
-                console.log(msg);
+                //console.log(msg);
             });
         }
 
