@@ -6,7 +6,7 @@
 */
 
 
-define(['jquery'], function () {
+define(function () {
 
     var
         vi2 = window.vi2 || {},
@@ -15,50 +15,56 @@ define(['jquery'], function () {
 
     function Logger(options) {
 
-        this.video = vi2.observer.player;
+        this.video = vi2.observer.player.video;
         this.interval = 5;
         this.lastposition = -1;
         this.timer = null;
 
-        var _this = this;
+        
 
-        this.video.addEventListener('play', function (e) {
-            _this.start();
-        });
 
-        this.video.addEventListener('pause', function (e) {
-            _this.stop();
-        });
-
-        this.video.addEventListener('abort', function (e) {
-            _this.stop();
-        });
-
-        this.video.addEventListener('timeupdate', function (e) {
-
-        });
-
-        this.video.addEventListener('ended', function (e) {
-            _this.stop();
-        }, false);
-
-        /*
-         player.oncanplay(start);
-                player.onSeek(restart);
-         player.onPause(stop);
-             player.onBuffer(stop);
-         player.onIdle(stop);
-         player.onComplete(stop);
-             player.onError(stop);
-       */
 
     }
 
     Logger.prototype = {
 
+        init: function () {
+            var _this = this;
+            
+            this.video.addEventListener('play', function (e) {
+                _this.start();
+            });
+
+            this.video.addEventListener('pause', function (e) {
+                _this.stop();
+            });
+
+            this.video.addEventListener('abort', function (e) {
+                _this.stop();
+            });
+
+            this.video.addEventListener('timeupdate', function (e) {
+
+            });
+
+            this.video.addEventListener('ended', function (e) {
+                _this.stop();
+            }, false);
+
+            /*
+             player.oncanplay(start);
+                    player.onSeek(restart);
+             player.onPause(stop);
+                 player.onBuffer(stop);
+             player.onIdle(stop);
+             player.onComplete(stop);
+                 player.onError(stop);
+           */
+        },
+
         loop: function () {
             var currentinterval = (Math.round(vi2.observer.player.currentTime()) / this.interval) >> 0;
-            console.log("i:" + currentinterval + ", p:" + vi2.observer.player.getPosition());
+            console.log("i:" + currentinterval + ", p:");
             if (currentinterval != this.lastposition) {
                 vi2.observer.log({ context: 'player', action: 'playback', values: [currentinterval] });
                 this.lastposition = currentinterval;

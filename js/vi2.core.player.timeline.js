@@ -29,7 +29,7 @@ define(['jquery', 'js/vi2.core.utils.js'], function ($, Utils) {
         this.options = $.extend(this.options, options);
         this.seek = seek === undefined ? 0 : seek;
         this.init();
-    };
+    }
 
     Timeline.prototype = {
 
