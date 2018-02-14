@@ -6,14 +6,14 @@ define([
 	'js/vi2.core.database.js',
 	'js/vi2.core.log.js',
 	'js/vi2.core.utils.js'
-	], function (
-		$,
-		inherit,
-		Observer,
-		Database,
-		Log,
-		Utils
-	) {
+], function (
+	$,
+	inherit,
+	Observer,
+	Database,
+	Log,
+	Utils
+) {
 
 		var
 			vi2 = {}, // global variable				
@@ -23,6 +23,31 @@ define([
 		Vi2.Database = Database;
 		Vi2.Log = Log;
 		Vi2.Utils = Utils;
+
+		/**
+             * Loads player and annotation plugins
+             *   
+             * todo:
+                var temporalBookmarks = new Vi2.TemporalBookmarks();
+                var sharing = new Vi2.Sharing();
+             */
+		Vi2.loadPlugins = function() {
+			this.plugins = [
+				{ path: 'js/vi2.core.player.volume.js' },
+				{ path: 'js/vi2.player.skip.js', options: { step: -5 } },
+				{ path: 'js/vi2.player.zoom.js' },
+				{ path: 'js/vi2.player.playback-speed.js' },
+				{ path: 'js/vi2.annotations.comments.js' }
+			];
+
+			for (var i = 0, len = this.plugins.length; i < len; i++) {
+				require([this.plugins[i].path, this.plugins[i].options], function (Plugin, options) {
+					var opt = options !== undefined ? options : {};
+					var p = new Plugin(opt);
+					vi2.observer.addWidget(p);
+				});
+			}
+		}
 
 		Vi2.initVideo = function (db) {
 			vi2.db = db;
@@ -37,7 +62,7 @@ define([
 				selector: 'seq'
 			});
 			vi2.observer.init(0);
-			var viLog = new Vi2.Log({ 
+			var viLog = new Vi2.Log({
 				output_type: -1, // 0: console log: 1: server log
 				logger_service_url: '/moodle/webservice/rest/server.php',
 				logger_service_params: {
@@ -46,9 +71,9 @@ define([
 					wsfunction: 'videodatabase_logging',
 					data: {}
 				}
-			}); 
+			});
 			vi2.observer.addWidget(viLog);
-			loadAnnotationPlugins();
+			Vi2.loadPlugins();
 			vi2.observer.parse(videoData);
 
 		};
@@ -66,21 +91,7 @@ define([
 		};
 
 
-		function loadAnnotationPlugins() {
-			var plugins = [
-				{ path: 'js/vi2.annotations.comments.js' }
 
-			];
-			this.player_plugins = plugins;
-
-			for (var i = 0, len = this.player_plugins.length; i < len; i++) {
-				require([this.player_plugins[i].path], function (Plugin) {
-					var options = {};//plugins[i]['options'] !== undefined ? plugins[i].options : {};
-					var p = new Plugin();
-					vi2.observer.addWidget(p);
-				});
-			}
-		}
 
 		return Vi2;
 	});// end define

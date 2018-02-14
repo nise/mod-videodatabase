@@ -193,7 +193,7 @@ define([
                 this.logger();
 
                 // xxx should depend on the configuration
-                this.loadPlayerPlugins();
+                //this.loadPlayerPlugins();
 
              
                 this.play_btn = $('.vi2-video-play-pause');
@@ -252,36 +252,7 @@ define([
             },
 
 
-            /**
-             * Loads the player plugins
-             *   
-             * bug: delegate  options as parameters when instantiating the plugin
-                
-                //var temporalBookmarks = new Vi2.TemporalBookmarks();
-                //vi2.observer.addWidget( temporalBookmarks );
-                
-                //var sharing = new Vi2.Sharing();
-                //vi2.observer.addWidget( sharing ); // http://localhost/elearning/vi2/vi-two/examples/iwrm/videos/iwrm_seidel1.webm
-
-             */
-            loadPlayerPlugins: function () {
-                var plugins = [
-                    { path: 'js/vi2.core.player.volume.js'},
-                    { path: 'js/vi2.player.skip.js', options: {step: -5 }},
-                    { path: 'js/vi2.player.zoom.js' },
-                    { path: 'js/vi2.player.playback-speed.js'}
-                    
-                ];
-                this.player_plugins = plugins;
-
-                for (var i = 0, len = this.player_plugins.length; i < len; i++) {
-                    require([this.player_plugins[i].path], function (Plugin) {
-                        var options = {};//plugins[i]['options'] !== undefined ? plugins[i].options : {};
-                        var p = new Plugin('#video1'); 
-                        vi2.observer.addWidget( p );
-                    });
-                }
-            },
+            
 
 
             /* HTML5 playback detection 
