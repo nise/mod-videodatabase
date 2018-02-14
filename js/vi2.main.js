@@ -37,6 +37,7 @@ define([
 				{ path: 'js/vi2.player.skip.js', options: { step: -5 } },
 				{ path: 'js/vi2.player.zoom.js' },
 				{ path: 'js/vi2.player.playback-speed.js' },
+				{ path: 'js/vi2.player.logger.js' },
 				{ path: 'js/vi2.annotations.comments.js' }
 			];
 

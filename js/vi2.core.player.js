@@ -101,11 +101,9 @@ define([
         function Player(options) {
             vi2.observer.player = this;
             this.options = $.extend(this.options, options);
-            //this.options = $.extend(this.options, options);
-            //this.video = document.getElementById((this.options.selector).replace(/\#/, ''));
             this.supportedMime = this.detectVideoSupport();
             this.loadUI();
-        };
+        }
 
         Player.prototype = {
             name: 'video player',
@@ -156,7 +154,7 @@ define([
                     .attr('controls', false)
                     .attr('autobuffer', true)
                     .attr('preload', "metadata")
-                    .attr('id', this.options.selector.replace('#','') )
+                    .attr('id', this.options.selector.replace('#', ''))
                     //.show()
                     //.css({width:'75vw'}) // xxx: size should be defined somewhere
                     //.addClass('embed-responsive-item col-md-12')
@@ -189,13 +187,10 @@ define([
                 // add timeline
                 this.timeline = new Timeline(this.video, {}, this.seek);
 
-                // add playback logger
-                this.logger();
-
                 // xxx should depend on the configuration
                 //this.loadPlayerPlugins();
 
-             
+
                 this.play_btn = $('.vi2-video-play-pause');
                 this.play_btn.find('.fa-pause').hide();
 
@@ -252,7 +247,7 @@ define([
             },
 
 
-            
+
 
 
             /* HTML5 playback detection 
@@ -374,7 +369,7 @@ define([
                     cursorVisible = false;
                     //$(_this.options.videoControlsSelector).removeClass("open-controls");
                 }
-                var el = document.getElementById(this.options.selector.replace('#',''));
+                var el = document.getElementById(this.options.selector.replace('#', ''));
                 document.onmousemove = function () {
                     if (mouseTimer) {
                         window.clearTimeout(mouseTimer);
@@ -603,7 +598,7 @@ define([
             /**
              * Returns the current videofile
              */
-            currentVideoFile: function(){
+            currentVideoFile: function () {
                 return this.video.src;
             },
 
@@ -612,10 +607,11 @@ define([
             currentTime: function (x) {
                 if (x === undefined) {
                     return this.video.currentTime; //$(this.options.selector).attr('currentTime');
-                } else if( parseInt(x) >= 0 ) {
+                } else if (parseInt(x) >= 0) {
                     this.video.currentTime = parseInt(x);
-                    $(this.video).trigger('play');
-                    this.play();
+                    //$(this.video).trigger('play');
+                    //this.play();
+                    this.video.play();
                 }
             },
 
@@ -643,81 +639,10 @@ define([
             errorHandling: function (e) {
                 //		console.log('Error - Media Source not supported: ' + this.video.error.code == this.video.error.MEDIA_ERR_SRC_NOT_SUPPORTED); // true
                 //	 	console.log('Error - Network No Source: ' + this.video.networkState == this.video.NETWORK_NO_SOURCE); // true
-            },
-
-
-            /*
-            * Logger
-            **/
-            logger: function () {
-                var
-                    _this = this,
-                    interval = 5,
-                    lastposition = -1,
-                    timer
-                    ;
-
-                function loop() {
-                    var currentinterval;
-                    currentinterval = (Math.round(_this.currentTime()) / interval) >> 0;
-                    //console.log("i:" + currentinterval + ", p:" + player.getPosition());
-                    if (currentinterval != lastposition) {
-                        vi2.observer.log({ context: 'player', action: 'playback', values: [currentinterval] });
-                        lastposition = currentinterval;
-                    }
-                }
-
-                function start() {
-                    if (timer) {
-                        timer = clearInterval(timer);
-                    }
-                    timer = setInterval(loop, interval * 1000);
-                    setTimeout(loop, 100);
-                }
-
-                function restart() {
-                    if (timer) {
-                        timer = clearInterval(timer);
-                    }
-                    lasttime = -1;
-                    timer = setInterval(loop, interval * 1000);
-                    setTimeout(loop, 100);
-                }
-
-                function stop() {
-                    timer = clearInterval(timer);
-                    loop();
-                }
-                /*
-                    player.oncanplay(start);
-                           player.onSeek(restart);
-                    player.onPause(stop);
-                        player.onBuffer(stop);
-                    player.onIdle(stop);
-                    player.onComplete(stop);
-                        player.onError(stop);
-                  */
-                this.video.addEventListener('play', function (e) {
-                    start();
-                });
-
-                this.video.addEventListener('pause', function (e) {
-                    stop();
-                });
-
-                this.video.addEventListener('abort', function (e) {
-                    stop();
-                });
-
-                this.video.addEventListener('timeupdate', function (e) {
-
-                });
-
-                this.video.addEventListener('ended', function (e) {
-                    stop();
-                }, false);
-
             }
+
+
+            
 
         };
 
