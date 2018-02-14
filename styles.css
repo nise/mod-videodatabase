@@ -236,34 +236,38 @@ div.link{
     outline-offset: 10px;
     background: lightcyan;
     color: dimgray;
-    padding: 6px 10px;
+    padding: 0;
     min-height: 100px;
    position: relative;
     cursor: pointer;
   }
 
+  
+  
  .dropbox label {
      font-size:1em;
      font-weight:700;
      align-content: center;
      cursor: pointer;
-     width:80%;
+     width:100%;
+     margin-bottom:0 !important;
+     padding: 6px 12px; 
  }
 
   .dropbox label p{
-      align-content: center;
-      text-align: center;
+    align-content: center;
+    text-align: center;
+    padding: 10px 0px;
     width:100%;
       
   }
-
-
 
   .input-file {
     opacity: 0; /* invisible but it's there! */
     width: 100%;
     cursor: pointer;
   }
+
 
   .dropbox:hover {
     background: lightblue; /* when mouse over to the drop zone, change color */

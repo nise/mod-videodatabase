@@ -229,56 +229,63 @@ echo '
 	<div>
 		<div class="col-md-12 col-sm-12  col-xs-12">
 			<a href="#/videos" class="right large"><span class="fa fa-close"></span></a>	
-			<h3>Bearbeiten</h3>
-				
-		</div>	
-		<div class="col-md-6 col-sm-12 col-xs-12">
-			<form 
-				enctype="multipart/form-data" 
-				novalidate 
-				v-if="isInitial || isSaving"
-				class="dropbox"
-				>
-				<input id="file" type="file" multiple :name="uploadFieldName" :disabled="isSaving" @change="filesChange($event.target.name, $event.target.files); fileCount = $event.target.files.length" accept="video/*" class="input-file" />
-				<label class="file-label" for="file">
-					<p v-if="isInitial">
-					Drag your file(s) here to begin<br> or click to browse
-					</p>
-					<p v-if="isFailed">{{ error }}</p>
-					<p v-if="isSaving">
-						Uploading {{ fileCount }} files
-						<div class="row">
-							<div v-cloak v-for="file in uploadedFiles" class="col-md-4">{{ file.name }} ({{ Math.round( file.size / 1024 / 1024 ) }}MB)					
-								<video width="100%" height="auto" controls>
-									<source v-bind:src="file.location" :type="file.type" >
+			<h3>Video bearbeiten</h3>
+		</div>
+		<div class="row">	
+			<div class="col-md-3 col-sm-12 col-xs-12">
+				<video width="100%" height="auto" controls preload="none">
+					<source v-if="video.video" :src="video.video" :type="video.mimetype" >
+				</video>
+			</div>
+			<div class="col-md-3 col-sm-12 col-xs-12">
+				<form 
+					enctype="multipart/form-data" 
+					novalidate 
+					v-if="isInitial || isSaving"
+					class="dropbox"
+					>
+					
+					<label class="file-label">
+						<input id="file" type="file" multiple :name="uploadFieldName"  @change="filesChange($event.target.name, $event.target.files); fileCount = $event.target.files.length" accept="video/*" class="input-file" />
+						<p v-if="isInitial">
+							Videodatei für den Upload auswählen
+						</p>
+						<p v-if="isFailed">
+							Error: {{ error }}
+						</p>
+						<p v-if="isSuccess || isInitial">
+							<div v-cloak v-for="file in uploadedFiles">
+								Für Upload ausgewählt:<br> {{ file.name }} ({{ Math.round( file.size / 1024 / 1024 ) }}MB)					
+								<video width="100%" height="auto" controls preload="none">
+									<source v-if="file.location" @change="file.location" :src="file.location" :type="file.type" >
 									Your browser does not support the video tag.
 								</video>
-							</div> 
-						</div>
+							</div>
+						</p>
+					</label>
+				</form>
+				<!--SUCCESS-->
+				<div v-if="isSuccess">
+					<h2>Uploaded {{ uploadedFiles.length }} file(s) successfully.</h2>
+					<p>
+					<a href="javascript:void(0)" @click="reset()">Upload again</a>
 					</p>
-				</label>
-			</form>
-			<!--SUCCESS-->
-			<div v-if="isSuccess">
-				<h2>Uploaded {{ uploadedFiles.length }} file(s) successfully.</h2>
-				<p>
-				<a href="javascript:void(0)" @click="reset()">Upload again</a>
-				</p>
-				<ul class="list-unstyled">
-				<li v-for="item in uploadedFiles">
-					<img :src="item.url" class="img-responsive img-thumbnail" :alt="item.originalName">
-				</li>
-				</ul>
-			</div>
-			<!--FAILED-->
-			<div v-if="isFailed">
-				<h2>Uploaded failed.</h2>
-				<p>
-				<a href="javascript:void(0)" @click="reset()">Try again</a>
-				</p>
-				<pre>{{ uploadError }}</pre>
-			</div>
-		</div>		
+					<ul class="list-unstyled">
+					<li v-for="item in uploadedFiles">
+						<img :src="item.url" class="img-responsive img-thumbnail" :alt="item.originalName">
+					</li>
+					</ul>
+				</div>
+				<!--FAILED-->
+				<div v-if="isFailed">
+					<h2>Uploaded failed.</h2>
+					<p>
+					<a href="javascript:void(0)" @click="reset()">Try again</a>
+					</p>
+					<pre>{{ uploadError }}</pre>
+				</div>
+			</div>	
+		</div>	
 	</div>
   </div>
 
