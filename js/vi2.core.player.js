@@ -153,7 +153,7 @@ define([
                 var video_element = $('<video></video>')
                     .attr('controls', false)
                     .attr('autobuffer', true)
-                    .attr('preload', "metadata")
+                    .attr('preload', "auto") // "metadata"
                     .attr('id', this.options.selector.replace('#', ''))
                     //.show()
                     //.css({width:'75vw'}) // xxx: size should be defined somewhere
@@ -187,8 +187,6 @@ define([
                 // add timeline
                 this.timeline = new Timeline(this.video, {}, this.seek);
 
-                // xxx should depend on the configuration
-                //this.loadPlayerPlugins();
 
 
                 this.play_btn = $('.vi2-video-play-pause');
@@ -199,6 +197,42 @@ define([
                     //$('header').hide();
                     _this.play_btn.find('.fa-pause').show();
                     _this.play_btn.find('.fa-play').hide();
+                });
+
+                this.video.addEventListener('playing', function () {
+                    console.log('networkstate code: ' + _this.video.networkState)
+                    /*     
+                        0 = NETWORK_EMPTY - audio/video has not yet been initialized
+                        1 = NETWORK_IDLE - audio/video is active and has selected a resource, but is not using the network
+                        2 = NETWORK_LOADING - browser is downloading data
+                        3 = NETWORK_NO_SOURCE - no audio/video source found
+                    */
+                    if (_this.video.error) {
+                        console.log('error code: ' + _this.video.error.code);
+                    }
+                    /*
+                        1 = MEDIA_ERR_ABORTED - fetching process aborted by user
+                        2 = MEDIA_ERR_NETWORK - error occurred when downloading
+                        3 = MEDIA_ERR_DECODE - error occurred when decoding
+                        4 = MEDIA_ERR_SRC_NOT_SUPPORTED - audio/video not supported
+                    */
+
+                    _this.video.onstalled = function () {
+                        console.log("Media data is not available");
+                        _this.startSpinning();
+                    }; 
+
+                    _this.video.onsuspend = function () {
+                        console.log("Loading of the media is suspended");
+                        _this.startSpinning();
+                    }; 
+
+                    _this.video.onwaiting = function () {
+                        console.log("Wait! I need to buffer the next frame");
+                        _this.startSpinning();
+                    }; 
+
+
                 });
 
                 this.video.addEventListener('pause', function (e) {
@@ -473,16 +507,23 @@ define([
             * event handler: on can play. Notifies the observer about a new video.
             */
             readyStateHandler: function (e) {
-                console.log(e);
                 vi2.observer.updateVideo(this.seqList[this.seqNum].id, this.seqNum);
             },
 
 
-            /* 
-            * event handler: on time update
-            **/
+
+            /** 
+             * event handler: on time update
+             * readyState:
+             * 0 = HAVE_NOTHING - no information whether or not the audio/video is ready
+             * 1 = HAVE_METADATA - metadata for the audio/video is ready
+             * 2 = HAVE_CURRENT_DATA - data for the current playback position is available, but not enough data to play next frame/millisecond
+             * 3 = HAVE_FUTURE_DATA - data for the current and at least the next frame is available
+             * 4 = HAVE_ENOUGH_DATA - enough data available to start playing
+             * */
             timeUpdateHandler: function (e) {
-                if (this.video.readyState === 2) {
+                console.log(this.video.readyState)
+                if (this.video.readyState < 3) {
                     this.startSpinning();
                 } else if (this.video.readyState === 4) {
                     this.stopSpinning();
@@ -643,7 +684,7 @@ define([
             }
 
 
-            
+
 
         };
 
