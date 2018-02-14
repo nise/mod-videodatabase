@@ -19,16 +19,11 @@ define([
     '/moodle/mod/videodatabase/amd/src/vue.js',
     '/moodle/mod/videodatabase/amd/src/vue-router.js',
     '/moodle/mod/videodatabase/amd/src/vuex.js',
-    //'/moodle/mod/videodatabase/amd/src/vue-uniq-ids.min.js',
     '/moodle/mod/videodatabase/amd/src/vfg.js',
     '/moodle/mod/videodatabase/amd/src/axios.min.js',
 
     '/moodle/mod/videodatabase/amd/src/datamodel.js',
-
-    //'/moodle/mod/videodatabase/amd/src/dropzone.js',
-    //'/moodle/mod/videodatabase/amd/src/vue2Dropzone.js',
    // '/moodle/mod/videodatabase/amd/src/vuejs-paginator.js',
-    //'js/vi-two-lib.js',
     'js/vi2.main.js'
 ],
     function (
@@ -38,16 +33,11 @@ define([
         Vue,
         VueRouter,
         Vuex,
-        // VueUniqIds,
         VueFormGenerator,
         Axios,
 
         Datamodel,
-
-        // dropzone, 
-        //  Vue2Dropzone,
        // VuePaginator,
-        //  Vi2Lib, 
         Vi2
     ) {
 
@@ -152,6 +142,12 @@ define([
                     },
                     setCurrentVideoRating(state, rating) {
                         state.videos[state.currentVideo].rating = rating;
+                    },
+                    setVideoFileData(state, data){
+                        console.log(data.files);
+                        state.videos[state.currentVideo].mimetype = data.files[0].type;
+                        state.videos[state.currentVideo].size = data.files[0].size;
+                        state.videos[state.currentVideo].filename = BASE_URL + 'test2/' + data.files[0].name;
                     }
                 }
             });
@@ -364,7 +360,7 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                         'rating': Rating
                     }
                 };
-
+            
 
             const STATUS_INITIAL = 0, STATUS_SAVING = 1, STATUS_SUCCESS = 2, STATUS_FAILED = 3;
 
@@ -377,13 +373,28 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                         uploadedFiles: [],
                         fileCount: 0,
                         uploadError: null,
-                        currentStatus: null,
+                        currentStatus: 0,
                         uploadFieldName: 'videouploads[]'
-
                     }
                 },
                 computed: {
-
+                    video: function () {
+                        var id = this.$route.params.id;
+                        store.commit('setCurrentVideo', this.$route.params.id);
+                        var video_data = store.getters.videoById(id);
+                        if (video_data !== undefined) {
+                            video_data.metadata = [];
+                            video_data.metadata[0] = {};
+                            video_data.metadata[0].author = video_data['contributor'];
+                            video_data.metadata[0].title = video_data['title'];
+                            video_data.metadata[0].abstract = video_data['description'];
+                            video_data.metadata[0].thumbnail = "still-" + video_data.filename.replace('.mp4', '_comp.jpg');
+                            video_data.video = '/videos/' + video_data.filename.replace('.mp4', '.webm');
+                            return video_data;//store.getters.videoById( this.$route.params.id );
+                        } else {
+                            //return null;
+                        }
+                    },
                     isInitial() {
                         return this.currentStatus === STATUS_INITIAL;
                     },
@@ -398,24 +409,29 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                     }
                 },
                 methods: {
-                    isAdvancedUpload() {
+                    isAdvancedUpload: function() {
                         var div = document.createElement('div');
                         return (('draggable' in div) || ('ondragstart' in div && 'ondrop' in div)) && 'FormData' in window && 'FileReader' in window;
                     },
-                    reset() {
+                    reset: function() {
                         // reset form to initial state
                         this.currentStatus = STATUS_INITIAL;
                         this.uploadedFiles = [];
                         this.uploadError = null;
                         this.advancedUpload = this.isAdvancedUpload();
                     },
-                    save(formData) {
+                    save: function(formData) {
                         // upload data to the server
                         this.currentStatus = STATUS_SAVING;
                         upload(formData, this.updateSelectedFiles);
                     },
-                    filesChange(fieldName, fileList) {
-                        if (!fileList.length) return;
+                    filesChange: function(fieldName, fileList) {
+                        if (!fileList.length){
+                            return;
+                        }
+                        this.currentStatus = STATUS_INITIAL; 
+                        this.uploadedFiles = [];
+                        document.getElementById("file").value = "";
                         const formData = new FormData();
                         for (var i = 0, len = fileList.length; i < len; i++) {
                             formData.append('videofiles[]', fileList[i]);
@@ -426,21 +442,22 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                                 location: '',
                                 status: 'selected'
                             });
-                        }
+                        } 
                         // save it
                         this.save(formData);
                     },
-                    updateSelectedFiles(data) {
-                        if (data.error) {
+                    updateSelectedFiles: function(data) {
+                        if (data.error.length > 0) {
                             this.currentStatus === STATUS_FAILED;
                             this.error = data.error;
                         } else {
                             this.uploadedFiles = data.files;
+                            store.commit('setVideoFileData', data);
                             return this.currentStatus === STATUS_SUCCESS;
                         }
                     }
                 },
-                mounted() {
+                mounted: function() {
                     this.reset();
                 }
             };
@@ -456,7 +473,7 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                     type: 'POST',
                     data: formData,
                     success: function (data) {
-                        console.log(data);
+                        // update store
                         data = JSON.parse(data.toString());
                         if (data.error !== '') {
                             console.log('ERROR: ' + data.error)
@@ -544,6 +561,7 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
 
             // combine the parts of the form
             const Form = {
+                
                 render(h) {
                     const upload = h(UploadForm);
                     const meta = h(MetadataForm);
