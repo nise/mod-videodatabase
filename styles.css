@@ -460,5 +460,13 @@ div.link{
   color: #CCC;
 }
 
+.search-wrapper input{
+    padding: 4px 12px;
+      color: rgba(0,0,0,.70);
+      border: 1px solid rgba(0,0,0,.12);
+      transition: .15s all ease-in-out;
+      background: white;
+}
+
 
 
