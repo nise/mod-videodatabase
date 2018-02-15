@@ -200,7 +200,7 @@ define([
                     _this.play_btn.find('.fa-play').hide();
                 });
 
-                this.video.addEventListener('playing', function () {
+                this.video.addEventListener('playing', function () { return;
                     //vi2.debug('networkstate code: ' + _this.video.networkState)
                     /*     
                         0 = NETWORK_EMPTY - audio/video has not yet been initialized
