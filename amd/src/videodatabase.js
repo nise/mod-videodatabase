@@ -7,7 +7,6 @@
  * @copyright  2017 Niels Seidel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since      3.1
- * 
  */
 define([
     'jquery',
@@ -113,6 +112,11 @@ define([
                     currentVideo: 0
                 },
                 getters: {
+                    videos(state){
+                        return function () {
+                            return state.videos;
+                        };
+                    },
                     videoById(state) {
                         var self = this;
                         return function (id) {
@@ -137,7 +141,7 @@ define([
                     setCurrentVideo(state, id) {
                         state.currentVideo = id;
                     },
-                    setCurrentVideoRating(state, rating) {
+                    setCurrentVideoRating(state, rating) { 
                         state.videos[state.currentVideo].rating = rating;
                     },
                     setVideoFileData(state, data) {
@@ -163,36 +167,47 @@ define([
                     value: { type: [Number, String] },
                     name: { type: String, default: 'rate' },
                     length: { type: Number },
-                    showcount: { type: Boolean },
+                    showcount: { type: Boolean, default: false },
                     required: { type: Boolean },
                     ratedesc: { type: Array, default() { return [] } },
                     disabled: { type: Boolean, default: false },
                     readonly: { type: Boolean, default: false }
                 },
-                data() {
+                data: function() {
                     return {
                         over: 0,
                         rate: 0
+                    };
+                },
+                computed: {
+                    currentvideo: function() {
+                        return store.state.currentVideo;
                     }
                 },
                 methods: {
-                    onOver(index) { if (!this.readonly) this.over = index },
+                    onOver:function(index) { 
+                        if (!this.readonly){
+                            this.over = index; 
+                        }
+                    },
                     onOut() { if (!this.readonly) this.over = this.rate },
-                    setRate(index) {
+                    setRate(index) { 
                         var _this = this;
                         if (index === undefined) { index = 0; }
 
                         this.userHasRatedVideo(function (hasRated) {
-                            if (hasRated) {
-                                // not allowed to rate anymore
-                            } else {
-                                if (_this.rate !== index) {
+                            this.disabled = hasRated;
+                            this.readonly = hasRated;
+                            if (!hasRated) { 
+                                //if (_this.rate !== index) {
                                     _this.$emit('beforeRate', _this.rate);
-                                    var data = store.getters.currentVideoData();
-                                    _this.storeRating(function (e) {
-                                        _this.$emit('readonly', true); // xxx bug // set readonly after giving a vote
+                                    //var data = store.getters.currentVideoData();
+                                    _this.storeRating(index, function (e) {
+                                        console.log(index);
+                                        //_this.$emit('readonly', true); // xxx bug // set readonly after giving a vote
                                     });
-                                }
+                                    _this.calcVideoRating();
+                                //}
                                 _this.rate = index;
                                 _this.$emit('input', _this.rate);
                                 _this.$emit('value', _this.rate);
@@ -209,35 +224,69 @@ define([
                     },
                     getRatingsOfVideo: function (callback) {
                         get_ws('videodatabase_ratings', "POST", {
-                            'videoid': 1,
+                            'videoid': this.currentvideo,
                             'courseid': 2,
                         }, function (e) {
                             //console.log(e);
                             callback(e);
+                        }, function (err) {
+                            console.error(err);
                         });
                     },
                     userHasRatedVideo: function (callback) {
                         get_ws('videodatabase_ratings', "POST", {
-                            'videoid': 1,
+                            'videoid': this.currentvideo,
                             'courseid': 2,
                             'userid': 20
                         }, function (e) {
                             var data = JSON.parse(e.data);
-                            if (typeof data === 'array' && data.length === 0) {
+                            //console.log(data)
+                            if (data.length === 0) {
                                 callback(false);
                             } else {
-                                callback(true)
+                                callback(false);//xxx
                             }
                         });
                     },
                     storeRating: function (rating, callback) {
                         get_ws('videodatabase_ratings', "POST", {
-                            'videoid': 1,
+                            'videoid': this.currentvideo,
                             'courseid': 2,
                             'userid': 2,
                             'rating': rating
                         }, function (e) {
                             callback(e);
+                        }, function (err) {
+                            console.error(err);
+                        });
+                    },
+                    calcVideoRating:function(){
+                        var _this = this;
+                        this.getRatingsOfVideo(function (e) {
+                            //console.log(Object.values(JSON.parse(e.data)))
+                            var data = Object.values(JSON.parse(e.data)).map(function (obj) {
+                                return obj.rating;
+                            });
+                            if(data.length > 0){
+                            var positiveRatings = data.filter(function (obj) {
+                                return obj > 2 ? true : false;
+                            });
+                            var avg = Math.round( data.reduce(function (a, b) { return Number(a) + Number(b); }) / data.length );
+                            var wilson = _this.wilsonScore(positiveRatings.length, data.length) * 5;
+                            // console.log(avg, wilson, positiveRatings.length, data.length);
+                            store.commit('setCurrentVideoRating', avg);
+                            if (_this.value >= _this.length) {
+                                _this.value = _this.length;
+                            } else if (_this.value < 0) {
+                                _this.value = 0;
+                            }
+                            _this.rate = avg;
+                            _this.over = avg;
+                            }else{ // xxx why this?
+                                _this.rate = _this.value;
+                                _this.over = _this.value;
+                            }
+
                         });
                     },
 
@@ -250,29 +299,23 @@ The variance of your data is ( E(x^2)-(E(x))^2 )/n = ( (p1*1^2 + p2*2^2..+p5*5^2
 
 Since std = sqrt(var), it is pretty straightforward to calculate Normal approximation interval. I will let you work on extending this to WCI.
                     */
-                    wilsonScore: function (pos, n) {
+                    wilsonScore: function (positiveRatings, n) {
                         if (n === 0) {
                             return 0;
                         }
                         const z = 1.96; //Statistics2.pnormaldist(1 - (1 - confidence) / 2)
-                        const phat = 1.0 * pos / n;
+                        const phat = 1.0 * positiveRatings / n;
                         return (phat + z * z / (2 * n) - z * Math.sqrt((phat * (1 - phat) + z * z / (4 * n)) / n)) / (1 + z * z / n);
                     }
                 },
                 created: function () {
-                    if (this.value >= this.length) {
-                        this.value = this.length;
-                    } else if (this.value < 0) {
-                        this.value = 0;
-                    }
-                    this.rate = this.value;
-                    this.over = this.value;
+                    this.calcVideoRating();
                 },
                 updated: function () {
                     var d = store.getters.currentVideoData().rating;
                     if (d === undefined) { d = 0; }
                     this.rate = d;
-                    this.hover = d;
+                    this.over = d;
                     this.$emit('value', d);
                     this.onOut();
                 }
@@ -350,7 +393,7 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                     },
                     methods: {
                         onAfterRate: function (rate) {
-                            store.commit('setCurrentVideoRating', rate);
+                            //store.commit('setCurrentVideoRating', rate);
                         }
                     },
                     components: {
@@ -466,7 +509,7 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
             function upload(formData, callback) {
 
                 $.ajax({
-                    url: SERVICE_URL,//window.location.pathname,
+                    url: SERVICE_URL,
                     type: 'POST',
                     data: formData,
                     success: function (data) {
@@ -587,6 +630,7 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                     show: false,
                     isEditor: true,
                     listView: false,
+                    search:''
                 },
                 computed: {
                     columnObject: function () { //console.log(JSON.stringify(this.videos))
@@ -594,7 +638,13 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                     },
                     videos: function () {
                         return store.state.videos;
-                    }
+                    },
+                    filteredList: function() {
+                        return Object.values(store.getters.videos()).filter(video => {
+                            // video.title.toLowerCase().includes(this.search.toLowerCase());
+                            return Object.values(video).join(' ').toLowerCase().includes(this.search.toLowerCase());
+                        });
+                    }    
                 },
                 methods: {
                     setListView: function () { this.listView = true; },
@@ -628,15 +678,14 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                             ''
                         ].join(' ');
                     },
-                    downloadLogData: function(){
+                    downloadLogData: function () {
                         get_ws('videodatabase_get_log', "POST", {
                             'courseid': 2,
                         }, function (data) {
                             // extract log entries form result set
-                            var json = Object.values(JSON.parse(data.response)).map(function(d){ return JSON.parse(d.entry); });
+                            var json = Object.values(JSON.parse(data.response)).map(function (d) { return JSON.parse(d.entry); });
                             // convert json to csv
                             var fields = Object.keys(json[0]);
-                            var replacer = function (key, value) { return value === null ? '' : value }
                             var csv = json.map(function (row) {
                                 return Object.values(row);
                             });

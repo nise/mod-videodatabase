@@ -280,8 +280,8 @@ class mod_videodatabase_ratings_external extends external_api {
         $transaction = $DB->start_delegated_transaction(); //If an exception is thrown in the below code, all DB queries in this code will be rollback.
         $table = "videodatabase_ratingss";
         $res = '';
-    
-        if(isset($data['rating'])){
+        
+        if(array_key_exists('rating', $data)){
             // set value
             $r = new stdClass();
             $r->rating = $data['rating'];
@@ -291,7 +291,7 @@ class mod_videodatabase_ratings_external extends external_api {
             $res = $DB->insert_records($table, array($r));
         }else{
             // get value
-            $res = $DB->get_records($table, array('videoid'=>$data['videoid'], 'userid'=>$data['userid']));
+            $res = $DB->get_records($table, array('videoid'=>$data['videoid']));
         }
         $transaction->allow_commit();
     

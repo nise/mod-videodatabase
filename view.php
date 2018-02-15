@@ -106,7 +106,7 @@ echo '
 				<a href="#/videos" class="right large"><span class="fa fa-close video-close"></span></a>
 				<!-- Main -->
 				<div :id="vi2_player_id" class="container-fluid">
-					<h2>{{ video.title }} {{video.rating}}</h2>
+					<h2>{{ video.title }}</h2>
 					<div class="row">
 						<div id="videowrapper" class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
 							<div :id="video_selector"></div>
@@ -188,7 +188,7 @@ echo '
 							</div>
 							<div class="vi2-volume-controls right"></div>
 							<div class="vi2-video-timer right"></div>
-							<rating class="right" ref="childRating" v-bind:value="video.rating" :length="5" @after-rate="onAfterRate" :ratedesc="[\'Very bad\', \'bad\', \'Normal\', \'Good\', \'Very good\']"></rating>
+							<rating class="right" ref="childRating" v-bind:value="video.rating" :length="5" @after-rate="onAfterRate"></rating>
 						</div>
 					</div>
 				</div>
@@ -356,7 +356,9 @@ echo '
 			<span @click="setListView()" title="Kachelansicht" class="fa fa-list large right link"></span>
 		</div>
 		<h1>Videos</h1>
-		
+		<div class="search-wrapper">
+    		<input type="text" v-model="search" placeholder="Suche"/>
+        </div>
 		
 
 		<div>
@@ -379,7 +381,7 @@ echo '
 								</tr>
 							</thead>
 							<tbody>
-								<tr v-for="video in videos">
+								<tr v-for="video in filteredList">
 									<td>
 										<div v-if="isEditor">
 											<router-link v-if="isEditor" class="" :to="{ path: \'/videos/\' + video.id + \'/edit\'}">
@@ -417,7 +419,7 @@ echo '
 							</span>
 						</div>
 						<div 
-							v-for="video in videos" 
+							v-for="video in filteredList" 
 							v-bind:class="\' col-xs-12 col-sm-5 col-md-2 video-item \'+ videoItemClass(video.id)"
 							>
 							<router-link class="title" :to="{ path: \'/videos/\' + video.id + \'/view\'}">
@@ -430,7 +432,7 @@ echo '
 							<div class="meta">
 								<router-link class="title" :to="{ path: \'/videos/\' + video.id + \'/view\'}">{{video.title}}</router-link>
 								<div>
-									<span v-for="star in video.id%5+1"> 
+									<span v-for="star in video.rating"> 
 										<span class="fa fa-star"></span>
 									</span>
 									<router-link v-if="isEditor" class="title" :to="{ path: \'/videos/\' + video.id + \'/edit\'}">
