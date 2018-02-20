@@ -39,9 +39,10 @@ class mod_videodatabase_videos_external extends external_api {
 
     public static function get_all_videos($data) {
         global $CFG, $DB, $USER;
+        
         $transaction = $DB->start_delegated_transaction(); 
         $table = "videodatabase_videos";
-        $res = $DB->get_records($table); 
+        $res = $DB->get_records($table, array('courseid'=> 2)); 
         $transaction->allow_commit();
         return array(
             'data' => json_encode($res),
@@ -49,7 +50,7 @@ class mod_videodatabase_videos_external extends external_api {
             'firstname' =>  $USER->firstname,
             'lastname' =>  $USER->lastname,
             'userid' =>  $USER->id, // or idnumber
-            'userimage' => '/moodle/user/pix.php/'.$USER->id.'/f1.jpg' 
+            'userimage' => '/moodle/user/pix.php/'.$USER->id.'/f1.jpg'
         );
     }
 }
