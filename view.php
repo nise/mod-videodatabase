@@ -87,9 +87,9 @@ $content = format_text($content, $videodatabase->contentformat, $formatoptions);
 */
 
 
-
-
-
+echo '<span id="courseid">';
+echo $cm->course;
+echo '</span>';
 
 
 

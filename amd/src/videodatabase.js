@@ -41,7 +41,10 @@ define([
 
         var datamodel = new Datamodel();
 
-
+        var course = {
+            id: parseInt($('#courseid').html())
+        };
+        
         /**
          * Obtains data from a moodle webservice
          * @param {*} ws: Name of the web service 
@@ -75,7 +78,7 @@ define([
          * @param {*} msg 
          */
         function con(msg) {
-
+            
             // map data on internal model
             var
                 data = JSON.parse(msg.data),
@@ -86,8 +89,7 @@ define([
                     id: msg.userid,
                     image: msg.userimage
                 };
-
-
+            
             // setup vue
             Vue.use(Vuex);
             Vue.use(VueRouter);
@@ -225,7 +227,7 @@ define([
                     getRatingsOfVideo: function (callback) {
                         get_ws('videodatabase_ratings', "POST", {
                             'videoid': this.currentvideo,
-                            'courseid': 2,
+                            'courseid': course.id,
                         }, function (e) {
                             //console.log(e);
                             callback(e);
@@ -236,7 +238,7 @@ define([
                     userHasRatedVideo: function (callback) {
                         get_ws('videodatabase_ratings', "POST", {
                             'videoid': this.currentvideo,
-                            'courseid': 2,
+                            'courseid': course.id,
                             'userid': 20
                         }, function (e) {
                             var data = JSON.parse(e.data);
@@ -251,8 +253,8 @@ define([
                     storeRating: function (rating, callback) {
                         get_ws('videodatabase_ratings', "POST", {
                             'videoid': this.currentvideo,
-                            'courseid': 2,
-                            'userid': 2,
+                            'courseid': course.id,
+                            'userid': user.id,
                             'rating': rating
                         }, function (e) {
                             callback(e);
@@ -601,7 +603,6 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
 
             // combine the parts of the form
             const Form = {
-
                 render(h) {
                     const upload = h(UploadForm);
                     const meta = h(MetadataForm);
@@ -680,7 +681,7 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                     },
                     downloadLogData: function () {
                         get_ws('videodatabase_get_log', "POST", {
-                            'courseid': 2,
+                            'courseid': course.id,
                         }, function (data) {
                             // extract log entries form result set
                             var json = Object.values(JSON.parse(data.response)).map(function (d) { return JSON.parse(d.entry); });
@@ -704,7 +705,7 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
 
 
 
-        get_ws('videodatabase_videos', "POST", { 'courseid': 2 }, con);
+get_ws('videodatabase_videos', "POST", { 'courseid': course.id }, con);
         //get_ws('videodatabase_video', { 'courseid': 2, 'videoid':165 }, con);
 
 

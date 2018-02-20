@@ -125,11 +125,11 @@ function xmldb_videodatabase_upgrade($oldversion) {
 
 
     
-      if ($oldversion < 0) {// 2017064101
+      if ($oldversion < 2017064117) {// 2017064101
 
         // Define field id to be added to videodatabase_annotations.
         $table = new xmldb_table('videodatabase_videos');
-        $field = new xmldb_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null, null);
+        $field = new xmldb_field('rating', XMLDB_TYPE_INTEGER, '8', null, XMLDB_NOTNULL, null, 0, null);
 
         // Conditionally launch add field id.
         if (!$dbman->field_exists($table, $field)) {
@@ -137,7 +137,7 @@ function xmldb_videodatabase_upgrade($oldversion) {
         }
 
         // Videodatabase savepoint reached.
-        upgrade_mod_savepoint(true, 2017064101, 'videodatabase');
+        upgrade_mod_savepoint(true, 2017064117, 'videodatabase');
 
 
         /******************
