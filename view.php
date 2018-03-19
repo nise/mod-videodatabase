@@ -11,10 +11,19 @@
 require('../../config.php');
 require_once($CFG->dirroot.'/mod/videodatabase/locallib.php');
 require_once($CFG->libdir.'/completionlib.php');
+require_once('lib.php');
 
 $id      = optional_param('id', 0, PARAM_INT); // Course Module ID
 $p       = optional_param('p', 0, PARAM_INT);  // videodatabase instance ID
 $inpopup = optional_param('inpopup', 0, PARAM_BOOL);
+
+/* // other settings    
+$mode        = optional_param('mode', 0, PARAM_INT);     // Display mode (for single forum)
+    $showall     = optional_param('showall', '', PARAM_INT); // show all discussions on one page
+    $changegroup = optional_param('group', -1, PARAM_INT);   // choose the current group
+    $page        = optional_param('page', 0, PARAM_INT);     // which page to show
+    $search      = optional_param('search', '', PARAM_CLEAN);// search string
+*/
 
 if ($p) {
     if (!$videodatabase = $DB->get_record('videodatabase', array('id'=>$p))) {
@@ -54,6 +63,10 @@ if ($inpopup and $videodatabase->display == RESOURCELIB_DISPLAY_POPUP) {
     $PAGE->set_heading($course->shortname.': '.$videodatabase->name);//$course->fullname);
     $PAGE->set_activity_record($videodatabase);
 }
+
+$context = context_module::instance($cm->id);
+$PAGE->set_context($context);
+	
 // custome CSS
 $PAGE->requires->css( '/mod/videodatabase/css/bootstrap.min.css');
 $PAGE->requires->css( '/mod/videodatabase/styles.css', true );
@@ -488,6 +501,8 @@ function bulkVideoImport($PAGE) {
 		 	$row++;
 			$record = new stdClass();
 			$record->id = (int)$row;
+			$record->courseid = 4; // xxx
+			$record->status = 1;
 			$record->courselevel = $data[0];  // multi
 			$record->title = (string)$data[2];
 			$record->creator = $data[3];
@@ -547,7 +562,7 @@ function dummyComments(){
 	$r = new stdClass();
 	$r->id =0;
 	$r->video =1;
-	$r->course =2;
+	$r->course =4;
 	$r->type ='comment';
 	//$r->created =;
 	//$r->updated =;

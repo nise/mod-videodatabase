@@ -22,6 +22,17 @@ $capabilities = array(
             'admin' => CAP_ALLOW
         )
     ),
+    'mod/videodatabase:addinstance' => array( // required to add an instance of the plugin to a moodle course
+        'riskbitmask' => RISK_XSS,
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_COURSE,
+        'archetypes' => array(
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW,
+            'admin' => CAP_ALLOW
+        ),
+        'clonepermissionsfrom' => 'moodle/course:manageactivities' // unclear
+    ),
      'mod/videodatabase:vdb_video-manager' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,

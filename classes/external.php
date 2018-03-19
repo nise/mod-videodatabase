@@ -42,7 +42,7 @@ class mod_videodatabase_videos_external extends external_api {
         
         $transaction = $DB->start_delegated_transaction(); 
         $table = "videodatabase_videos";
-        $res = $DB->get_records($table, array('courseid'=> 2)); 
+        $res = $DB->get_records($table, array('courseid'=> 4)); 
         $transaction->allow_commit();
         return array(
             'data' => json_encode($res),

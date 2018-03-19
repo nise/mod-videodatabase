@@ -37,6 +37,29 @@ define([
         Vi2
     ) {
 
+
+
+        var promises = ajax.call([
+            { methodname: 'get_all_videos', args: { component: 'mod_videodatabase', courseid: 10 } },
+            { methodname: 'core_get_string', args: { component: 'mod_wiki', stringid: 'changerate' } }
+        ]);
+/*
+        promises[0].done(function (response) {
+            console.log('mod_wiki/pluginname is' + response);
+        }).fail(function (ex) {
+            console.log(ex);// do something with the exception
+        });
+
+        promises[1].done(function (response) {
+            console.log('mod_wiki/changerate is' + response);
+        }).fail(function (ex) {
+            // do something with the exception
+        });
+
+*/
+
+
+
         var Filters = function () { };
 
         var datamodel = new Datamodel();
@@ -57,7 +80,7 @@ define([
                 method: method,
                 url: "/moodle/webservice/rest/server.php",
                 data: { // xxx get token: https://www.yourmoodle.com/login/token.php?username=USERNAME&password=PASSWORD&service=SERVICESHORTNAME
-                    wstoken: 'e321c48e338fc44830cda07824833944',
+                    wstoken: '027d0289994006d503b6554df204e7a8',//'e321c48e338fc44830cda07824833944',
                     moodlewsrestformat: 'json',
                     wsfunction: ws,
                     data: params
@@ -78,7 +101,7 @@ define([
          * @param {*} msg 
          */
         function con(msg) {
-            
+
             // map data on internal model
             var
                 data = JSON.parse(msg.data),
@@ -89,7 +112,7 @@ define([
                     id: msg.userid,
                     image: msg.userimage
                 };
-            
+
             // setup vue
             Vue.use(Vuex);
             Vue.use(VueRouter);
@@ -114,7 +137,7 @@ define([
                     currentVideo: 0
                 },
                 getters: {
-                    videos(state){
+                    videos(state) {
                         return function () {
                             return state.videos;
                         };
@@ -143,7 +166,7 @@ define([
                     setCurrentVideo(state, id) {
                         state.currentVideo = id;
                     },
-                    setCurrentVideoRating(state, rating) { 
+                    setCurrentVideoRating(state, rating) {
                         state.videos[state.currentVideo].rating = rating;
                     },
                     setVideoFileData(state, data) {
@@ -175,40 +198,40 @@ define([
                     disabled: { type: Boolean, default: false },
                     readonly: { type: Boolean, default: false }
                 },
-                data: function() {
+                data: function () {
                     return {
                         over: 0,
                         rate: 0
                     };
                 },
                 computed: {
-                    currentvideo: function() {
+                    currentvideo: function () {
                         return store.state.currentVideo;
                     }
                 },
                 methods: {
-                    onOver:function(index) { 
-                        if (!this.readonly){
-                            this.over = index; 
+                    onOver: function (index) {
+                        if (!this.readonly) {
+                            this.over = index;
                         }
                     },
                     onOut() { if (!this.readonly) this.over = this.rate },
-                    setRate(index) { 
+                    setRate(index) {
                         var _this = this;
                         if (index === undefined) { index = 0; }
 
                         this.userHasRatedVideo(function (hasRated) {
                             this.disabled = hasRated;
                             this.readonly = hasRated;
-                            if (!hasRated) { 
+                            if (!hasRated) {
                                 //if (_this.rate !== index) {
-                                    _this.$emit('beforeRate', _this.rate);
-                                    //var data = store.getters.currentVideoData();
-                                    _this.storeRating(index, function (e) {
-                                        console.log(index);
-                                        //_this.$emit('readonly', true); // xxx bug // set readonly after giving a vote
-                                    });
-                                    _this.calcVideoRating();
+                                _this.$emit('beforeRate', _this.rate);
+                                //var data = store.getters.currentVideoData();
+                                _this.storeRating(index, function (e) {
+                                    console.log(index);
+                                    //_this.$emit('readonly', true); // xxx bug // set readonly after giving a vote
+                                });
+                                _this.calcVideoRating();
                                 //}
                                 _this.rate = index;
                                 _this.$emit('input', _this.rate);
@@ -262,29 +285,29 @@ define([
                             console.error(err);
                         });
                     },
-                    calcVideoRating:function(){
+                    calcVideoRating: function () {
                         var _this = this;
                         this.getRatingsOfVideo(function (e) {
                             //console.log(Object.values(JSON.parse(e.data)))
                             var data = Object.values(JSON.parse(e.data)).map(function (obj) {
                                 return obj.rating;
                             });
-                            if(data.length > 0){
-                            var positiveRatings = data.filter(function (obj) {
-                                return obj > 2 ? true : false;
-                            });
-                            var avg = Math.round( data.reduce(function (a, b) { return Number(a) + Number(b); }) / data.length );
-                            var wilson = _this.wilsonScore(positiveRatings.length, data.length) * 5;
-                            // console.log(avg, wilson, positiveRatings.length, data.length);
-                            store.commit('setCurrentVideoRating', avg);
-                            if (_this.value >= _this.length) {
-                                _this.value = _this.length;
-                            } else if (_this.value < 0) {
-                                _this.value = 0;
-                            }
-                            _this.rate = avg;
-                            _this.over = avg;
-                            }else{ // xxx why this?
+                            if (data.length > 0) {
+                                var positiveRatings = data.filter(function (obj) {
+                                    return obj > 2 ? true : false;
+                                });
+                                var avg = Math.round(data.reduce(function (a, b) { return Number(a) + Number(b); }) / data.length);
+                                var wilson = _this.wilsonScore(positiveRatings.length, data.length) * 5;
+                                // console.log(avg, wilson, positiveRatings.length, data.length);
+                                store.commit('setCurrentVideoRating', avg);
+                                if (_this.value >= _this.length) {
+                                    _this.value = _this.length;
+                                } else if (_this.value < 0) {
+                                    _this.value = 0;
+                                }
+                                _this.rate = avg;
+                                _this.over = avg;
+                            } else { // xxx why this?
                                 _this.rate = _this.value;
                                 _this.over = _this.value;
                             }
@@ -631,7 +654,7 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                     show: false,
                     isEditor: true,
                     listView: false,
-                    search:''
+                    search: ''
                 },
                 computed: {
                     columnObject: function () { //console.log(JSON.stringify(this.videos))
@@ -640,12 +663,12 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                     videos: function () {
                         return store.state.videos;
                     },
-                    filteredList: function() {
+                    filteredList: function () {
                         return Object.values(store.getters.videos()).filter(video => {
                             // video.title.toLowerCase().includes(this.search.toLowerCase());
                             return Object.values(video).join(' ').toLowerCase().includes(this.search.toLowerCase());
                         });
-                    }    
+                    }
                 },
                 methods: {
                     setListView: function () { this.listView = true; },
@@ -657,8 +680,10 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                         var video = store.getters.videoById(id);
 
                         var ffn = function (key) {
-                            var arr = video[key].split(';');
-                            var out = '';
+                            var out = '', arr = [];
+                            if (video[key]){ 
+                                arr = video[key].split(';');
+                            }
                             for (var i = 0, len = arr.length; i < len; i++) {
                                 out += ' ' + key + '-' + arr[i].replace(/\ /g, '') + ' ';
                             }
@@ -705,7 +730,7 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
 
 
 
-get_ws('videodatabase_videos', "POST", { 'courseid': course.id }, con);
+        get_ws('videodatabase_videos', "POST", { 'courseid': course.id }, con);
         //get_ws('videodatabase_video', { 'courseid': 2, 'videoid':165 }, con);
 
 

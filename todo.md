@@ -142,18 +142,6 @@ https://docs.moodle.org/31/en/MySQL_full_unicode_support
 
 
 
-
-
-
-# plugins to extend
-https://moodle.org/plugins/mod_mediagallery
-https://moodle.org/plugins/mod_videofile
-	https://docs.moodle.org/26/en/mod/videofile/view#Download
-https://moodle.org/plugins/repository_ensemble
-https://moodle.org/plugins/mod_eduplayer
-
-
-
 # Server
 ## Setup
 https://docs.moodle.org/26/en/Step-by-step_Installation_Guide_for_Ubuntu#Step_4:_Download_Moodle
@@ -184,20 +172,6 @@ sudo rsync --dry-run --delete -azvv -e ssh /home/path/folder1/ remoteuser@remote
 
 
 
-
-
-
-
-#Stundennachweis
-
-hours	date	task
-2	2016-04-06	Angebotserstellung & Kooperationsaushandlung
-1 2016-04-17	Angebotsübearbeitung
-1 2016-07-29	Planung
-2 2016-08-12	Servereinrichtung, moodle Installation
-2 2016-08-31	Systemeinrichtung Lokal; Projektmanagement, Plugin-Recherche
-3 2016-09-23	Pluginaufbau und Tests für Javascript und CSS Integration
-3 2016-09-24	Pluginaufbau und Tests für Javascript und CSS Integration
 
 
 
