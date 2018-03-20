@@ -68,7 +68,7 @@ define(['/moodle/mod/videodatabase/amd/src/vfg.js'], function (VueFormGenerator)
                                 "model": "description",
                                 "featured": true,
                                 "required": true,
-                                "min": 10,
+                                "min": 8,
                                 "validator": VueFormGenerator.validators.string.locale({
                                     "fieldIsRequired": "The password is required!",
                                     "textTooSmall": "Diese Beschreibung ist sehr kurz. Sie sollte mindestens {1} Zeichen umfassen, um den Inhalt des Videos zu beschreiben."
