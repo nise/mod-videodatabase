@@ -391,12 +391,13 @@ video {
 .vi2-volume-controls {
 	display:inline-block;
 	position:relative;
-	width: 40px;
+	
 	height: 30px;
 	color: #167ac6;
 	border:0 none;
 	padding: 0px 8px;
 	float: right;
+	width: 130px;
 }
 
 .vi2-volume-controls:hover {	
@@ -410,7 +411,7 @@ video {
 																																																																																																																																																																																																									
 
 .vi2-volume-controls .vi2-volume-slider {
-	display:none;	
+	display:inline;	
 	position:absolute;																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																											
 	height: 14px;
 	width: 80px;
