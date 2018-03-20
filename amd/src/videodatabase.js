@@ -31,25 +31,26 @@ define([
         Vuex,
         VueFormGenerator,
         Axios,
-
         Datamodel,
         // VuePaginator,
         Vi2
     ) {
 
 
-
+        //methodname: 'mod_assign_submit_grading_form',
+        //args: { assignmentid: assignmentid, userid: this._lastUserId, jsonformdata: JSON.stringify(data) },
         var promises = ajax.call([
-            { methodname: 'get_all_videos', args: { component: 'mod_videodatabase', courseid: 10 } },
+            { wsfunction: 'mod_videodatabase_videos', },
+            { methodname: 'mod_videodatabase_videos', args: {  courseid: 4 }},
             { methodname: 'core_get_string', args: { component: 'mod_wiki', stringid: 'changerate' } }
         ]);
-/*
+
         promises[0].done(function (response) {
             console.log('mod_wiki/pluginname is' + response);
         }).fail(function (ex) {
             console.log(ex);// do something with the exception
         });
-
+/*
         promises[1].done(function (response) {
             console.log('mod_wiki/changerate is' + response);
         }).fail(function (ex) {
@@ -798,7 +799,7 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                     'overflow': jQuery(this).width() - jQuery(window).width()
                 });
             });
-            console.table(overflowing);
+            //console.table(overflowing);
 
             function createXPathFromElement(e) { for (var t = document.getElementsByTagName("*"), a = []; e && 1 == e.nodeType; e = e.parentNode)if (e.hasAttribute("id")) { for (var s = 0, l = 0; l < t.length && (t[l].hasAttribute("id") && t[l].id == e.id && s++ , !(s > 1)); l++); if (1 == s) return a.unshift('id("' + e.getAttribute("id") + '")'), a.join("/"); a.unshift(e.localName.toLowerCase() + '[@id="' + e.getAttribute("id") + '"]') } else if (e.hasAttribute("class")) a.unshift(e.localName.toLowerCase() + '[@class="' + e.getAttribute("class") + '"]'); else { for (i = 1, sib = e.previousSibling; sib; sib = sib.previousSibling)sib.localName == e.localName && i++; a.unshift(e.localName.toLowerCase() + "[" + i + "]") } return a.length ? "/" + a.join("/") : null }
 
