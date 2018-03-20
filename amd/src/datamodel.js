@@ -96,6 +96,7 @@ define(['/moodle/mod/videodatabase/amd/src/vfg.js'], function (VueFormGenerator)
                                 "model": "sports",
                                 "label": "Sportart",
                                 "type": "select",
+                                "selectOptions": { "noneSelectedText": "Keine Sportart ausgewählt" },
                                 "filterable": true,
                                 "level": 1,
                                 "values": [
@@ -104,13 +105,15 @@ define(['/moodle/mod/videodatabase/amd/src/vfg.js'], function (VueFormGenerator)
                                     "Barren",
                                     "Judo",
                                     "Handball",
-                                    "Volleyball"
+                                    "Volleyball",
+                                    "Leichtathletik"
                                 ]
                             },
                             {
                                 "model": "movements",
                                 "label": "Bewegungsfelder",
                                 "type": "select",
+                                "selectOptions": {"noneSelectedText":"Kein Bewegungsfeld ausgewählt"},
                                 "multi": false,
                                 "filterable": true,
                                 "level": 1,
@@ -155,6 +158,7 @@ define(['/moodle/mod/videodatabase/amd/src/vfg.js'], function (VueFormGenerator)
                                 "model": "actors",
                                 "label": "Akteure",
                                 "type": "select",
+                                "selectOptions": { "noneSelectedText": "Keine Akteure ausgewählt" },
                                 "multi": false,
                                 "filterable": true,
                                 "level": 2,
