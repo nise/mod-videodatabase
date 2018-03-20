@@ -137,6 +137,11 @@ define([
                         description:'12345678', 
                         tags:'tag', 
                         filename:'video.mp4',
+                        mimetype:'',
+                        format:'',
+                        size:'',
+                        length:'',
+
                         courseid: course.id
                     },
                     mouse: {},
@@ -184,10 +189,15 @@ define([
                         state.videos[state.currentVideo].rating = rating;
                     },
                     setVideoFileData(state, data) {
-                        console.log(data.files);
-                        state.videos[state.currentVideo].mimetype = data.files[0].type;
-                        state.videos[state.currentVideo].size = data.files[0].size;
-                        state.videos[state.currentVideo].filename = BASE_URL + 'test2/' + data.files[0].name;
+                        if (data.isNewVideo){
+                            state.newvideo.mimetype = data.files.type;
+                            state.newvideo.size = data.files.size;
+                            state.newvideo.filename = BASE_URL + 'test2/' + data.files.name;
+                        }else{
+                            state.videos[state.currentVideo].mimetype = data.files.type;
+                            state.videos[state.currentVideo].size = data.files.size;
+                            state.videos[state.currentVideo].filename = BASE_URL + 'test2/' + data.files.name;
+                        }
                     }
                 }
             });
@@ -521,7 +531,7 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                     filesChange: function (fieldName, fileList) {
                         if (!fileList.length) {
                             return;
-                        }
+                        } console.log(fileList[0])
                         this.currentStatus = STATUS_INITIAL;
                         this.uploadedFiles = [];
                         document.getElementById("file").value = "";
@@ -534,17 +544,24 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                                 size: fileList[i].size,
                                 location: '',
                                 status: 'selected'
-                            });
+                            }); 
                         }
                         // save it
                         this.save(formData);
                     },
                     updateSelectedFiles: function (data) {
-                        if (data.error.length > 0) {
+                        console.log(data)
+                        if (data.error.length > 0) { // 
                             this.currentStatus === STATUS_FAILED;
                             this.error = data.error;
                         } else {
-                            this.uploadedFiles = data.files;
+                            console.log(this.uploadedFiles[0].size)
+                            data.files = this.uploadedFiles[0];
+                            if (this.$route.params.id !== undefined) {
+                                data.isNewVideo = false;
+                            }else{
+                                data.isNewVideo = true;
+                            }
                             store.commit('setVideoFileData', data);
                             return this.currentStatus === STATUS_SUCCESS;
                         }

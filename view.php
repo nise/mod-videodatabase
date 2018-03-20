@@ -100,10 +100,7 @@ $content = format_text($content, $videodatabase->contentformat, $formatoptions);
 */
 
 
-echo '<span id="courseid">';
-echo $cm->course;
-echo '</span>';
-
+echo "<span id='courseid' hidden>$cm->course </span>";
 
 
 // video player
@@ -246,7 +243,7 @@ echo '
 		</div>
 		<div class="row">	
 			<div class="col-md-3 col-sm-12 col-xs-12">
-				<video width="100%" height="auto" controls preload="none">
+				<video v-if="video" width="100%" height="auto" controls preload="none">
 					<source v-if="video.video" :src="video.video" :type="video.mimetype" >
 				</video>
 			</div>
@@ -439,7 +436,8 @@ echo '
 								<img 
 									v-on:mouseover="mouseOverCheck = video.id" 
 									v-on:mouseout="mouseOverCheck = \'\'" 
-									class="still-images" 
+									class="still-images"
+									@error="imageLoadError" 
 									v-bind:src="mouseOverCheck === video.id ? \'images/stills/still-\'+video.filename.replace(\'.mp4\',\'_comp.gif\') : \'images/stills/still-\'+video.filename.replace(\'.mp4\',\'_comp.jpg\') " />    
 							</router-link>	
 							<div class="meta">
@@ -501,7 +499,7 @@ function bulkVideoImport($PAGE) {
 		 	$row++;
 			$record = new stdClass();
 			$record->id = (int)$row;
-			$record->courseid = 4; // xxx
+			$record->courseid = $cm->course; 
 			$record->status = 1;
 			$record->courselevel = $data[0];  // multi
 			$record->title = (string)$data[2];
@@ -562,7 +560,7 @@ function dummyComments(){
 	$r = new stdClass();
 	$r->id =0;
 	$r->video =1;
-	$r->course =4;
+	$r->course = $cm->course;
 	$r->type ='comment';
 	//$r->created =;
 	//$r->updated =;
