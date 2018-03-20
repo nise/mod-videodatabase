@@ -36,7 +36,7 @@ define([
         Vi2
     ) {
 
-
+/*
         //methodname: 'mod_assign_submit_grading_form',
         //args: { assignmentid: assignmentid, userid: this._lastUserId, jsonformdata: JSON.stringify(data) },
         var promises = ajax.call([
@@ -50,7 +50,7 @@ define([
         }).fail(function (ex) {
             console.log(ex);// do something with the exception
         });
-/*
+
         promises[1].done(function (response) {
             console.log('mod_wiki/changerate is' + response);
         }).fail(function (ex) {
@@ -132,6 +132,13 @@ define([
                 state: {
                     myValue: 0,
                     videos: data,
+                    newvideo: { 
+                        title:'hello world', 
+                        description:'12345678', 
+                        tags:'tag', 
+                        filename:'video.mp4',
+                        courseid: course.id
+                    },
                     mouse: {},
                     showForm: false,
                     formDataModel: {},
@@ -142,6 +149,9 @@ define([
                         return function () {
                             return state.videos;
                         };
+                    },
+                    newvideo(state){
+                        return function () { return state.newvideo; };
                     },
                     videoById(state) {
                         var self = this;
@@ -161,6 +171,9 @@ define([
                     }
                 },
                 mutations: {
+                    addVideo(state, video) {
+                        state.videos[video.id] = video;
+                    },
                     getFormDataModel() {
 
                     },
@@ -185,7 +198,16 @@ define([
             // console.log(store.getters.videoById(165));
             //store.commit('getFormDataModel');
 
-
+            function skeleton(source, isArray) {
+                var o = Array.isArray(source) ? [] : {};
+                for (var key in source) {
+                    if (source.hasOwnProperty(key)) {
+                        var t = typeof source[key];
+                        o[key] = t == 'object' ? skeleton(source[key]) : { string: '', number: 0, boolean: false }[t];
+                    }
+                }
+                return o;
+            }
 
             const Rating = {
                 template: '#rating',
@@ -441,25 +463,30 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                         uploadError: null,
                         currentStatus: 0,
                         uploadFieldName: 'videouploads[]'
-                    }
+                    };
                 },
                 computed: {
                     video: function () {
-                        var id = this.$route.params.id;
-                        store.commit('setCurrentVideo', this.$route.params.id);
-                        var video_data = store.getters.videoById(id);
-                        if (video_data !== undefined) {
-                            video_data.metadata = [];
-                            video_data.metadata[0] = {};
-                            video_data.metadata[0].author = video_data['contributor'];
-                            video_data.metadata[0].title = video_data['title'];
-                            video_data.metadata[0].abstract = video_data['description'];
-                            video_data.metadata[0].thumbnail = "still-" + video_data.filename.replace('.mp4', '_comp.jpg');
-                            video_data.video = '/videos/' + video_data.filename.replace('.mp4', '.webm');
-                            return video_data;//store.getters.videoById( this.$route.params.id );
-                        } else {
-                            //return null;
+                        if (this.$route.params.id){ // if video already exists
+                            var id = this.$route.params.id;
+                            store.commit('setCurrentVideo', id);
+                            var video_data = store.getters.videoById(id);
+                            if (video_data !== undefined) {
+                                video_data.metadata = [];
+                                video_data.metadata[0] = {};
+                                video_data.metadata[0].author = video_data['contributor'];
+                                video_data.metadata[0].title = video_data['title'];
+                                video_data.metadata[0].abstract = video_data['description'];
+                                video_data.metadata[0].thumbnail = "still-" + video_data.filename.replace('.mp4', '_comp.jpg');
+                                video_data.video = '/videos/' + video_data.filename.replace('.mp4', '.webm');
+                                return video_data;//store.getters.videoById( this.$route.params.id );
+                            } else {
+                                //return null;
+                            }
+                        }else{ // else it must be a new video
+                            console.log('no video data');
                         }
+                        
                     },
                     isInitial() {
                         return this.currentStatus === STATUS_INITIAL;
@@ -596,6 +623,8 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                         if (this.$route.params.id !== undefined) {
                             store.commit('setCurrentVideo', this.$route.params.id);
                             return store.getters.videoById(this.$route.params.id);
+                        }else{
+                            return store.getters.newvideo();
                         }
                     },
                     schema() { return datamodel.data; },
@@ -613,16 +642,45 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                 template: '#form-submit-template',
                 methods: {
                     submitForm() {
+                        var id=-1, data={}, nu = 0;
+                        if (this.$route.params.id !== undefined) {
+                            id = store.getters.currentVideoData().id;
+                            data = store.getters.currentVideoData();
+                        }else{   
+                            data = store.getters.newvideo();
+                            nu = 1;
+                            id = (data.title + data.description).hashCode();
+                            data.id = id;
+                            //store.commit('addVideo', data );
+                            //store.commit('setCurrentVideo', id);
+                        }
                         get_ws('videodatabase_store_video', "POST", {
-                            'id': store.getters.currentVideoData().id,
-                            'data': JSON.stringify(store.getters.currentVideoData())
-                        }, this.response);
+                            'nu': nu,
+                            'id': id,
+                            'data': JSON.stringify(data)
+                        }, function(res){
+                            if(nu){
+                                store.commit('addVideo', data);
+                                store.commit('setCurrentVideo', id);
+                            }
+                        });
                     },
                     response(res) {
                         console.log(res);
                     }
 
                 }
+            };
+
+            String.prototype.hashCode = function () {
+                var hash = 0, i, chr;
+                if (this.length === 0) return hash;
+                for (i = 0; i < this.length; i++) {
+                    chr = this.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + chr;
+                    hash |= 0; // Convert to 32bit integer
+                }
+                return hash;
             };
 
             // combine the parts of the form
@@ -642,7 +700,10 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                     { path: '/videos/:id/view', component: Video },
                     { path: '/videos/:id/edit', component: Form },
                     { path: '/videos/new', component: Form }
-                ]
+                ],
+                scrollBehavior: function(to, from, savedPosition) {
+                    return { x: 0, y: 405 };
+                }
             });
 
 
@@ -672,6 +733,9 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                     }
                 },
                 methods: {
+                    imageLoadError: function(){ 
+                        console.log('Image missing');
+                    },
                     setListView: function () { this.listView = true; },
                     setTableView: function () { this.listView = false; },
                     toogleForm: function (id) {
@@ -682,7 +746,7 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
 
                         var ffn = function (key) {
                             var out = '', arr = [];
-                            if (video[key]){ 
+                            if (video[key] && typeof video[key] === 'string'){ 
                                 arr = video[key].split(';');
                             }
                             for (var i = 0, len = arr.length; i < len; i++) {
@@ -698,10 +762,10 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                             ffn('perspectives'),
 
                             // single
-                            'actors-' + video.actors.replace(/\//g, ''),
-                            'location-' + video.location,
-                            'sports-' + video.sports.replace(/,\ /g, ''),
-                            'movements-' + video.movements.replace(/, /g, ''),
+                            video.actors ? 'actors-' + video.actors.replace(/\//g, '') : '',
+                            video.location ? 'location-' + video.location : '',
+                            video.sports ? 'sports-' + video.sports.replace(/,\ /g, '') : '',
+                            video.movements ? 'movements-' + video.movements.replace(/, /g, '') :'',
                             ''
                         ].join(' ');
                     },
@@ -751,8 +815,9 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                     var result = innerValue.replace(/"/g, '""');
                     if (result.search(/("|,|\n)/g) >= 0)
                         result = '"' + result + '"';
-                    if (j > 0)
+                    if (j > 0){
                         finalVal += ',';
+                    }    
                     finalVal += result;
                 }
                 return finalVal + '\n';
@@ -789,7 +854,9 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
         $(function () {
 
             // xxx remove for production
+            /*
             var overflowing = [];
+            var createXPathFromElement = function (e) { for (var t = document.getElementsByTagName("*"), a = []; e && 1 == e.nodeType; e = e.parentNode)if (e.hasAttribute("id")) { for (var s = 0, l = 0; l < t.length && (t[l].hasAttribute("id") && t[l].id == e.id && s++ , !(s > 1)); l++); if (1 == s) return a.unshift('id("' + e.getAttribute("id") + '")'), a.join("/"); a.unshift(e.localName.toLowerCase() + '[@id="' + e.getAttribute("id") + '"]') } else if (e.hasAttribute("class")) a.unshift(e.localName.toLowerCase() + '[@class="' + e.getAttribute("class") + '"]'); else { for (i = 1, sib = e.previousSibling; sib; sib = sib.previousSibling)sib.localName == e.localName && i++; a.unshift(e.localName.toLowerCase() + "[" + i + "]") } return a.length ? "/" + a.join("/") : null };
             jQuery(':not(script)').filter(function () {
                 return jQuery(this).width() > jQuery(window).width();
             }).each(function () {
@@ -799,9 +866,9 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                     'overflow': jQuery(this).width() - jQuery(window).width()
                 });
             });
-            //console.table(overflowing);
-
-            function createXPathFromElement(e) { for (var t = document.getElementsByTagName("*"), a = []; e && 1 == e.nodeType; e = e.parentNode)if (e.hasAttribute("id")) { for (var s = 0, l = 0; l < t.length && (t[l].hasAttribute("id") && t[l].id == e.id && s++ , !(s > 1)); l++); if (1 == s) return a.unshift('id("' + e.getAttribute("id") + '")'), a.join("/"); a.unshift(e.localName.toLowerCase() + '[@id="' + e.getAttribute("id") + '"]') } else if (e.hasAttribute("class")) a.unshift(e.localName.toLowerCase() + '[@class="' + e.getAttribute("class") + '"]'); else { for (i = 1, sib = e.previousSibling; sib; sib = sib.previousSibling)sib.localName == e.localName && i++; a.unshift(e.localName.toLowerCase() + "[" + i + "]") } return a.length ? "/" + a.join("/") : null }
+            console.table(overflowing);
+            */
+            
 
 
 

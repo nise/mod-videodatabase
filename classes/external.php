@@ -69,7 +69,7 @@ class mod_videodatabase_set_video_external extends external_api {
                 'data' => 
                     new external_single_structure(
                         array(
-                            //'courseid' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL),
+                            'nu' => new external_value(PARAM_INT, 'is it a new video', VALUE_OPTIONAL),
                             'id' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL),
                             'data' => new external_value(PARAM_RAW, 'video data', VALUE_OPTIONAL)
                         )
@@ -86,10 +86,13 @@ class mod_videodatabase_set_video_external extends external_api {
         global $CFG, $DB;
         $transaction = $DB->start_delegated_transaction(); //If an exception is thrown in the below code, all DB queries in this code will be rollback.
         $table = "videodatabase_videos";
-        $metadata = json_decode($data['data']);
-        $res = $DB->update_record($table, $metadata);
+        if($data['nu'] == 1 ){
+            $res = $DB->insert_record($table, (object)json_decode($data['data']));
+        }else{
+            $res = $DB->update_record($table,  json_decode($data['data']));
+        }
         $transaction->allow_commit();
-        return array('data'=> '{ "status":"ok", "msg":"Successfully saved meta data of video with id '.$metadata->id.'."}');
+        return array('data'=> '{ "status":"ok", "msg":"Successfully saved meta data of video with id '.'."}');
     } 
 }
 
