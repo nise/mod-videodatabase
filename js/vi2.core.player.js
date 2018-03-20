@@ -171,7 +171,7 @@ define([
 
                 // Loading Indicator
                 this.spinner = new Spinner(this.spinner_options);
-                this.startSpinning();
+                //this.startSpinning();
 
 
                 this.video = $.extend(this.video, {
@@ -200,6 +200,26 @@ define([
                     _this.play_btn.find('.fa-play').hide();
                 });
 
+                this.video.onsuspend = function () {
+                    //console.log("Media load suspended");
+                    _this.startSpinning();
+                };
+
+                this.video.onwaiting = function () {
+                    //console.log("Video on waiting");
+                    _this.startSpinning();
+                };
+
+                this.video.onstalled = function () {
+                    //console.log("Media not available");
+                    _this.startSpinning();
+                };
+
+                this.video.oncanplay = function () {
+                    //console.log("Video can play");
+                    _this.stopSpinning();
+                };
+
                 this.video.addEventListener('playing', function () { return;
                     //vi2.debug('networkstate code: ' + _this.video.networkState)
                     /*     
@@ -218,20 +238,9 @@ define([
                         4 = MEDIA_ERR_SRC_NOT_SUPPORTED - audio/video not supported
                     */
 
-                    _this.video.onstalled = function () {
-                        //vi2.debug("Media not available");
-                        _this.startSpinning();
-                    };
+                    
 
-                    _this.video.onsuspend = function () {
-                        //vi2.debug("Media load suspended");
-                        _this.startSpinning();
-                    };
-
-                    _this.video.onwaiting = function () {
-                        //vi2.debug("Video on waiting");
-                        _this.startSpinning();
-                    };
+                    
 
                     /*
                         * 0 = HAVE_NOTHING - no information whether or not the audio/video is ready
