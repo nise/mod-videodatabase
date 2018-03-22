@@ -17,7 +17,7 @@ define([
     '/moodle/mod/videodatabase/amd/src/vuex.js',
     '/moodle/mod/videodatabase/amd/src/vfg.js',
     '/moodle/mod/videodatabase/amd/src/axios.min.js',
-
+    
     '/moodle/mod/videodatabase/amd/src/datamodel.js',
     // '/moodle/mod/videodatabase/amd/src/vuejs-paginator.js',
     'js/vi2.main.js'
@@ -118,7 +118,7 @@ define([
             Vue.use(Vuex);
             Vue.use(VueRouter);
             Vue.use(VueFormGenerator);
-
+            
 
             //Vue.use(VueUniqIds);
             //Vue.use(Vue2Dropzone);
@@ -141,7 +141,6 @@ define([
                         format:'',
                         size:'',
                         length:'',
-
                         courseid: course.id
                     },
                     mouse: {},
@@ -179,6 +178,14 @@ define([
                     addVideo(state, video) {
                         state.videos[video.id] = video;
                     },
+                    removeVideo(state, video_id){
+                        //var index = state.videos.indexOf(video_id);
+                        //delete state.videos[video_id];
+                        state.videos[video_id] = null;
+                        delete state.videos[video_id];
+                        //console.log(state.videos);
+                        //state.videos.splice(video_id, 1); //alert(0);
+                    },
                     getFormDataModel() {
 
                     },
@@ -189,14 +196,16 @@ define([
                         state.videos[state.currentVideo].rating = rating;
                     },
                     setVideoFileData(state, data) {
-                        if (data.isNewVideo){
+                        if (data.isNewVideo) {
                             state.newvideo.mimetype = data.files.type;
+                            state.newvideo.format = data.files.name.split('.')[1];
                             state.newvideo.size = data.files.size;
-                            state.newvideo.filename = BASE_URL + 'test2/' + data.files.name;
+                            state.newvideo.length = data.files.duration;
+                            state.newvideo.filename = data.files.name; //BASE_URL + 'test2/' +
                         }else{
                             state.videos[state.currentVideo].mimetype = data.files.type;
                             state.videos[state.currentVideo].size = data.files.size;
-                            state.videos[state.currentVideo].filename = BASE_URL + 'test2/' + data.files.name;
+                            state.videos[state.currentVideo].filename = data.files.name; //BASE_URL + 'test2/' +
                         }
                     }
                 }
@@ -208,16 +217,7 @@ define([
             // console.log(store.getters.videoById(165));
             //store.commit('getFormDataModel');
 
-            function skeleton(source, isArray) {
-                var o = Array.isArray(source) ? [] : {};
-                for (var key in source) {
-                    if (source.hasOwnProperty(key)) {
-                        var t = typeof source[key];
-                        o[key] = t == 'object' ? skeleton(source[key]) : { string: '', number: 0, boolean: false }[t];
-                    }
-                }
-                return o;
-            }
+          
 
             const Rating = {
                 template: '#rating',
@@ -550,13 +550,15 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                         this.save(formData);
                     },
                     updateSelectedFiles: function (data) {
-                        console.log(data)
+                        
                         if (data.error.length > 0) { // 
                             this.currentStatus === STATUS_FAILED;
                             this.error = data.error;
                         } else {
                             console.log(this.uploadedFiles[0].size)
-                            data.files = this.uploadedFiles[0];
+                            console.log(data.files)
+                            this.uploadedFiles[0] = data.files[0];
+                            data.files = data.files[0];
                             if (this.$route.params.id !== undefined) {
                                 data.isNewVideo = false;
                             }else{
@@ -577,7 +579,8 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
             const BASE_URL = 'http://localhost/videos/';
 
             function upload(formData, callback) {
-
+                console.log('formDate');
+                
                 $.ajax({
                     url: SERVICE_URL,
                     type: 'POST',
@@ -586,14 +589,15 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                         // update store
                         data = JSON.parse(data.toString());
                         if (data.error !== '') {
-                            console.log('ERROR: ' + data.error)
+                            console.log('ERROR: '); console.log(data)
                             callback(data);
                         } else {
+                            console.log('SUccess: '); console.log(data.files[0]); console.log(data);
                             callback(data);
                         }
                     },
                     error: function (data) {
-                        console.log('upload error:' + data)
+                        console.log('upload error:'); console.log(data);
                     },
                     cache: false,
                     contentType: false,
@@ -680,7 +684,17 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                                 store.commit('addVideo', data);
                                 store.commit('setCurrentVideo', id);
                             }
+                            router.push({ path: '/videos' });
                         });
+                    },
+                    removeVideo(){
+                        var id = this.$route.params.id;
+                        if ( id !== undefined){
+                            if(window.confirm('Wollen Sie das Video wirklich löschen?')){
+                                router.push({ path: '/videos' });
+                                store.commit('removeVideo', id);
+                            }
+                        }
                     },
                     response(res) {
                         console.log(res);
@@ -750,8 +764,9 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                     }
                 },
                 methods: {
-                    imageLoadError: function(){ 
-                        console.log('Image missing');
+                    imageLoadError: function(id){ 
+                        var img = document.getElementById('video-img-'+id);
+                        img.src = 'images/stills/default.jpg'; 
                     },
                     setListView: function () { this.listView = true; },
                     setTableView: function () { this.listView = false; },

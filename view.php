@@ -307,7 +307,8 @@ echo '
 <div v-cloak id="form-submit-template">
 	<div class="col-md-12">
 		<button v-on:click="submitForm" class="btn btn-primary">Speichern</button>
-		<a class="btn btn-link" href="#/videos">cancel</a>
+		<a class="btn btn-link" href="#/videos">abbrechen</a>
+		<a v-on:click="removeVideo" class="btn btn-link right red">Video löschen</a>
 	</div>
 </div>
 ';
@@ -433,11 +434,12 @@ echo '
 							v-bind:class="\' col-xs-12 col-sm-5 col-md-2 video-item \'+ videoItemClass(video.id)"
 							>
 							<router-link class="title" :to="{ path: \'/videos/\' + video.id + \'/view\'}">
-								<img 
+								<img
+									:id="\'video-img-\'+video.id" 
 									v-on:mouseover="mouseOverCheck = video.id" 
 									v-on:mouseout="mouseOverCheck = \'\'" 
 									class="still-images"
-									@error="imageLoadError" 
+									@error="imageLoadError(video.id)" 
 									v-bind:src="mouseOverCheck === video.id ? \'images/stills/still-\'+video.filename.replace(\'.mp4\',\'_comp.gif\') : \'images/stills/still-\'+video.filename.replace(\'.mp4\',\'_comp.jpg\') " />    
 							</router-link>	
 							<div class="meta">
