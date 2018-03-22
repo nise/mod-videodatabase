@@ -102,7 +102,7 @@ define([
          * @param {*} msg 
          */
         function con(msg) {
-
+            console.log(msg);
             // map data on internal model
             var
                 data = JSON.parse(msg.data),
