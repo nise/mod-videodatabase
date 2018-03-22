@@ -84,7 +84,11 @@ input {
       margin-top:4px;
   }
 
-    
+  .vue-form-generator .field-checklist .dropList, .vue-form-generator .field-checklist .listbox{
+      max-width:100% !important;
+      max-height:inherit !important;
+      border:none !important;
+  }  
 
 .list-row > label > input[type="checkbox"] {
     margin-right:10px !important;
@@ -151,10 +155,13 @@ display:block;
 }
 
 .btn, .btn-primary {
-    padding:2px !important;
-    margin:0;
+    padding:4px 6px !important;
+    margin:20px 0 0 0;
 }
 
+.btn-primary {
+    font-weight: bold;
+}
 
 a {
     cursor: pointer;

@@ -19,7 +19,7 @@ define(['/moodle/mod/videodatabase/amd/src/vfg.js'], function (VueFormGenerator)
                             {
                                 "type": "input",
                                 "inputType": "text",
-                                "label": "Länge",
+                                "label": "Länge (s)",
                                 "model": "length",
                                 "disabled": true
                             },
