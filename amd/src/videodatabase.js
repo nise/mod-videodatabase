@@ -81,19 +81,23 @@ define([
                 method: method,
                 url: "/moodle/webservice/rest/server.php",
                 data: { // xxx get token: https://www.yourmoodle.com/login/token.php?username=USERNAME&password=PASSWORD&service=SERVICESHORTNAME
-                    wstoken: '027d0289994006d503b6554df204e7a8',//'e321c48e338fc44830cda07824833944',
+                    wstoken: $('#token').text(),//'027d0289994006d503b6554df204e7a8',//'e321c48e338fc44830cda07824833944',
                     moodlewsrestformat: 'json',
                     wsfunction: ws,
                     data: params
                 },
                 dataType: "json"
             })
-                .done(function (msg) {
+            .done(function (msg) {
+                if(msg.hasOwnProperty('exception')){
+                    $('#alert')
+                        .html('Videodatenbank konnte nicht geladen werden.<br>')
+                        .append(JSON.stringify(msg));
+                }else{
                     cb(msg);
-                })
-                .fail(function (data) {
-                    console.log(data);
-                });
+                }
+            })
+            .fail(function (data) { });
         }
 
 
@@ -102,7 +106,7 @@ define([
          * @param {*} msg 
          */
         function con(msg) {
-            console.log(msg);
+            
             // map data on internal model
             var
                 data = JSON.parse(msg.data),
