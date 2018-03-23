@@ -476,7 +476,7 @@ $PAGE->requires->js_amd_inline("require(['jquery', 'jqueryui', 'mod_videodatabas
  * 
  **/
 if(isset($_GET["dummy"]) && $_GET["dummy"] == 'true'){
-	bulkVideoImport($PAGE);
+	bulkVideoImport($PAGE, $cm->course);
 }
 
 
@@ -485,7 +485,7 @@ if(isset($_GET["dummy"]) && $_GET["dummy"] == 'true'){
  * Imports dataset with video metadate from csv-file and stores them in the database 
  * see: https://docs.moodle.org/dev/Data_manipulation_API#Example.28s.29
  **/
-function bulkVideoImport($PAGE) {
+function bulkVideoImport($PAGE, $courseid) {
 	global $CFG, $DB;
 	//$DB->set_debug(true);
 	$table = "videodatabase_videos";
@@ -496,13 +496,12 @@ function bulkVideoImport($PAGE) {
 	$video_arr = array();
 	if (($handle = fopen($CFG->dirroot.'/mod/videodatabase/data/testdata_20171213.csv', "r")) !== FALSE) {
 		while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-			echo (int)$cm->course;
-			echo $cm->course;
+			
 		  $num = count($data);
 		 	$row++;
 			$record = new stdClass();
 			$record->id = (int)$row;
-			$record->courseid = (int)$cm->course; 
+			$record->courseid = $courseid; 
 			$record->status = 1;
 			$record->courselevel = $data[0];  // multi
 			$record->title = (string)$data[2];
