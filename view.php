@@ -99,7 +99,7 @@ $content = format_text($content, $videodatabase->contentformat, $formatoptions);
 */
 
 
-echo "<span id='courseid'>$cm->course</span>";
+echo "<span hidden id='courseid'>$cm->course</span>";
 echo "<span hidden id='token'>$videodatabase->token</span>";
 echo "<div id='alert'></div>";
 // video player
@@ -547,7 +547,7 @@ function bulkVideoImport($PAGE, $courseid) {
 		echo 'not imported!!';
 	}
 	// delete all records
-	$DB->delete_records($table);
+	//$DB->delete_records($table);
 	// insert into database
 	$DB->insert_records($table, $video_arr);
 }
