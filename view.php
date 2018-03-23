@@ -72,7 +72,6 @@ $PAGE->requires->css( '/mod/videodatabase/css/bootstrap.min.css');
 $PAGE->requires->css( '/mod/videodatabase/styles.css', true );
 //$PAGE->requires->css( '/mod/videodatabase/css/animate.css', true );
 $PAGE->requires->css( '/mod/videodatabase/css/vfg.css', true );
-//$PAGE->requires->css( '/mod/videodatabase/css/vue2Dropzone.css', true );
 $PAGE->requires->css( '/mod/videodatabase/css/vi-two.css', true );
 echo $OUTPUT->header();
 /* end header */
@@ -100,9 +99,9 @@ $content = format_text($content, $videodatabase->contentformat, $formatoptions);
 */
 
 
-echo "<span id='courseid'>$cm->course </span>";
-
-
+echo "<span hidden id='courseid'>$cm->course </span>";
+echo "<span hidden id='token'>$videodatabase->token</span>";
+echo "<div id='alert'></div>";
 // video player
 echo '
 <div id="app-video-template" v-cloak >

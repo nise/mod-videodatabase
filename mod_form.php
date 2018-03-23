@@ -48,6 +48,16 @@ class mod_videodatabase_mod_form extends moodleform_mod {
         }
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
+
+        $mform->addElement('text', 'token', 'Token', array('size'=>'48'));
+        if (!empty($CFG->formatstringstriptags)) {
+            $mform->setType('token', PARAM_TEXT);
+        } else {
+            $mform->setType('token', PARAM_CLEANHTML);
+        }
+        $mform->addRule('token', null, 'required', null, 'client');
+        $mform->addRule('token', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
+
         $this->add_intro_editor($config->requiremodintro);
 
         //-------------------------------------------------------
