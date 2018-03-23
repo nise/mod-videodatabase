@@ -496,6 +496,8 @@ function bulkVideoImport($PAGE) {
 	$video_arr = array();
 	if (($handle = fopen($CFG->dirroot.'/mod/videodatabase/data/testdata_20171213.csv', "r")) !== FALSE) {
 		while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+			echo (int)$cm->course;
+			echo $cm->course;
 		  $num = count($data);
 		 	$row++;
 			$record = new stdClass();
