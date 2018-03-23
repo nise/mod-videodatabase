@@ -122,7 +122,7 @@ function xmldb_videodatabase_upgrade($oldversion) {
 */
 
 
- $table = new xmldb_table('videodatabase');
+        $table = new xmldb_table('videodatabase');
         $field = new xmldb_field('token', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, null);
 
         // Conditionally launch add field id.
