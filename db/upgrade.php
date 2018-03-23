@@ -122,6 +122,16 @@ function xmldb_videodatabase_upgrade($oldversion) {
 */
 
 
+ $table = new xmldb_table('videodatabase');
+        $field = new xmldb_field('token', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, null);
+
+        // Conditionally launch add field id.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Videodatabase savepoint reached.
+        upgrade_mod_savepoint(true, 2017064205, 'videodatabase');
 
 
     
@@ -137,7 +147,7 @@ function xmldb_videodatabase_upgrade($oldversion) {
         }
 
         // Videodatabase savepoint reached.
-        upgrade_mod_savepoint(true, 2017064117, 'videodatabase');
+        upgrade_mod_savepoint(true, 2017064205, 'videodatabase');
 
 
         /******************
