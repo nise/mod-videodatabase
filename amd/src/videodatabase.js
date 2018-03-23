@@ -200,6 +200,7 @@ define([
                         state.videos[state.currentVideo].rating = rating;
                     },
                     setVideoFileData(state, data) {
+                        console.log(data);
                         if (data.isNewVideo) {
                             state.newvideo.mimetype = data.files.type;
                             state.newvideo.format = data.files.name.split('.')[1];
@@ -554,8 +555,8 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                         this.save(formData);
                     },
                     updateSelectedFiles: function (data) {
-                        
-                        if (data.error.length > 0) { // 
+                        console.log(data);
+                        if (data.hasOwnProperty('error') && String(data.error).length > 0) { // 
                             this.currentStatus === STATUS_FAILED;
                             this.error = data.error;
                         } else {
@@ -592,7 +593,7 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                     url: SERVICE_URL,
                     type: 'POST',
                     data: formData,
-                    success: function (data) {
+                    success: function (data) { console.log(data);
                         data = JSON.parse(data.toString());
                         if (data.error !== '') {
                             console.log('ERROR: '); console.log(data)
@@ -601,6 +602,19 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                             console.log('Success: '); console.log(data.files[0]); console.log(data);
                             callback(data);
                         }
+                    },
+                    xhr: function () {
+                        var xhr = new window.XMLHttpRequest();
+                        xhr.upload.addEventListener("progress", function (evt) {
+                            if (evt.lengthComputable) {
+                                $('#uploadprogress')
+                                    .attr('value', evt.loaded)
+                                    .attr('max', evt.total);
+                                //console.log(evt.loaded/evt.total);
+                            }
+                        }, false);
+                        
+                        return xhr;
                     },
                     error: function (data) {
                         console.log('upload error:'); console.log(data);
@@ -619,8 +633,10 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                 $.ajax({
                     url: SERVICE_URL,
                     type: 'GET',
-                    data: { completeupload: filename},
+                    data: { completeupload: filename },
                     success: function (msg) {
+                        console.log('file move')
+                        console.log(msg)
                         if(msg.length === 0){
                             callback();
                         }else{
@@ -628,11 +644,11 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                         }
                     },
                     error: function (data) {
-                        console.log('upload error:'); console.log(data);
+                        console.log('file move error:'); console.log(data);
                     },
                     cache: false,
-                    contentType: false,
-                    processData: false
+                    contentType: false
+                    //processData: false
                 });
             }
 

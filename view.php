@@ -272,6 +272,7 @@ echo '
 							</div>
 						</p>
 					</label>
+					<progress id="uploadprogress" value="0" max="100"></progress>
 				</form>
 				<!--SUCCESS-->
 				<div v-if="isSuccess">
