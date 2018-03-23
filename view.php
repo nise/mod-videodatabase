@@ -99,7 +99,7 @@ $content = format_text($content, $videodatabase->contentformat, $formatoptions);
 */
 
 
-echo "<span hidden id='courseid'>$cm->course </span>";
+echo "<span id='courseid'>$cm->course</span>";
 echo "<span hidden id='token'>$videodatabase->token</span>";
 echo "<div id='alert'></div>";
 // video player

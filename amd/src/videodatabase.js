@@ -581,22 +581,24 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
 
             const SERVICE_URL = 'http://localhost/videos/php-video-upload-chain/upload.php';
             const BASE_URL = 'http://localhost/videos/';
-
+            
+            /**
+             * Metadata and preview files will be generated. File conversions will take place.
+             * @param {*} formData 
+             * @param {*} callback 
+             */
             function upload(formData, callback) {
-                console.log('formDate');
-                
                 $.ajax({
                     url: SERVICE_URL,
                     type: 'POST',
                     data: formData,
                     success: function (data) {
-                        // update store
                         data = JSON.parse(data.toString());
                         if (data.error !== '') {
                             console.log('ERROR: '); console.log(data)
                             callback(data);
                         } else {
-                            console.log('SUccess: '); console.log(data.files[0]); console.log(data);
+                            console.log('Success: '); console.log(data.files[0]); console.log(data);
                             callback(data);
                         }
                     },
@@ -607,38 +609,32 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                     contentType: false,
                     processData: false
                 });
-                /*
-                var data = new FormData();
-        
-                data.append('file', formData[0]);
-                var config = {
-                    onUploadProgress: function (progressEvent) {
-                        var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-                        console.log("Progress:-" + percentCompleted);
-                    }
-                };
-                Axios.post(SERVICE_URL, data, config)
-                    .then(function (res) {
-                        console.log(res)
-                    })
-                    .catch(function (err) {
-                        console.log(err.message);
-                    });
-        
-                return Axios.post(SERVICE_URL, formData)
-                    // get data
-                    .then(x => x.data)
-                    // add url field
-                    .then(x => x.map(img => Object.assign({},
-                        img, { url: `${BASE_URL}/images/${img.id}` })
-                    ).catch(function(err){
-                        console.log(err)
-                    })
-                );
-                */
             }
 
 
+            /**
+             * 
+             */
+            function complete_upload(filename, callback) {
+                $.ajax({
+                    url: SERVICE_URL,
+                    type: 'GET',
+                    data: { completeupload: filename},
+                    success: function (msg) {
+                        if(msg.length === 0){
+                            callback();
+                        }else{
+                            console.log(msg)
+                        }
+                    },
+                    error: function (data) {
+                        console.log('upload error:'); console.log(data);
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                });
+            }
 
 
             const MetadataForm = {
@@ -679,6 +675,11 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                             //store.commit('addVideo', data );
                             //store.commit('setCurrentVideo', id);
                         }
+                        // move files
+                        complete_upload(data.filename.split('.')[0], function(){
+                            console.log('ready');
+                        })
+                        // save data to database
                         get_ws('videodatabase_store_video', "POST", {
                             'nu': nu,
                             'id': id,
