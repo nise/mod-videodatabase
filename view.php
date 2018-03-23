@@ -500,7 +500,7 @@ function bulkVideoImport($PAGE) {
 		 	$row++;
 			$record = new stdClass();
 			$record->id = (int)$row;
-			$record->courseid = $cm->course; 
+			$record->courseid = (int)$cm->course; 
 			$record->status = 1;
 			$record->courselevel = $data[0];  // multi
 			$record->title = (string)$data[2];
