@@ -593,6 +593,7 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                     url: SERVICE_URL,
                     type: 'POST',
                     data: formData,
+                    crossOrigin: true,
                     success: function (data) { console.log(data);
                         data = JSON.parse(data.toString());
                         if (data.error !== '') {
