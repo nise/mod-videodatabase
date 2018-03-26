@@ -579,10 +579,10 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                 }
             };
 
-
-            const SERVICE_URL = 'http://localhost/videos/php-video-upload-chain/upload.php';
-            const BASE_URL = 'http://localhost/videos/';
-            
+            const url = new URL(window.location.href);
+            const SERVICE_URL = url.hostname+':'+url.port+'/videos/php-video-upload-chain/upload.php';
+            const BASE_URL = url.hostname + ':' + url.port +'/videos/';
+            alert(url.hostname+'  '+url.port);
             /**
              * Metadata and preview files will be generated. File conversions will take place.
              * @param {*} formData 
