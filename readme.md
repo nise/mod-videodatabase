@@ -3,7 +3,9 @@ Vi-moodle is a video database for moodle.
 *Features:*
 * Upload and convert video files
 * Browse and search a video collection
+* Having multiple video databases in a course or course module
 * Advanced video playback functionionalities (e.g. zoom, speed, loop, skip back)
+* comprehensive meta data description of video files (dublin core, pedagogic metadata, technical descriptions)
 * Video annotations (e.g. comments)
 * User rating per video
 
@@ -15,8 +17,8 @@ Tested with Moodle v3.x
 * Rename the plugin folder: `mv vi-moodle videodatabase`
 
 ## Install depenencies
-sudo apt-get install ffmpeg lame libaacs-dev
-
+* `sudo apt-get install ffmpeg lame libaacs-dev`
+* [Video Upload Manager](https://github.com/nise/php-video-upload-chain)
 ## Configure the webserver
 **Apache2**
 Open `/etc/php/7.0/apache2/php.ini` and increase `upload_max_filesize = 500M` and `post_max_size = 500M`
