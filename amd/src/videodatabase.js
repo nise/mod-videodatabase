@@ -631,19 +631,13 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
             /**
              * 
              */
-            function complete_upload(filename, callback) {
+            function complete_upload(filename, duration, callback) {
                 $.ajax({
                     url: SERVICE_URL,
                     type: 'GET',
-                    data: { completeupload: filename },
+                    data: { completeupload: filename, duration: duration },
                     success: function (msg) {
-                        console.log('file move')
-                        console.log(msg)
-                        if(msg.length === 0){
-                            callback();
-                        }else{
-                            console.log(msg)
-                        }
+                        callback(msg);
                     },
                     error: function (data) {
                         console.log('file move error:'); console.log(data);
@@ -692,10 +686,11 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                             data.id = id;
                             //store.commit('addVideo', data );
                             //store.commit('setCurrentVideo', id);
-                        }
+                        } console.log(data.length);
                         // move files
-                        complete_upload(data.filename.split('.')[0], function(){
-                            console.log('ready');
+                        complete_upload(data.filename.split('.')[0], data.length, function(msg){
+                            console.log('Moving files is done.');
+                            console.log(msg);
                         })
                         // save data to database
                         get_ws('videodatabase_store_video', "POST", {
