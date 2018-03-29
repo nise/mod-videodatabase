@@ -601,7 +601,9 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                             console.log('ERROR: '); console.log(data)
                             callback(data);
                         } else {
-                            console.log('Success: '); console.log(data.files[0]); console.log(data);
+                            console.log('Success: '); 
+                            console.log(data.files[0]); 
+                            console.log(data);
                             callback(data);
                         }
                     },

@@ -245,6 +245,7 @@ echo '
 				<video v-if="video" width="100%" height="auto" controls preload="none">
 					<source v-if="video.video" :src="video.video" :type="video.mimetype" >
 				</video>
+				<img :src="video.poster">
 			</div>
 			<div class="col-md-3 col-sm-12 col-xs-12">
 				<form 
