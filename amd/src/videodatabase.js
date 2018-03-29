@@ -580,8 +580,9 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
             };
 
             const url = new URL(window.location.href);
-            const SERVICE_URL = url.protocol + '//' + url.hostname + ':' + url.port + '/videos/php-video-upload-chain/upload.php';
-            const BASE_URL = url.protocol + '//' + url.hostname + ':' + url.port + '/videos/';
+            const server = url.protocol + '//' + url.hostname + (url.port === '' ? '' : ':' + url.port);
+            const SERVICE_URL = server + '/videos/php-video-upload-chain/upload.php';
+            const BASE_URL = server + '/videos/';
             
             /**
              * Metadata and preview files will be generated. File conversions will take place.
@@ -618,7 +619,7 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                         return xhr;
                     },
                     error: function (data) {
-                        console.log('upload error:'); console.log(data);
+                        console.log('upload error:'); console.log(JSON.stringify(data));
                     },
                     cache: false,
                     contentType: false,
