@@ -25,16 +25,22 @@ select option:disabled, .option-head {
   display: none;
 }
 
-.progress-bar {
+.progress-bars {
     font-weight: 1;
     font-size: .8em;
     color: inherit;
-    float: left;
+    display: block;
+    margin-bottom: 4px !important;
 }
 
-.progress-bar span, .progress-bar  progress {
+.progress-bars ppercent, .progress-bars  plabel, .progress-bars progress {
     display: inline;
 }
+
+.progress-bars .ppercent, .progress-bars  .plabel {
+    padding:4px 4px;
+}
+
 
 /*
 progress[value] {

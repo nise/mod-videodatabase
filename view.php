@@ -271,11 +271,16 @@ echo '
 									Your browser does not support the video tag.
 								</video>
 							</div>
-							<div class="progress-bar">
-								<span>Transcoding: </span>
-								<progress id="uploadprogress" :value="progress" max="100"></progress>
-								<span id="percentage" style="text-align:right;">{{ progress }}%</span>
-							</div>	
+							<div class="progress-bars progress">
+								<span class="plabel">Video kodieren: </span>
+								<progress class="progress-bar progress-bar-striped progress-bar-animated" id="uploadprogress" :value="progtranscode" max="100"></progress>
+								<span class="ppercent">{{ progtranscode }}%</span>
+							</div>
+							<div class="progress-bars progress">
+								<span class="plabel">Vorschaubilder generieren: </span>
+								<progress class="progress-bar progress-bar-striped progress-bar-animated" id="uploadprogress2" :value="progpreview" max="100"></progress>
+								<span class="ppercent">{{ progpreview }}%</span>
+							</div>		
 						</p>
 					</label>
 				</form>
