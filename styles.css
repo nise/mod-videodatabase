@@ -25,6 +25,29 @@ select option:disabled, .option-head {
   display: none;
 }
 
+.progress-bar {
+    font-weight: 1;
+    font-size: .8em;
+    color: inherit;
+    float: left;
+}
+
+.progress-bar span, .progress-bar  progress {
+    display: inline;
+}
+
+/*
+progress[value] {
+  width: 250px;
+  height: 20px;
+}
+
+progress[value]::-webkit-progress-bar {
+  background-color: #eee;
+  border-radius: 2px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
+}
+*/
 
 #videomanager .container-fluid {
     margin-right:0;

@@ -271,9 +271,13 @@ echo '
 									Your browser does not support the video tag.
 								</video>
 							</div>
+							<div class="progress-bar">
+								<span>Transcoding: </span>
+								<progress id="uploadprogress" :value="progress" max="100"></progress>
+								<span id="percentage" style="text-align:right;">{{ progress }}%</span>
+							</div>	
 						</p>
 					</label>
-					<progress id="uploadprogress" value="0" max="100"></progress>
 				</form>
 				<!--SUCCESS-->
 				<div v-if="isSuccess">

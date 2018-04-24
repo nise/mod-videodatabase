@@ -150,13 +150,17 @@ define([
                     mouse: {},
                     showForm: false,
                     formDataModel: {},
-                    currentVideo: 0
+                    currentVideo: 0,
+                    transcodeprogress:0
                 },
                 getters: {
                     videos(state) {
                         return function () {
                             return state.videos;
                         };
+                    },
+                    transcodeprogress(state){
+                        return function () { return state.transcodeprogress; };   
                     },
                     newvideo(state){
                         return function () { return state.newvideo; };
@@ -192,6 +196,9 @@ define([
                     },
                     getFormDataModel() {
 
+                    },
+                    transcodeprogress(state, p) {
+                        state.transcodeprogress = p;
                     },
                     setCurrentVideo(state, id) {
                         state.currentVideo = id;
@@ -477,10 +484,19 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                         fileCount: 0,
                         uploadError: null,
                         currentStatus: 0,
+                        transcodeprogress: 0,
                         uploadFieldName: 'videouploads[]'
                     };
                 },
                 computed: {
+                    progress: {
+                        get: function () {
+                            return store.getters.transcodeprogress();
+                        },
+                        set: function (e) {
+                            store.commit('transcodeporgress', e);
+                        }    
+                    },
                     video: function () {
                         if (this.$route.params.id){ // if video already exists
                             var id = this.$route.params.id;
@@ -533,6 +549,9 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                         this.currentStatus = STATUS_SAVING;
                         upload(formData, this.updateSelectedFiles);
                     },
+                    progress: function(e){
+                        this.transcodeprogress = store.getters.transcodeprogress();
+                    },
                     filesChange: function (fieldName, fileList) {
                         if (!fileList.length) {
                             return;
@@ -542,6 +561,7 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                         document.getElementById("file").value = "";
                         const formData = new FormData();
                         for (var i = 0, len = fileList.length; i < len; i++) {
+                            fileList[i].lastModifiedDate = new Date();
                             formData.append('videofiles[]', fileList[i]);
                             this.uploadedFiles.push({
                                 name: fileList[i].name,
@@ -560,7 +580,6 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                             this.currentStatus === STATUS_FAILED;
                             this.error = data.error;
                         } else {
-                            console.log(this.uploadedFiles[0].size)
                             console.log(data.files)
                             this.uploadedFiles[0] = data.files[0];
                             data.files = data.files[0];
@@ -581,7 +600,8 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
 
             const url = new URL(window.location.href);
             const server = url.protocol + '//' + url.hostname + (url.port === '' ? '' : ':' + url.port);
-            const SERVICE_URL = server + '/videos/php-video-upload-chain/upload.php';
+            const UPLOAD_URL = server + '/videos/php-video-upload-chain/upload.php';
+            const TRANSCODING_URL = server + '/videos/php-video-upload-chain/transcoding.php';
             const BASE_URL = server + '/videos/';
             
             /**
@@ -589,21 +609,29 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
              * @param {*} formData 
              * @param {*} callback 
              */
-            function upload(formData, callback) {
+            function upload(formData, callback) { console.log
                 $.ajax({
-                    url: SERVICE_URL,
+                    url: UPLOAD_URL,
                     type: 'POST',
                     data: formData,
                     crossOrigin: true,
-                    success: function (data) { console.log(data);
-                        data = JSON.parse(data.toString());
+                    success: function (data) { 
+                        try{
+                            data = JSON.parse(data.toString());
+                        }catch(e){
+                            console.log(e);
+                        }
                         if (data.error !== '') {
-                            console.log('ERROR: '); console.log(data)
+                            console.log('ERROR: '); console.log(data); 
                             callback(data);
                         } else {
                             console.log('Success: '); 
                             console.log(data.files[0]); 
-                            console.log(data);
+                            startProgressLog(
+                                data.files[0].tmp_location, 
+                                data.files[0].duration,
+                                data.files[0].name_clean
+                            );
                             callback(data);
                         }
                     },
@@ -621,11 +649,51 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                         return xhr;
                     },
                     error: function (data) {
-                        console.log('upload error:'); console.log(JSON.stringify(data));
+                        console.log('upload error:'); 
+                        console.log(data);
                     },
                     cache: false,
                     contentType: false,
                     processData: false
+                });
+            }
+
+            
+            /**
+             * 
+             * @param {*} location File location
+             * @param {*} duration Video duration
+             * @param {*} name Name of the video file excluding file extention
+             */
+            function startProgressLog(location, duration, name) {
+                var params = '?location=' + encodeURIComponent(location) + '&duration=' + duration + '&name=' + name;
+                var es = new EventSource(TRANSCODING_URL + params);
+                
+                es.addEventListener('message', function (e) { 
+                    try{
+                        var result = JSON.parse(e.data);
+
+                        if (e.message == 'CLOSE') {
+                            es.close();
+                            UploadForm.progress = 100;
+                        } else if (e.message === 'x264' || e.message === 'webm') {
+                            store.commit('transcodeprogress', result.progress);
+                            UploadForm.progress = result.progress;
+                        } else if (e.message === 'animation') {
+                        } else if (e.message === 'thumbnail') {
+                        } else if (e.message === 'preview') { 
+
+                        }else{
+                            console.warn('Unknown EventSource message: '+ e.message);
+                        }
+                    }catch(e){
+                        console.error(e);
+                    }
+                });
+
+                es.addEventListener('error', function (e) {
+                    console.error(e);
+                    es.close();
                 });
             }
 
@@ -635,7 +703,7 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
              */
             function complete_upload(filename, duration, callback) {
                 $.ajax({
-                    url: SERVICE_URL,
+                    url: UPLOAD_URL,
                     type: 'GET',
                     data: { completeupload: filename, duration: duration },
                     success: function (msg) {
