@@ -151,7 +151,8 @@ define([
                     showForm: false,
                     formDataModel: {},
                     currentVideo: 0,
-                    transcodeprogress:0
+                    progresstranscode:0,
+                    progresspreview: 0
                 },
                 getters: {
                     videos(state) {
@@ -159,8 +160,11 @@ define([
                             return state.videos;
                         };
                     },
-                    transcodeprogress(state){
-                        return function () { return state.transcodeprogress; };   
+                    progresstranscode(state){
+                        return function () { return state.progresstranscode; };   
+                    },
+                    progresspreview(state) {
+                        return function () { return state.progresspreview; };
                     },
                     newvideo(state){
                         return function () { return state.newvideo; };
@@ -197,8 +201,13 @@ define([
                     getFormDataModel() {
 
                     },
-                    transcodeprogress(state, p) {
-                        state.transcodeprogress = p;
+                    progresstranscode(state, p) {
+                        p = typeof (p) === 'number' ? p : 0;
+                        state.progresstranscode = p;
+                    },
+                    progresspreview(state, p) {
+                        p = typeof(p) === 'number' ? p : 0;
+                        state.progresspreview = p;
                     },
                     setCurrentVideo(state, id) {
                         state.currentVideo = id;
@@ -484,18 +493,31 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                         fileCount: 0,
                         uploadError: null,
                         currentStatus: 0,
-                        transcodeprogress: 0,
+                        //progresstranscode: 0,
+                        //progresspreview: 0,
                         uploadFieldName: 'videouploads[]'
                     };
                 },
                 computed: {
-                    progress: {
+                    progtranscode: {
                         get: function () {
-                            return store.getters.transcodeprogress();
+                            return store.getters.progresstranscode();
                         },
                         set: function (e) {
-                            store.commit('transcodeporgress', e);
+                            if( typeof(e) === 'number'){
+                                store.commit('progresstranscode', e);
+                            }
                         }    
+                    },
+                    progpreview: {
+                        get: function () {
+                            return store.getters.progresspreview();
+                        },
+                        set: function (e) {
+                            if (typeof (e) === 'number') {
+                                store.commit('progresspreview', e);
+                            }
+                        }
                     },
                     video: function () {
                         if (this.$route.params.id){ // if video already exists
@@ -549,8 +571,11 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                         this.currentStatus = STATUS_SAVING;
                         upload(formData, this.updateSelectedFiles);
                     },
-                    progress: function(e){
-                        this.transcodeprogress = store.getters.transcodeprogress();
+                    progresstranscode: function(e){
+                        this.progresstranscode = store.getters.progresstranscode();
+                    },
+                    progresspreview: function (e) {
+                        this.progresspreview = store.getters.progresspreview();
                     },
                     filesChange: function (fieldName, fileList) {
                         if (!fileList.length) {
@@ -658,7 +683,7 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                 });
             }
 
-            
+
             /**
              * 
              * @param {*} location File location
@@ -676,15 +701,20 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                         if (e.message == 'CLOSE') {
                             es.close();
                             UploadForm.progress = 100;
-                        } else if (e.message === 'x264' || e.message === 'webm') {
-                            store.commit('transcodeprogress', result.progress);
-                            UploadForm.progress = result.progress;
-                        } else if (e.message === 'animation') {
-                        } else if (e.message === 'thumbnail') {
-                        } else if (e.message === 'preview') { 
-
-                        }else{
-                            console.warn('Unknown EventSource message: '+ e.message);
+                        } else {
+                            if (result.message === 'x264' || result.message === 'webm') {
+                                store.commit('progresstranscode', result.progress);
+                                UploadForm.progtranscode = result.progress;
+                            } else if (result.message === 'animation') {
+                                console.log('animation '+ result.progress);
+                            } else if (result.message === 'thumbnail') {
+                                console.log('thumbnail ' + result.progress);
+                            } else if (result.message === 'preview') { 
+                                store.commit('progresspreview', result.progress);
+                                UploadForm.progpreview = result.progress;
+                            }else{
+                                console.warn('Unknown EventSource message: '+ result.message);
+                            }
                         }
                     }catch(e){
                         console.error(e);
