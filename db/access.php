@@ -13,7 +13,7 @@ defined('MOODLE_INTERNAL') || die;
 
 $capabilities = array(
     'mod/videodatabase:view' => array(
-        'captype' => 'read',
+        'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
             'user' => CAP_ALLOW,
@@ -33,6 +33,7 @@ $capabilities = array(
         ),
         'clonepermissionsfrom' => 'moodle/course:manageactivities' // unclear
     ),
+    /*,
      'mod/videodatabase:vdb_video-manager' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -83,7 +84,7 @@ $capabilities = array(
             'manager' => CAP_ALLOW,
             'admin' => CAP_ALLOW
         )
-    ),
+    ),*/
      'mod/videodatabase:managefiles' => array(
         'riskbitmask' => RISK_SPAM,
         'captype' => 'write',
