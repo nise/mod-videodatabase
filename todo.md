@@ -5,9 +5,9 @@ MOODLE version 3.1.3 !!
 
 
 #backlog
+https://huboard.com/nise/vi-moodle/
 https://github.com/nise/vi-moodle/issues
 
-- Sportlehrer dürfen Videos hochladen
 - Admin gibt Videos frei
 - Rating
 - Suche
