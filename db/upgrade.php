@@ -119,7 +119,7 @@ function xmldb_videodatabase_upgrade($oldversion) {
 
         // Videodatabase savepoint reached.
         upgrade_mod_savepoint(true, 2017064113, 'videodatabase');
-*/
+
 
 
         $table = new xmldb_table('videodatabase');
@@ -150,7 +150,7 @@ function xmldb_videodatabase_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2017064205, 'videodatabase');
 
 
-        /******************
+     
           
         // Define field id to be added to videodatabase_videos.
         $table = new xmldb_table('videodatabase_videos');
@@ -163,9 +163,9 @@ function xmldb_videodatabase_upgrade($oldversion) {
 
         // Videodatabase savepoint reached.
         upgrade_mod_savepoint(true, 2017064101, 'videodatabase');
-        */
+       
     }
-  
+   */
 
     return true;
 }
