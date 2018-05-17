@@ -40,7 +40,7 @@ if ($p) {
 $course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
 require_course_login($course, true, $cm);
 $context = context_module::instance($cm->id);
-require_capability('mod/videodatabase:vdb_video-manager', $context);
+require_capability('mod/videodatabase:view', $context);
 
 // Update 'viewed' state if required by completion system
 /*require_once($CFG->libdir . '/completionlib.php');
@@ -49,7 +49,7 @@ $completion->set_module_viewed($cm);
 */
 
 /* begin header*/
-//$PAGE->set_url('/mod/videodatabase/vdb_video-manager.php', array('id' => $cm->id));
+$PAGE->set_url('/mod/videodatabase/view.php', array('id' => $cm->id));
 $PAGE->navbar->add('Video Manager');// , new moodle_url('vdb_video-manager.php'.'?id='.$cm->id));
 
 //$options = empty($videodatabase->displayoptions) ? array() : unserialize($videodatabase->displayoptions);
@@ -100,8 +100,12 @@ $content = format_text($content, $videodatabase->contentformat, $formatoptions);
 
 
 echo "<span hidden id='courseid'>$cm->course</span>";
+echo "<span hidden id='moduleid'>$cm->id</span>";
 echo "<span hidden id='token'>$videodatabase->token</span>";
 echo "<div id='alert'></div>";
+
+
+
 // video player
 echo '
 <div id="app-video-template" v-cloak >
@@ -242,69 +246,76 @@ echo '
 		</div>
 		<div class="row">	
 			<div class="col-md-3 col-sm-12 col-xs-12">
-				<video v-if="video" width="100%" height="auto" controls preload="none">
-					<source v-if="video.video" :src="video.video" :type="video.mimetype" >
-				</video>
-				
-			</div>
-			<div class="col-md-3 col-sm-12 col-xs-12">
+				<!--INITIAL-->
 				<form 
 					enctype="multipart/form-data" 
 					novalidate 
 					v-if="isInitial || isSaving"
 					class="dropbox"
 					>
-					
 					<label class="file-label">
+						<div class="">Videodatei auswählen</div>
 						<input id="file" type="file" multiple :name="uploadFieldName"  @change="filesChange($event.target.name, $event.target.files); fileCount = $event.target.files.length" accept="video/*" class="input-file" />
-						<p v-if="isInitial">
-							Videodatei für den Upload auswählen
-						</p>
-						<p v-if="isFailed">
-							Error: {{ error }}
-						</p>
-						<p v-if="isSuccess || isInitial">
-							<div v-cloak v-for="file in uploadedFiles">
-								Für Upload ausgewählt:<br> {{ file.name }} ({{ Math.round( file.size / 1024 / 1024 ) }}MB)					
-								<video width="100%" height="auto" controls preload="none">
-									<source v-if="file.location" @change="file.location" :src="file.location" :type="file.type" >
-									Your browser does not support the video tag.
-								</video>
-							</div>
-							<div class="progress-bars progress">
-								<span class="plabel">Video kodieren: </span>
-								<progress class="progress-bar progress-bar-striped progress-bar-animated" id="uploadprogress" :value="progtranscode" max="100"></progress>
-								<span class="ppercent">{{ progtranscode }}%</span>
-							</div>
-							<div class="progress-bars progress">
-								<span class="plabel">Vorschaubilder generieren: </span>
-								<progress class="progress-bar progress-bar-striped progress-bar-animated" id="uploadprogress2" :value="progpreview" max="100"></progress>
-								<span class="ppercent">{{ progpreview }}%</span>
-							</div>		
-						</p>
 					</label>
 				</form>
 				<!--SUCCESS-->
-				<div v-if="isSuccess">
-					<h2>Uploaded {{ uploadedFiles.length }} file(s) successfully.</h2>
-					<p>
-					<a href="javascript:void(0)" @click="reset()">Upload again</a>
-					</p>
-					<ul class="list-unstyled">
-					<li v-for="item in uploadedFiles">
-						<img :src="item.url" class="img-responsive img-thumbnail" :alt="item.originalName">
-					</li>
-					</ul>
-				</div>
+				<div v-if="isSuccess" style="margin:0 20px;">
+					<div v-cloak v-for="file in uploadedFiles">
+						Für Upload ausgewählt:<br> {{ file.name }} ({{ Math.round( file.size / 1024 / 1024 ) }}MB)					
+						<video width="100%" height="auto" controls preload="none">
+							<source v-if="file.location" @change="file.location" :src="file.tmp_rel_location" :type="file.type" >
+							Your browser does not support the video tag.
+						</video>
+					</div>
+				</div>	
 				<!--FAILED-->
-				<div v-if="isFailed">
-					<h2>Uploaded failed.</h2>
-					<p>
-					<a href="javascript:void(0)" @click="reset()">Try again</a>
-					</p>
-					<pre>{{ uploadError }}</pre>
+				<div v-if="isFailed" class="dropbox">
+					<label class="file-label">
+						<b>Upload fehlgeschlagen.</b>
+						<div hidden class="">Videodatei auswählen</div>
+						<input hidden id="file" type="file" multiple :name="uploadFieldName"  @change="filesChange($event.target.name, $event.target.files); fileCount = $event.target.files.length" accept="video/*" class="input-file" />
+						<p style="font-weight:normal;">{{ error }}</p>
+						<a href="javascript:void(0)" @click="reset()">Eine andere Datei hochladen.</a>
+					</label>
 				</div>
 			</div>	
+			<div class="col-md-3 col-sm-12 col-xs-12">
+				<!--SUCCESS-->
+				<div v-if="isSuccess">
+					<ul hidden class="list-unstyled">
+						<li v-for="item in uploadedFiles">
+							<img :src="item.url" class="img-responsive img-thumbnail" :alt="item.originalName">
+						</li>
+					</ul>
+					<span class="fa fa-check"></span> Uploaded {{ uploadedFiles.length }} file(s) successfully.
+					<div v-if="progthumbnail==100">
+						<span class="fa fa-check"></span> Videovorschaubild erzeugt
+					</div>
+					<div v-if="proganimation==100">
+						<span class="fa fa-check"></span> Videovorschauanimation erzeugt
+					</div>
+					<div v-if="progpreview<100" class="progress">
+						<div class="progress">
+							<div class="progress-bar my-progress" role="progressbar" :style="\'width:\'+progpreview+\'%;\'" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">Vorschaubilder generieren: {{ progpreview }}</div>
+						</div>						
+					</div>
+					<div v-if="progpreview==100">
+						<span class="fa fa-check"></span> Szenenvorschaubilder erzeugt
+					</div>
+					<div v-if="progtranscode<100" class="progress">
+						<div class="progress">
+							<div class="progress-bar my-progress" role="progressbar" :style="\'width:\'+progtranscode+\'%;\'" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">Video konvertieren: {{ progtranscode }}</div>
+						</div>
+					</div>
+					<div v-if="progtranscode==100">
+						<span class="fa fa-check"></span> Video konvertiert
+					</div>
+					<br>
+					<p>
+						<a class="red" href="javascript:void(0)" @click="reset()">Upload verwerfen</a>
+					</p>
+				</div>
+			</div>
 		</div>	
 	</div>
   </div>
