@@ -202,7 +202,7 @@ define([
 
                 this.video.onsuspend = function () {
                     //console.log("Media load suspended");
-                    _this.startSpinning();
+                    //_this.startSpinning();
                 };
 
                 this.video.onwaiting = function () {
