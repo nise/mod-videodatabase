@@ -1,14 +1,12 @@
 
-/* 
-*	name: Vi2.Utils
-*	author: niels.seidel@nise81.com
-* license: MIT License
-*	description: 
-* dependencies:
-*  - jquery-1.11.2.min.js
-*  - jquery.inherit-1.1.1.js
-*	todo:
-*/
+/**
+ *	name: Vi2.Utils
+ *	author: niels.seidel@nise81.com
+ * license: MIT License
+ *	description:
+ * dependencies:
+ *  - jquery-1.11.2.min.js
+ */
 
 
 define(['jquery'], function ($) {
