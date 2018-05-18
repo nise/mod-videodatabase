@@ -132,8 +132,6 @@ define([
             play_btn: null,
 
             /* flags */
-
-
             isSequence: false,
             seqList: [],
             seqNum: null,
@@ -163,7 +161,9 @@ define([
                     .appendTo('#seq');
 
                 this.video = document.getElementById((this.options.selector).replace(/\#/, ''));
-
+                if(this.video === null){
+                    return;
+                }
                 if (this.videoIsPlaying) {
                     $(vi2.observer.player).trigger('player.play', []);
                 }
@@ -220,17 +220,18 @@ define([
                     _this.stopSpinning();
                 };
 
-                this.video.addEventListener('playing', function () { return;
+                this.video.addEventListener('playing', function () {
                     //vi2.debug('networkstate code: ' + _this.video.networkState)
                     /*     
                         0 = NETWORK_EMPTY - audio/video has not yet been initialized
                         1 = NETWORK_IDLE - audio/video is active and has selected a resource, but is not using the network
                         2 = NETWORK_LOADING - browser is downloading data
                         3 = NETWORK_NO_SOURCE - no audio/video source found
-                    */
+                   
                     if (_this.video.error) {
                         //vi2.debug('error code: ' + _this.video.error.code);
                     }
+                     */
                     /*
                         1 = MEDIA_ERR_ABORTED - fetching process aborted by user
                         2 = MEDIA_ERR_NETWORK - error occurred when downloading
@@ -238,25 +239,19 @@ define([
                         4 = MEDIA_ERR_SRC_NOT_SUPPORTED - audio/video not supported
                     */
 
-                    
-
-                    
-
                     /*
                         * 0 = HAVE_NOTHING - no information whether or not the audio/video is ready
                         * 1 = HAVE_METADATA - metadata for the audio/video is ready
                         * 2 = HAVE_CURRENT_DATA - data for the current playback position is available, but not enough data to play next frame/millisecond
                         * 3 = HAVE_FUTURE_DATA - data for the current and at least the next frame is available
                         * 4 = HAVE_ENOUGH_DATA - enough data available to start playing
-                    */
+                    
                     if (_this.video.readyState < 3) {
                         _this.startSpinning();
                     } else if (_this.video.readyState === 4) {
                         _this.stopSpinning();
                     }
-
-
-
+                    */
                 });
 
                 this.video.addEventListener('pause', function (e) {
@@ -305,9 +300,7 @@ define([
             },
 
 
-
-
-
+            // xxx should separated
             /* HTML5 playback detection 
             * 	returns: mime type of supported video or empty string if there is no support
             *		called-by: loadVideo()
@@ -334,7 +327,7 @@ define([
                 return '';
             },
 
-
+            // xxx should separated
             detectBrowser: function () {
                 var ua = navigator.userAgent, tem,
                     M = ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
@@ -376,7 +369,8 @@ define([
                 var
                     mime_type = this.supportedMime,
                     ext = '.mp4',
-                    source = document.createElement('source');
+                    source = document.createElement('source')
+                    ;
                 if (this.detectBrowser() === 'Firefox') {
                     ext = '.mp4';  // lacy bug fix since firefox doesn't support mp4 anymore. xxx needs further testing.
                     mime_type = "video/webm";
@@ -387,7 +381,6 @@ define([
 
                 // extract file type out of mime type
                 source.src = src.replace('.mp4', ext) + "?foo=" + (new Date().getTime());//
-                // set mime type
                 source.type = mime_type;
                 return source;
             },
@@ -641,8 +634,12 @@ define([
             },
 
             /* returns duration of video */
+            dur : 0,
             duration: function () {
-                return this.video.duration; //$(this.options.selector).attr('duration');
+                if (this.video !== null){
+                    this.dur = this.video.duration
+                }
+                return this.dur;
             },
 
             /**
@@ -655,13 +652,15 @@ define([
 
             /* return current playback time or set the time */
             currentTime: function (x) {
-                if (x === undefined) {
+                if (x === undefined && this.video !== null) {
                     return this.video.currentTime; //$(this.options.selector).attr('currentTime');
                 } else if (parseInt(x) >= 0) {
                     this.video.currentTime = parseInt(x);
                     //$(this.video).trigger('play');
                     //this.play();
                     this.video.play();
+                }else{
+                    return 0;
                 }
             },
 
