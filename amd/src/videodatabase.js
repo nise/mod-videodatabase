@@ -4,108 +4,52 @@
  * @module     mod_videodatabase/videodatabase
  * @package    mod_videodatabase
  * @class      Videodatabase
- * @copyright  2017 Niels Seidel
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  2018 Niels Seidel, info@social-machinables.com
+ * @license    MIT
  * @since      3.1
  */
 define([
     'jquery',
     'core/log',
-    'core/ajax',
-    '/moodle/mod/videodatabase/amd/src/vue.js',
-    '/moodle/mod/videodatabase/amd/src/vue-router.js',
-    '/moodle/mod/videodatabase/amd/src/vuex.js',
-    '/moodle/mod/videodatabase/amd/src/vfg.js',
-    '/moodle/mod/videodatabase/amd/src/axios.min.js',
-    
+    '/moodle/mod/videodatabase/amd/src/lib/vue.js',
+    '/moodle/mod/videodatabase/amd/src/lib/vue-router.js',
+    '/moodle/mod/videodatabase/amd/src/lib/vfg.js',
+    '/moodle/mod/videodatabase/amd/src/lib/axios.min.js',
     '/moodle/mod/videodatabase/amd/src/datamodel.js',
     // '/moodle/mod/videodatabase/amd/src/vuejs-paginator.js',
-    'js/vi2.main.js'
+    '/moodle/mod/videodatabase/amd/src/components/Store.js',
+    '/moodle/mod/videodatabase/amd/src/components/Video.js',
+    '/moodle/mod/videodatabase/amd/src/components/Utils.js'
 ],
     function (
         $,
         log,
-        ajax,
         Vue,
         VueRouter,
-        Vuex,
         VueFormGenerator,
         Axios,
         Datamodel,
         // VuePaginator,
-        Vi2
+        Store,
+        Video,
+        Utils
     ) {
-
-/*
-        //methodname: 'mod_assign_submit_grading_form',
-        //args: { assignmentid: assignmentid, userid: this._lastUserId, jsonformdata: JSON.stringify(data) },
-        var promises = ajax.call([
-            { wsfunction: 'mod_videodatabase_videos', },
-            { methodname: 'mod_videodatabase_videos', args: {  courseid: 4 }},
-            { methodname: 'core_get_string', args: { component: 'mod_wiki', stringid: 'changerate' } }
-        ]);
-
-        promises[0].done(function (response) {
-            console.log('mod_wiki/pluginname is' + response);
-        }).fail(function (ex) {
-            console.log(ex);// do something with the exception
-        });
-
-        promises[1].done(function (response) {
-            console.log('mod_wiki/changerate is' + response);
-        }).fail(function (ex) {
-            // do something with the exception
-        });
-
-*/
-
-
 
         var Filters = function () { };
 
         var datamodel = new Datamodel();
 
         var course = {
-            id: parseInt($('#courseid').html())
+            id: parseInt($('#courseid').html()),
+            module: parseInt($('#moduleid').html())
         };
+        const utils = new Utils();
         
         /**
-         * Obtains data from a moodle webservice
-         * @param {*} ws: Name of the web service 
-         * @param {*} method: GET or POST 
-         * @param {*} params: Parameter to transfer 
-         * @param {*} cb: Callback function 
-         */
-        function get_ws(ws, method, params, cb) {
-            $.ajax({
-                method: method,
-                url: "/moodle/webservice/rest/server.php",
-                data: { // xxx get token: https://www.yourmoodle.com/login/token.php?username=USERNAME&password=PASSWORD&service=SERVICESHORTNAME
-                    wstoken: $('#token').text(),//'027d0289994006d503b6554df204e7a8',//'e321c48e338fc44830cda07824833944',
-                    moodlewsrestformat: 'json',
-                    wsfunction: ws,
-                    data: params
-                },
-                dataType: "json"
-            })
-            .done(function (msg) {
-                if(msg.hasOwnProperty('exception')){
-                    $('#alert')
-                        .html('Videodatenbank konnte nicht geladen werden.<br>')
-                        .append(JSON.stringify(msg));
-                }else{
-                    cb(msg);
-                }
-            })
-            .fail(function (data) { });
-        }
-
-
-        /**
-         * 
+         * Connection handler
          * @param {*} msg 
          */
-        function con(msg) {
+        function connection_handler(msg) {
             
             // map data on internal model
             var
@@ -119,366 +63,14 @@ define([
                 };
 
             // setup vue
-            Vue.use(Vuex);
             Vue.use(VueRouter);
             Vue.use(VueFormGenerator);
             
-
-            //Vue.use(VueUniqIds);
-            //Vue.use(Vue2Dropzone);
-            // Vue.use(VuePaginator); 
-
-            //Vue.component('paginate', VuePaginate);
-
-
-            // init vue store
-            const store = new Vuex.Store({
-                state: {
-                    myValue: 0,
-                    videos: data,
-                    newvideo: { 
-                        title:'hello world', 
-                        description:'12345678', 
-                        tags:'tag', 
-                        filename:'video.mp4',
-                        mimetype:'',
-                        format:'',
-                        size:'',
-                        length:'',
-                        courseid: course.id
-                    },
-                    mouse: {},
-                    showForm: false,
-                    formDataModel: {},
-                    currentVideo: 0,
-                    progresstranscode:0,
-                    progresspreview: 0
-                },
-                getters: {
-                    videos(state) {
-                        return function () {
-                            return state.videos;
-                        };
-                    },
-                    progresstranscode(state){
-                        return function () { return state.progresstranscode; };   
-                    },
-                    progresspreview(state) {
-                        return function () { return state.progresspreview; };
-                    },
-                    newvideo(state){
-                        return function () { return state.newvideo; };
-                    },
-                    videoById(state) {
-                        var self = this;
-                        return function (id) {
-                            if (state.videos[id] !== undefined && id !== undefined) {
-                                return state.videos[id];
-                            } else {
-                                console.log('id missing ' + id)
-                            }
-                        };
-                    },
-                    currentVideoData(state) {
-                        var self = this;
-                        return function () {
-                            return state.videos[state.currentVideo];
-                        };
-                    }
-                },
-                mutations: {
-                    addVideo(state, video) {
-                        state.videos[video.id] = video;
-                    },
-                    removeVideo(state, video_id){
-                        //var index = state.videos.indexOf(video_id);
-                        //delete state.videos[video_id];
-                        state.videos[video_id] = null;
-                        delete state.videos[video_id];
-                        //console.log(state.videos);
-                        //state.videos.splice(video_id, 1); //alert(0);
-                    },
-                    getFormDataModel() {
-
-                    },
-                    progresstranscode(state, p) {
-                        p = typeof (p) === 'number' ? p : 0;
-                        state.progresstranscode = p;
-                    },
-                    progresspreview(state, p) {
-                        p = typeof(p) === 'number' ? p : 0;
-                        state.progresspreview = p;
-                    },
-                    setCurrentVideo(state, id) {
-                        state.currentVideo = id;
-                    },
-                    setCurrentVideoRating(state, rating) {
-                        state.videos[state.currentVideo].rating = rating;
-                    },
-                    setVideoFileData(state, data) {
-                        console.log(data);
-                        if (data.isNewVideo) {
-                            state.newvideo.mimetype = data.files.type;
-                            state.newvideo.format = data.files.name.split('.')[1];
-                            state.newvideo.size = data.files.size;
-                            state.newvideo.length = data.files.duration;
-                            state.newvideo.filename = data.files.name; //BASE_URL + 'test2/' +
-                        }else{
-                            state.videos[state.currentVideo].mimetype = data.files.type;
-                            state.videos[state.currentVideo].size = data.files.size;
-                            state.videos[state.currentVideo].filename = data.files.name; //BASE_URL + 'test2/' +
-                        }
-                    }
-                }
-            });
-            //this.$set('contacts[' + newPsgId + ']', newObj)
-            //Vue.set(this.contacts[newPsgId], 'name', this.editPsgName); 
-            //console.log(store.state.videos[165].title);
-            //store.commit('increment', 10);
-            // console.log(store.getters.videoById(165));
-            //store.commit('getFormDataModel');
-
-          
-
-            const Rating = {
-                template: '#rating',
-                props: {
-                    value: { type: [Number, String] },
-                    name: { type: String, default: 'rate' },
-                    length: { type: Number },
-                    showcount: { type: Boolean, default: false },
-                    required: { type: Boolean },
-                    ratedesc: { type: Array, default() { return [] } },
-                    disabled: { type: Boolean, default: false },
-                    readonly: { type: Boolean, default: false }
-                },
-                data: function () {
-                    return {
-                        over: 0,
-                        rate: 0
-                    };
-                },
-                computed: {
-                    currentvideo: function () {
-                        return store.state.currentVideo;
-                    }
-                },
-                methods: {
-                    onOver: function (index) {
-                        if (!this.readonly) {
-                            this.over = index;
-                        }
-                    },
-                    onOut() { if (!this.readonly) this.over = this.rate },
-                    setRate(index) {
-                        var _this = this;
-                        if (index === undefined) { index = 0; }
-
-                        this.userHasRatedVideo(function (hasRated) {
-                            this.disabled = hasRated;
-                            this.readonly = hasRated;
-                            if (!hasRated) {
-                                //if (_this.rate !== index) {
-                                _this.$emit('beforeRate', _this.rate);
-                                //var data = store.getters.currentVideoData();
-                                _this.storeRating(index, function (e) {
-                                    console.log(index);
-                                    //_this.$emit('readonly', true); // xxx bug // set readonly after giving a vote
-                                });
-                                _this.calcVideoRating();
-                                //}
-                                _this.rate = index;
-                                _this.$emit('input', _this.rate);
-                                _this.$emit('value', _this.rate);
-                                _this.$emit('after-rate', _this.rate);
-                            }
-                        });
-
-                    },
-                    isFilled: function (index) {
-                        return index <= this.over;
-                    },
-                    isEmpty: function (index) {
-                        return index > this.over || !this.value && !this.over;
-                    },
-                    getRatingsOfVideo: function (callback) {
-                        get_ws('videodatabase_ratings', "POST", {
-                            'videoid': this.currentvideo,
-                            'courseid': course.id,
-                        }, function (e) {
-                            //console.log(e);
-                            callback(e);
-                        }, function (err) {
-                            console.error(err);
-                        });
-                    },
-                    userHasRatedVideo: function (callback) {
-                        get_ws('videodatabase_ratings', "POST", {
-                            'videoid': this.currentvideo,
-                            'courseid': course.id,
-                            'userid': 20
-                        }, function (e) {
-                            var data = JSON.parse(e.data);
-                            //console.log(data)
-                            if (data.length === 0) {
-                                callback(false);
-                            } else {
-                                callback(false);//xxx
-                            }
-                        });
-                    },
-                    storeRating: function (rating, callback) {
-                        get_ws('videodatabase_ratings', "POST", {
-                            'videoid': this.currentvideo,
-                            'courseid': course.id,
-                            'userid': user.id,
-                            'rating': rating
-                        }, function (e) {
-                            callback(e);
-                        }, function (err) {
-                            console.error(err);
-                        });
-                    },
-                    calcVideoRating: function () {
-                        var _this = this;
-                        this.getRatingsOfVideo(function (e) {
-                            //console.log(Object.values(JSON.parse(e.data)))
-                            var data = Object.values(JSON.parse(e.data)).map(function (obj) {
-                                return obj.rating;
-                            });
-                            if (data.length > 0) {
-                                var positiveRatings = data.filter(function (obj) {
-                                    return obj > 2 ? true : false;
-                                });
-                                var avg = Math.round(data.reduce(function (a, b) { return Number(a) + Number(b); }) / data.length);
-                                var wilson = _this.wilsonScore(positiveRatings.length, data.length) * 5;
-                                // console.log(avg, wilson, positiveRatings.length, data.length);
-                                store.commit('setCurrentVideoRating', avg);
-                                if (_this.value >= _this.length) {
-                                    _this.value = _this.length;
-                                } else if (_this.value < 0) {
-                                    _this.value = 0;
-                                }
-                                _this.rate = avg;
-                                _this.over = avg;
-                            } else { // xxx why this?
-                                _this.rate = _this.value;
-                                _this.over = _this.value;
-                            }
-
-                        });
-                    },
-
-                    // http://www.evanmiller.org/how-not-to-sort-by-average-rating.html
-                    // http://julesjacobs.github.io/2015/08/17/bayesian-scoring-of-ratings.html
-                    /*
-In your case calculating mean is simple. It is the mean of ratings itself. Assume p1 is the fraction of 1-star rating, p2,..., p5. p1+p2+...+p5 = 1. And assume you are calculating these stats using n samples. mean of your data is 1*p1+2*p2+...+5*p5.
-
-The variance of your data is ( E(x^2)-(E(x))^2 )/n = ( (p1*1^2 + p2*2^2..+p5*5^2) - (1*p1+2*p2+..+5*p5)^2 )/n
-
-Since std = sqrt(var), it is pretty straightforward to calculate Normal approximation interval. I will let you work on extending this to WCI.
-                    */
-                    wilsonScore: function (positiveRatings, n) {
-                        if (n === 0) {
-                            return 0;
-                        }
-                        const z = 1.96; //Statistics2.pnormaldist(1 - (1 - confidence) / 2)
-                        const phat = 1.0 * positiveRatings / n;
-                        return (phat + z * z / (2 * n) - z * Math.sqrt((phat * (1 - phat) + z * z / (4 * n)) / n)) / (1 + z * z / n);
-                    }
-                },
-                created: function () {
-                    this.calcVideoRating();
-                },
-                updated: function () {
-                    var d = store.getters.currentVideoData().rating;
-                    if (d === undefined) { d = 0; }
-                    this.rate = d;
-                    this.over = d;
-                    this.$emit('value', d);
-                    this.onOut();
-                }
-            };
-
-
-
-
-            const Video =
-                {
-                    template: '#app-video-template',//'<div>Video {{ $route.params.id }}: {{ video.title }}</div>', 
-                    data: function () {
-                        return {
-                            vi2_player_id: 'vi2-1',
-                            video_selector: 'seq',
-                            video_overlay_selector: 'overlay'//,
-                            //getRating: store.getters.currentVideoData().rating
-                        }
-                    },
-                    computed: {
-                        video: function () {
-                            var id = this.$route.params.id;
-                            store.commit('setCurrentVideo', this.$route.params.id);
-                            var video_data = store.getters.videoById(id);
-                            if (video_data !== undefined) {
-                                video_data.metadata = [];
-                                video_data.metadata[0] = {};
-                                video_data.metadata[0].author = video_data['contributor'];
-                                video_data.metadata[0].title = video_data['title'];
-                                video_data.metadata[0].abstract = video_data['description'];
-                                video_data.metadata[0].thumbnail = "still-" + video_data.filename.replace('.mp4', '_comp.jpg');
-                                video_data.video = '/videos/' + video_data.filename.replace('.mp4', '.webm');
-                                return video_data;//store.getters.videoById( this.$route.params.id );
-                            } else {
-                                //return null;
-                            }
-                        }
-                    },
-                    updated: function () {
-                        var id = this.$route.params.id;
-                        if (id === undefined) {
-                            id = 1;
-                        }
-                        var video_data = store.getters.videoById(id);
-                        //this.$refs.childRating.setRate(video_data.rating);
-                        if (video_data !== undefined) {
-                            video_data.metadata = [];
-                            video_data.metadata[0] = {};
-                            video_data.metadata[0].author = video_data['contributor'];
-                            video_data.metadata[0].title = video_data['title'];
-                            video_data.metadata[0].abstract = video_data['description'];
-                            video_data.metadata[0].thumbnail = "still-" + video_data.filename.replace('.mp4', '_comp.jpg');
-                            video_data.video = '/videos/' + video_data.filename.replace('.mp4', '.webm');
-                            Vi2.update(video_data);
-                        }
-                        //return video_data;    
-                    },
-                    mounted: function () {
-                        var id = this.$route.params.id;
-                        if (id === undefined) {
-                            id = 1;
-                        }
-                        var video_data = store.getters.videoById(id);
-
-                        if (video_data !== undefined) {
-                            video_data.metadata = [];
-                            video_data.metadata[0] = {};
-                            video_data.metadata[0].author = video_data.contributor;
-                            video_data.metadata[0].title = video_data.title;
-                            video_data.metadata[0].abstract = video_data.description;
-                            video_data.metadata[0].thumbnail = "still-" + video_data.filename.replace('.mp4', '_comp.jpg');
-                            video_data.video = '/videos/' + video_data.filename.replace('.mp4', '.webm');
-                            Vi2.start(video_data, user);
-                        }
-                    },
-                    methods: {
-                        onAfterRate: function (rate) {
-                            //store.commit('setCurrentVideoRating', rate);
-                        }
-                    },
-                    components: {
-                        'rating': Rating
-                    }
-                };
+            const vuestore = new Store(data, course);
+            const store = vuestore.store;
+            const utils = new Utils();
+            const videovue = new Video(store, course, user);
+            const video = videovue.video;
 
 
             const STATUS_INITIAL = 0, STATUS_SAVING = 1, STATUS_SUCCESS = 2, STATUS_FAILED = 3;
@@ -493,14 +85,12 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                         fileCount: 0,
                         uploadError: null,
                         currentStatus: 0,
-                        //progresstranscode: 0,
-                        //progresspreview: 0,
                         uploadFieldName: 'videouploads[]'
                     };
                 },
                 computed: {
                     progtranscode: {
-                        get: function () {
+                        get: function () {     
                             return store.getters.progresstranscode();
                         },
                         set: function (e) {
@@ -508,6 +98,26 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                                 store.commit('progresstranscode', e);
                             }
                         }    
+                    },
+                    proganimation: {
+                        get: function () {
+                            return store.getters.progressanimation();
+                        },
+                        set: function (e) {
+                            if (typeof (e) === 'number') {
+                                store.commit('progressanimation', e);
+                            }
+                        }
+                    },
+                    progthumbnail: {
+                        get: function () {
+                            return store.getters.progressthumbnail();
+                        },
+                        set: function (e) {
+                            if (typeof (e) === 'number') {
+                                store.commit('progressthumbnail', e);
+                            }
+                        }
                     },
                     progpreview: {
                         get: function () {
@@ -574,6 +184,12 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                     progresstranscode: function(e){
                         this.progresstranscode = store.getters.progresstranscode();
                     },
+                    progressanimation: function (e) {
+                        this.progressanimation = store.getters.progressanimation();
+                    },
+                    progressthumbnail: function (e) {
+                        this.progressthumbnail = store.getters.progressthumbnail();
+                    },
                     progresspreview: function (e) {
                         this.progresspreview = store.getters.progresspreview();
                     },
@@ -602,11 +218,14 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                     updateSelectedFiles: function (data) {
                         console.log(data);
                         if (data.hasOwnProperty('error') && String(data.error).length > 0) { // 
-                            this.currentStatus === STATUS_FAILED;
+                            this.currentStatus = STATUS_FAILED;
                             this.error = data.error;
+                            console.log(this.error);
                         } else {
-                            console.log(data.files)
+                            console.log(data.files);
                             this.uploadedFiles[0] = data.files[0];
+                            console.log('.....................')
+                            console.log(data.files[0])
                             data.files = data.files[0];
                             if (this.$route.params.id !== undefined) {
                                 data.isNewVideo = false;
@@ -614,6 +233,7 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                                 data.isNewVideo = true;
                             }
                             store.commit('setVideoFileData', data);
+                            this.currentStatus = STATUS_SUCCESS;
                             return this.currentStatus === STATUS_SUCCESS;
                         }
                     }
@@ -634,7 +254,7 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
              * @param {*} formData 
              * @param {*} callback 
              */
-            function upload(formData, callback) { console.log
+            function upload(formData, callback) { 
                 $.ajax({
                     url: UPLOAD_URL,
                     type: 'POST',
@@ -647,11 +267,8 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                             console.log(e);
                         }
                         if (data.error !== '') {
-                            console.log('ERROR: '); console.log(data); 
                             callback(data);
                         } else {
-                            console.log('Success: '); 
-                            console.log(data.files[0]); 
                             startProgressLog(
                                 data.files[0].tmp_location, 
                                 data.files[0].duration,
@@ -685,14 +302,17 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
 
 
             /**
-             * 
+             * Establishes a EventSource Connection and receives different messages about the state of video pre-procession on the server.
              * @param {*} location File location
              * @param {*} duration Video duration
              * @param {*} name Name of the video file excluding file extention
              */
             function startProgressLog(location, duration, name) {
-                var params = '?location=' + encodeURIComponent(location) + '&duration=' + duration + '&name=' + name;
-                var es = new EventSource(TRANSCODING_URL + params);
+                var 
+                    params = '?location=' + encodeURIComponent(location) + '&duration=' + duration + '&name=' + name,
+                    es = new EventSource(TRANSCODING_URL + params),
+                    ready = [0,0,0,0]
+                ;
                 
                 es.addEventListener('message', function (e) { 
                     try{
@@ -701,29 +321,71 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                         if (e.message == 'CLOSE') {
                             es.close();
                             UploadForm.progress = 100;
+
                         } else {
                             if (result.message === 'x264' || result.message === 'webm') {
                                 store.commit('progresstranscode', result.progress);
                                 UploadForm.progtranscode = result.progress;
+                                ready[0] = result.progress;   
+
                             } else if (result.message === 'animation') {
-                                console.log('animation '+ result.progress);
+                                store.commit('progressanimation', result.progress);
+                                UploadForm.proganimation = result.progress;
+                                ready[1] = result.progress;
+
                             } else if (result.message === 'thumbnail') {
-                                console.log('thumbnail ' + result.progress);
+                                store.commit('progressthumbnail', result.progress);
+                                UploadForm.progthumbnail = result.progress;
+                                ready[2] = result.progress;
+
                             } else if (result.message === 'preview') { 
                                 store.commit('progresspreview', result.progress);
                                 UploadForm.progpreview = result.progress;
+                                ready[3] = result.progress;
+
                             }else{
                                 console.warn('Unknown EventSource message: '+ result.message);
                             }
                         }
+                        if (ready.reduce(function (acc, val) { return acc + val; }) === 400){
+                            es.close();
+                        }
                     }catch(e){
+                        console.log('JSON.parse failed fro Event Source Message');
                         console.error(e);
                     }
                 });
 
                 es.addEventListener('error', function (e) {
-                    console.error(e);
-                    es.close();
+                    console.log('Some EventSource Error');
+                    //console.error(e);
+                    //es.close();
+                });
+            }
+
+
+            /**
+             * storeFileToMoodle 
+             * @param {*} filename 
+             * @param {*} location 
+             * @param {*} area 
+             */
+            function storeFileToMoodle(filename, location, area) {
+              
+                console.log('start storing' + '---' +filename + '---' +location+'---'+area);
+                utils.get_ws('videodatabase_files', "POST", {
+                    filename: filename,
+                    location: location,
+                    filearea: area,
+                    courseid: course.id,
+                    moduleid: course.module,
+                }, function (e) {
+                    console.log('Got callback');
+                    console.log(e);
+                    //callback(e);
+                }, function (err) {
+                    console.log('WS Error');
+                    console.error(err);
                 });
             }
 
@@ -731,12 +393,13 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
             /**
              * 
              */
-            function complete_upload(filename, duration, callback) {
+            function complete_upload(filename, duration, callback) { 
                 $.ajax({
                     url: UPLOAD_URL,
                     type: 'GET',
                     data: { completeupload: filename, duration: duration },
                     success: function (msg) {
+                        console.log('moving successful');
                         callback(msg);
                     },
                     error: function (data) {
@@ -786,14 +449,25 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                             data.id = id;
                             //store.commit('addVideo', data );
                             //store.commit('setCurrentVideo', id);
-                        } console.log(data.length);
-                        // move files
+                        }
+                        // move files into the moodledata diretory
+                        var name = data.filename.split('.')[0];
+                        var tmp_path = '/videos/tmp/';
+                        storeFileToMoodle('still-' + name + '_comp.jpg', tmp_path, 'thumbnail');
+                        storeFileToMoodle('still-' + name + '_comp.gif', tmp_path, 'animation');
+                        storeFileToMoodle(data.filename, tmp_path, 'video');
+                        for(var i = 0, len = data.length; i < len; i++){
+                            storeFileToMoodle('preview-' + name + '-' + i + '.jpg', tmp_path, 'preview');
+                        }
+                        // move files outside moodle
+                        /*
                         complete_upload(data.filename.split('.')[0], data.length, function(msg){
                             console.log('Moving files is done.');
                             console.log(msg);
-                        })
-                        // save data to database
-                        get_ws('videodatabase_store_video', "POST", {
+                        });
+                        */
+                        // save data to videodatabase
+                        utils.get_ws('videodatabase_store_video', "POST", {
                             'nu': nu,
                             'id': id,
                             'data': JSON.stringify(data)
@@ -846,7 +520,7 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
             const router = new VueRouter({
                 routes: [
                     { path: '/videos' },
-                    { path: '/videos/:id/view', component: Video },
+                    { path: '/videos/:id/view', component: video },
                     { path: '/videos/:id/edit', component: Form },
                     { path: '/videos/new', component: Form }
                 ],
@@ -854,7 +528,6 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                     return { x: 0, y: 405 };
                 }
             });
-
 
             var Main = new Vue({
                 el: '#app-videomanager',
@@ -882,6 +555,11 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                     }
                 },
                 methods: {
+                    getRatingOfVideo: function (videoid) {
+                        //return parseInt(store.getters.videoById(videoid).rating);
+                        console.log(this.$children)
+                        return parseInt(this.$children[0].calcRatingOfVideo(videoid));
+                    },
                     imageLoadError: function(id){ 
                         var img = document.getElementById('video-img-'+id);
                         img.src = 'images/stills/default.jpg'; 
@@ -920,7 +598,7 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                         ].join(' ');
                     },
                     downloadLogData: function () {
-                        get_ws('videodatabase_get_log', "POST", {
+                        utils.get_ws('videodatabase_get_log', "POST", {
                             'courseid': course.id,
                         }, function (data) {
                             // extract log entries form result set
@@ -937,17 +615,17 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
                     }
                 },
                 components: {
-
+                        rating: videovue.rating 
+                    
                 }
             });
 
-        } // end con()
+        } // callback to webservice
 
 
-
-        get_ws('videodatabase_videos', "POST", { 'courseid': course.id }, con);
-        //get_ws('videodatabase_video', { 'courseid': 2, 'videoid':165 }, con);
-
+        utils.get_ws('videodatabase_videos', "POST", { 'courseid': course.id }, connection_handler);
+        
+       
 
 
 
@@ -1002,25 +680,6 @@ Since std = sqrt(var), it is pretty straightforward to calculate Normal approxim
          */
         // render filter
         $(function () {
-
-            // xxx remove for production
-            /*
-            var overflowing = [];
-            var createXPathFromElement = function (e) { for (var t = document.getElementsByTagName("*"), a = []; e && 1 == e.nodeType; e = e.parentNode)if (e.hasAttribute("id")) { for (var s = 0, l = 0; l < t.length && (t[l].hasAttribute("id") && t[l].id == e.id && s++ , !(s > 1)); l++); if (1 == s) return a.unshift('id("' + e.getAttribute("id") + '")'), a.join("/"); a.unshift(e.localName.toLowerCase() + '[@id="' + e.getAttribute("id") + '"]') } else if (e.hasAttribute("class")) a.unshift(e.localName.toLowerCase() + '[@class="' + e.getAttribute("class") + '"]'); else { for (i = 1, sib = e.previousSibling; sib; sib = sib.previousSibling)sib.localName == e.localName && i++; a.unshift(e.localName.toLowerCase() + "[" + i + "]") } return a.length ? "/" + a.join("/") : null };
-            jQuery(':not(script)').filter(function () {
-                return jQuery(this).width() > jQuery(window).width();
-            }).each(function () {
-                overflowing.push({
-                    'xpath': createXPathFromElement(jQuery(this).get(0)),
-                    'width': jQuery(this).width(),
-                    'overflow': jQuery(this).width() - jQuery(window).width()
-                });
-            });
-            console.table(overflowing);
-            */
-            
-
-
 
             var arr = [];
             $.each(datamodel.data.groups[2].fields, function (j, val) {

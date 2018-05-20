@@ -74,6 +74,14 @@ $functions = array(
                 'type'        => 'write',
                 'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
         ),
+         'videodatabase_files' => array(
+                'classname'   => 'mod_videodatabase_files_external',
+                'methodname'  => 'files',
+                'classpath'   => 'mod/videodatabase/classes/external.php',
+                'description' => 'Store files to moodle',
+                'type'        => 'write',
+                'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
+        )
 );
 
 // http://localhost/moodle/webservice/rest/server.php?wstoken=e321c48e338fc44830cda07824833944&wsfunction=local_wstemplate_hello_world

@@ -1,4 +1,14 @@
-define(['/moodle/mod/videodatabase/amd/src/vfg.js'], function (VueFormGenerator) {
+/**
+ * Javascript data model for video categorization
+ *
+ * @module     mod_videodatabase/videodatabase
+ * @package    mod_videodatabase
+ * @class      Data model
+ * @copyright  2018 Niels Seidel, info@social-machinables.com
+ * @license    MIT
+ * @since      3.1
+ */
+define(['/moodle/mod/videodatabase/amd/src/lib/vfg.js'], function (VueFormGenerator) {
     return function () {
         return {
             "language": "de",

@@ -203,7 +203,7 @@ class mod_videodatabase_comments_external extends external_api {
                 'data' => 
                     new external_single_structure(
                         array(
-                            'courseid' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL),
+                            'courseid' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL)
                         )
                 )
             )
@@ -256,7 +256,7 @@ class mod_videodatabase_video_comments_external extends external_api {
 
 
 /**
- * Get or set video comments
+ * Get or set video ratings
  */
 class mod_videodatabase_ratings_external extends external_api {
     public static function ratings_parameters() {
@@ -298,6 +298,81 @@ class mod_videodatabase_ratings_external extends external_api {
             $res = $DB->get_records($table, array('videoid'=>$data['videoid']));
         }
         $transaction->allow_commit();
+    
+        return array('data'=> json_encode($res));
+    }    
+}
+
+
+/**
+ * Store files in Moodle
+ */
+class mod_videodatabase_files_external extends external_api {
+    public static function files_parameters() {
+        return new external_function_parameters(
+            array(
+                'data' => 
+                    new external_single_structure(
+                        array(
+                            'courseid' => new external_value(PARAM_INT, 'id of the course', VALUE_OPTIONAL),
+                            'moduleid' => new external_value(PARAM_INT, 'id of the module'),
+                            'filename' => new external_value(PARAM_TEXT, 'filename'),
+                            'location' => new external_value(PARAM_TEXT, 'file location'),
+                            'filearea' => new external_value(PARAM_TEXT, 'file area')
+                        )
+                )
+            )
+        );
+    }
+    public static function files_returns() {
+        return new external_single_structure(
+            array( 'data' => new external_value(PARAM_RAW, 'data') )
+        );
+    }
+    public static function files($data) {
+        global $CFG;
+       
+        $context = context_module::instance( $data['moduleid'] );
+        $fs = get_file_storage();
+        $file_record = array(
+            'contextid'=>$context->id, 
+            'component'=>'mod_videodatabase', 
+            'filearea'=>$data['filearea'],
+            'itemid'=>0, 
+            'filepath'=>'/', 
+            'filename'=>$data['filename'],
+            'timecreated'=>time(), 
+            'timemodified'=>time()
+        );
+        
+        // create sha1
+        $hash = sha1_file( $_SERVER['DOCUMENT_ROOT'] . $data['location'] . $data['filename'] );
+        $data['contenthash'] = $hash;
+        $path = $CFG->dataroot.'/filedir/'. substr( $hash, 0, 2) . '/' . substr( $hash, 2, 2) . '/';
+        $res = array(
+            'error'=>'',
+            'hash'=>$hash,
+            'filename'=>$data['filename'],
+            'location'=>$path . $hash
+        );
+        if(is_dir( $path )){
+            $res['error'] .= 'File already exists. ';
+        }else{
+            //$CFG->directorypermissions=00777;
+            mkdir($path, $CFG->directorypermissions, true);
+            if (is_dir($path) && is_writable($path)) {
+                $move = rename( $_SERVER['DOCUMENT_ROOT'] . $data['location'] . $data['filename'], $path . $hash );
+                if($move == false){
+                    $res['error'] .= 'File move error ';
+                }
+            }else{
+                $res['error'] .= 'Permission or path error. ';
+            }
+        }
+        //$fs->create_file_from_pathname($file_record, $data['location'] );
+        if($res['error'] != ''){
+            //error_log("FS create done? ".$res, 0);
+        }
     
         return array('data'=> json_encode($res));
     }    

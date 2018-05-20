@@ -4,7 +4,7 @@
  *
  * @package    mod
  * @subpackage page
- * @copyright  2018 Niels Seidel, social-machinables.com
+ * @copyright  2018 Niels Seidel, info@social-machinables.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -354,7 +354,16 @@ echo '
     </svg>
     <input type="hidden" :name="name" v-model="rate" :required="required">
     <template v-for="n in length">
-      <button type="button" :key="n" :class="{\'Rate__star\': true, \'hover\': n <= over, \'filled\': n <= rate}" @mouseover="onOver(n)" @mouseout="onOut(n)" @click="setRate(n)" @keyup="onOver(n)" @keyup.enter="setRate(n)" :disabled="disabled">
+	  <button 
+			@mouseenter="hover = n" 
+			@mouseout="hover = rate" 
+			type="button" :key="n" 
+			:class="{\'Rate__star\': true, \'hover\': n <= hover, \'filled\': n <= rate}"  
+			@click="setRate(n)" 
+			@keyup="hover = n" 
+			@keyup.enter="setRate(n)" 
+			:disabled="disabled"
+			>
         <svg class="icon" v-show="isFilled(n)">
           <use xlink:href="#icon-star-full"></use>
         </svg>
@@ -364,7 +373,7 @@ echo '
       </button>
     </template>
     <div class="Rate__view" :class="{disabled: disabled}">
-      <span class="count" v-if="showcount">{{over}}</span>
+      <span class="count" v-if="showcount">{{ ov }} {{ rate }} {{ value }}</span>
       <span class="desc" v-if="ratedesc.length > 0">{{ratedesc[over - 1]}}</span>
     </div>
   </div>
@@ -466,7 +475,8 @@ echo '
 							<div class="meta">
 								<router-link class="title" :to="{ path: \'/videos/\' + video.id + \'/view\'}">{{video.title}}</router-link>
 								<div>
-									<span v-for="star in video.rating"> 
+									<!--<rating class="right" ref="childRating" v-bind:value="video.rating" :length="5"></rating>-->
+									<span v-for="star in getRatingOfVideo(video.id)"> 
 										<span class="fa fa-star"></span>
 									</span>
 									<router-link v-if="isEditor" class="title" :to="{ path: \'/videos/\' + video.id + \'/edit\'}">
@@ -569,7 +579,7 @@ function bulkVideoImport($PAGE, $courseid) {
 		echo 'not imported!!';
 	}
 	// delete all records
-	//$DB->delete_records($table);
+	$DB->delete_records($table);
 	// insert into database
 	$DB->insert_records($table, $video_arr);
 }

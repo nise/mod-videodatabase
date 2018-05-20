@@ -460,7 +460,11 @@ div.link{
   vertical-align: middle;
 }
 
-.Rate__star.hover{color: #167ac6;}
+.Rate__star.hover{
+    color: #167ac6;
+    stroke: currentColor;
+    fill: currentColor;
+}
 .Rate__star.filled{color: #167ac6;}
 
 .Rate__star:hover, 

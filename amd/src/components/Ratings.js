@@ -6,7 +6,7 @@
  * @module     mod_videodatabase/videodatabase
  * @package    mod_videodatabase
  * @class      Ratings
- * @copyright  2018 Niels Seidel
+ * @copyright  2018 Niels Seidel, info@social-machinables.com
  * @license    MIT
  * @since      3.1
  * @notes
@@ -40,7 +40,7 @@ define([
                 ratedesc: { type: Array, default() { return [] } },
                 disabled: { type: Boolean, default: false },
                 readonly: { type: Boolean, default: false },
-                ov: { type: Number, default: 0 }
+                ov: { type: Number, default: 0 } // xxx remove
             },
             data: function () {
                 return {
@@ -93,12 +93,14 @@ define([
                 /**
                  * Interface for the web service to fetch all existing ratings
                  */
-                getRatingsOfVideo: function (callback) {
+                getRatingsOfVideo: function (videoid, callback) {
+                    if(videoid === null){
+                        videoid = this.currentvideo
+                    }
                     utils.get_ws('videodatabase_ratings', "POST", {
-                        'videoid': this.currentvideo,
+                        'videoid': videoid,
                         'courseid': course.id,
                     }, function (e) {
-                        //console.log(e);
                         callback(e);
                     }, function (err) {
                         console.error(err);
@@ -153,7 +155,7 @@ define([
                  */
                 calcVideoRating: function () {
                     var _this = this;
-                    this.getRatingsOfVideo(function (e) {
+                    this.getRatingsOfVideo(null, function (e) {
                         //console.log(Object.values(JSON.parse(e.data)))
                         var data = Object.values(JSON.parse(e.data)).map(function (obj) {
                             return obj.rating;
@@ -181,6 +183,27 @@ define([
                             //_this.over = _this.value;
                         }
 
+                    });
+                },
+                /**
+                 * Calculates the resulting rating including the user vote for a given video.
+                 */
+                calcRatingOfVideo: function (videoid) {
+                    var _this = this;
+                    return this.getRatingsOfVideo(videoid, function (e) {
+                        var data = Object.values(JSON.parse(e.data)).map(function (obj) {
+                            return obj.rating;
+                        });
+                        if (data.length > 0) {
+                            var positiveRatings = data.filter(function (obj) {
+                                return obj > 2 ? true : false;
+                            });
+                            var avg = data.reduce(function (a, b) {
+                                return Number(a) + Number(b);
+                            }) / data.length;
+                            var wilson = _this.wilsonScore(positiveRatings.length, data.length) * 5;
+                           return wilson; 
+                        } 
                     });
                 },
                 /**
