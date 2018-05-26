@@ -34,7 +34,7 @@ define([
                 return {
                     vi2_player_id: 'vi2-1',
                     video_selector: 'seq',
-                    video_overlay_selector: 'overlay'
+                    video_overlay_selector: 'overlay',
                 };
             },
             computed: {
@@ -56,6 +56,7 @@ define([
                     }
                 }
             },
+            
             updated: function () {
                 var id = this.$route.params.id;
                 if (id === undefined) {
