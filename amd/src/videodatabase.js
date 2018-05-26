@@ -35,8 +35,6 @@ define([
         Utils
     ) {
 
-        var Filters = function () { };
-
         var datamodel = new Datamodel();
 
         var course = {
@@ -44,13 +42,13 @@ define([
             module: parseInt($('#moduleid').html())
         };
         const utils = new Utils();
-        
+
         /**
          * Connection handler
          * @param {*} msg 
          */
         function connection_handler(msg) {
-            
+
             // map data on internal model
             var
                 data = JSON.parse(msg.data),
@@ -65,7 +63,7 @@ define([
             // setup vue
             Vue.use(VueRouter);
             Vue.use(VueFormGenerator);
-            
+
             const vuestore = new Store(data, course);
             const store = vuestore.store;
             const utils = new Utils();
@@ -90,14 +88,14 @@ define([
                 },
                 computed: {
                     progtranscode: {
-                        get: function () {     
+                        get: function () {
                             return store.getters.progresstranscode();
                         },
                         set: function (e) {
-                            if( typeof(e) === 'number'){
+                            if (typeof (e) === 'number') {
                                 store.commit('progresstranscode', e);
                             }
-                        }    
+                        }
                     },
                     proganimation: {
                         get: function () {
@@ -130,7 +128,7 @@ define([
                         }
                     },
                     video: function () {
-                        if (this.$route.params.id){ // if video already exists
+                        if (this.$route.params.id) { // if video already exists
                             var id = this.$route.params.id;
                             store.commit('setCurrentVideo', id);
                             var video_data = store.getters.videoById(id);
@@ -146,10 +144,10 @@ define([
                             } else {
                                 //return null;
                             }
-                        }else{ // else it must be a new video
+                        } else { // else it must be a new video
                             console.log('no video data');
                         }
-                        
+
                     },
                     isInitial() {
                         return this.currentStatus === STATUS_INITIAL;
@@ -181,7 +179,7 @@ define([
                         this.currentStatus = STATUS_SAVING;
                         upload(formData, this.updateSelectedFiles);
                     },
-                    progresstranscode: function(e){
+                    progresstranscode: function (e) {
                         this.progresstranscode = store.getters.progresstranscode();
                     },
                     progressanimation: function (e) {
@@ -210,7 +208,7 @@ define([
                                 size: fileList[i].size,
                                 location: '',
                                 status: 'selected'
-                            }); 
+                            });
                         }
                         // save it
                         this.save(formData);
@@ -229,7 +227,7 @@ define([
                             data.files = data.files[0];
                             if (this.$route.params.id !== undefined) {
                                 data.isNewVideo = false;
-                            }else{
+                            } else {
                                 data.isNewVideo = true;
                             }
                             store.commit('setVideoFileData', data);
@@ -248,29 +246,29 @@ define([
             const UPLOAD_URL = server + '/videos/php-video-upload-chain/upload.php';
             const TRANSCODING_URL = server + '/videos/php-video-upload-chain/transcoding.php';
             const BASE_URL = server + '/videos/';
-            
+
             /**
              * Metadata and preview files will be generated. File conversions will take place.
              * @param {*} formData 
              * @param {*} callback 
              */
-            function upload(formData, callback) { 
+            function upload(formData, callback) {
                 $.ajax({
                     url: UPLOAD_URL,
                     type: 'POST',
                     data: formData,
                     crossOrigin: true,
-                    success: function (data) { 
-                        try{
+                    success: function (data) {
+                        try {
                             data = JSON.parse(data.toString());
-                        }catch(e){
+                        } catch (e) {
                             console.log(e);
                         }
                         if (data.error !== '') {
                             callback(data);
                         } else {
                             startProgressLog(
-                                data.files[0].tmp_location, 
+                                data.files[0].tmp_location,
                                 data.files[0].duration,
                                 data.files[0].name_clean
                             );
@@ -287,11 +285,11 @@ define([
                                 //console.log(evt.loaded/evt.total);
                             }
                         }, false);
-                        
+
                         return xhr;
                     },
                     error: function (data) {
-                        console.log('upload error:'); 
+                        console.log('upload error:');
                         console.log(data);
                     },
                     cache: false,
@@ -308,14 +306,14 @@ define([
              * @param {*} name Name of the video file excluding file extention
              */
             function startProgressLog(location, duration, name) {
-                var 
+                var
                     params = '?location=' + encodeURIComponent(location) + '&duration=' + duration + '&name=' + name,
                     es = new EventSource(TRANSCODING_URL + params),
-                    ready = [0,0,0,0]
-                ;
-                
-                es.addEventListener('message', function (e) { 
-                    try{
+                    ready = [0, 0, 0, 0]
+                    ;
+
+                es.addEventListener('message', function (e) {
+                    try {
                         var result = JSON.parse(e.data);
 
                         if (e.message == 'CLOSE') {
@@ -326,7 +324,7 @@ define([
                             if (result.message === 'x264' || result.message === 'webm') {
                                 store.commit('progresstranscode', result.progress);
                                 UploadForm.progtranscode = result.progress;
-                                ready[0] = result.progress;   
+                                ready[0] = result.progress;
 
                             } else if (result.message === 'animation') {
                                 store.commit('progressanimation', result.progress);
@@ -338,19 +336,19 @@ define([
                                 UploadForm.progthumbnail = result.progress;
                                 ready[2] = result.progress;
 
-                            } else if (result.message === 'preview') { 
+                            } else if (result.message === 'preview') {
                                 store.commit('progresspreview', result.progress);
                                 UploadForm.progpreview = result.progress;
                                 ready[3] = result.progress;
 
-                            }else{
-                                console.warn('Unknown EventSource message: '+ result.message);
+                            } else {
+                                console.warn('Unknown EventSource message: ' + result.message);
                             }
                         }
-                        if (ready.reduce(function (acc, val) { return acc + val; }) === 400){
+                        if (ready.reduce(function (acc, val) { return acc + val; }) === 400) {
                             es.close();
                         }
-                    }catch(e){
+                    } catch (e) {
                         console.log('JSON.parse failed fro Event Source Message');
                         console.error(e);
                     }
@@ -371,8 +369,8 @@ define([
              * @param {*} area 
              */
             function storeFileToMoodle(filename, location, area) {
-              
-                console.log('start storing' + '---' +filename + '---' +location+'---'+area);
+
+                console.log('start storing' + '---' + filename + '---' + location + '---' + area);
                 utils.get_ws('videodatabase_files', "POST", {
                     filename: filename,
                     location: location,
@@ -393,7 +391,7 @@ define([
             /**
              * 
              */
-            function complete_upload(filename, duration, callback) { 
+            function complete_upload(filename, duration, callback) {
                 $.ajax({
                     url: UPLOAD_URL,
                     type: 'GET',
@@ -419,7 +417,7 @@ define([
                         if (this.$route.params.id !== undefined) {
                             store.commit('setCurrentVideo', this.$route.params.id);
                             return store.getters.videoById(this.$route.params.id);
-                        }else{
+                        } else {
                             return store.getters.newvideo();
                         }
                     },
@@ -438,11 +436,11 @@ define([
                 template: '#form-submit-template',
                 methods: {
                     submitForm() {
-                        var id=-1, data={}, nu = 0;
+                        var id = -1, data = {}, nu = 0;
                         if (this.$route.params.id !== undefined) {
                             id = store.getters.currentVideoData().id;
                             data = store.getters.currentVideoData();
-                        }else{   
+                        } else {
                             data = store.getters.newvideo();
                             nu = 1;
                             id = (data.title + data.description).hashCode();
@@ -456,7 +454,7 @@ define([
                         storeFileToMoodle('still-' + name + '_comp.jpg', tmp_path, 'thumbnail');
                         storeFileToMoodle('still-' + name + '_comp.gif', tmp_path, 'animation');
                         storeFileToMoodle(data.filename, tmp_path, 'video');
-                        for(var i = 0, len = data.length; i < len; i++){
+                        for (var i = 0, len = data.length; i < len; i++) {
                             storeFileToMoodle('preview-' + name + '-' + i + '.jpg', tmp_path, 'preview');
                         }
                         // move files outside moodle
@@ -471,18 +469,18 @@ define([
                             'nu': nu,
                             'id': id,
                             'data': JSON.stringify(data)
-                        }, function(res){
-                            if(nu){
+                        }, function (res) {
+                            if (nu) {
                                 store.commit('addVideo', data);
                                 store.commit('setCurrentVideo', id);
                             }
                             router.push({ path: '/videos' });
                         });
                     },
-                    removeVideo(){
+                    removeVideo() {
                         var id = this.$route.params.id;
-                        if ( id !== undefined){
-                            if(window.confirm('Wollen Sie das Video wirklich löschen?')){
+                        if (id !== undefined) {
+                            if (window.confirm('Wollen Sie das Video wirklich löschen?')) {
                                 router.push({ path: '/videos' });
                                 store.commit('removeVideo', id);
                             }
@@ -524,7 +522,7 @@ define([
                     { path: '/videos/:id/edit', component: Form },
                     { path: '/videos/new', component: Form }
                 ],
-                scrollBehavior: function(to, from, savedPosition) {
+                scrollBehavior: function (to, from, savedPosition) {
                     return { x: 0, y: 405 };
                 }
             });
@@ -538,7 +536,8 @@ define([
                     show: false,
                     isEditor: true,
                     listView: false,
-                    search: ''
+                    search: '',
+                    videoRatings: {}
                 },
                 computed: {
                     columnObject: function () { //console.log(JSON.stringify(this.videos))
@@ -554,15 +553,52 @@ define([
                         });
                     }
                 },
+                created: function () {
+                    var _this = this;
+                    utils.get_ws('videodatabase_ratings', "POST", {
+                        'courseid': course.id,
+                    }, function (e) {
+                        try {
+                            var data = {};
+                            var d = Object.values(JSON.parse(e.data));
+
+                            for (var obj in d) {
+                                if (d.hasOwnProperty(obj)) {
+                                    if (data[d[obj].videoid] === undefined) {
+                                        data[d[obj].videoid] = [];
+                                    }
+                                    data[d[obj].videoid].push(d[obj].rating);
+                                }
+                            }
+
+                            for (var video in data) {
+                                if (data.hasOwnProperty(video) && data[video].length > 0) {
+                                    var positiveRatings = data[video].filter(function (obj) {
+                                        return obj > 2 ? true : false;
+                                    });
+                                    var wilson = _this.wilsonScore(positiveRatings.length, data[video].length) * 5;
+                                    _this.videoRatings[video] = Math.round(wilson);
+                                }
+                            }
+                        } catch (e) { console.error(e); }
+                    });
+                },
                 methods: {
-                    getRatingOfVideo: function (videoid) {
-                        //return parseInt(store.getters.videoById(videoid).rating);
-                        console.log(this.$children)
-                        return parseInt(this.$children[0].calcRatingOfVideo(videoid));
+                    /**
+                     * Wilson scoring algorithm for a balanced overall rating
+                     */
+                    wilsonScore: function (positiveRatings, n) {
+                        const z = 1.96; //Statistics2.pnormaldist(1 - (1 - confidence) / 2)
+                        const z2 = Math.sqrt(2);
+                        const phat = 1.0 * positiveRatings / n;
+                        return (phat + z2 / (2 * n) - z * Math.sqrt((phat * (1 - phat) + z2 / (4 * n)) / n)) / (1 + z2 / n);
                     },
-                    imageLoadError: function(id){ 
-                        var img = document.getElementById('video-img-'+id);
-                        img.src = 'images/stills/default.jpg'; 
+                    /**
+                     * 
+                     */
+                    imageLoadError: function (id) {
+                        var img = document.getElementById('video-img-' + id);
+                        img.src = 'images/stills/default.jpg';
                     },
                     setListView: function () { this.listView = true; },
                     setTableView: function () { this.listView = false; },
@@ -574,7 +610,7 @@ define([
 
                         var ffn = function (key) {
                             var out = '', arr = [];
-                            if (video[key] && typeof video[key] === 'string'){ 
+                            if (video[key] && typeof video[key] === 'string') {
                                 arr = video[key].split(';');
                             }
                             for (var i = 0, len = arr.length; i < len; i++) {
@@ -593,30 +629,35 @@ define([
                             video.actors ? 'actors-' + video.actors.replace(/\//g, '') : '',
                             video.location ? 'location-' + video.location : '',
                             video.sports ? 'sports-' + video.sports.replace(/,\ /g, '') : '',
-                            video.movements ? 'movements-' + video.movements.replace(/, /g, '') :'',
+                            video.movements ? 'movements-' + video.movements.replace(/, /g, '') : '',
                             ''
                         ].join(' ');
                     },
                     downloadLogData: function () {
                         utils.get_ws('videodatabase_get_log', "POST", {
                             'courseid': course.id,
-                        }, function (data) {
+                        }, function (data) { //console.log(data)
+
                             // extract log entries form result set
                             var json = Object.values(JSON.parse(data.response)).map(function (d) { return JSON.parse(d.entry); });
-                            // convert json to csv
-                            var fields = Object.keys(json[0]);
-                            var csv = json.map(function (row) {
-                                return Object.values(row);
-                            });
-                            csv.unshift(fields); // add header column
-                            // export
-                            exportToCsv('moodle-videodatabase-log-data-.csv', csv);
+                            if (json.length === 0) {
+                                alert('Es liegen noch keine Logdaten vor.');
+                            } else {
+                                // convert json to csv
+                                var fields = Object.keys(json[0]);
+                                var csv = json.map(function (row) {
+                                    return Object.values(row);
+                                });
+                                csv.unshift(fields); // add header column
+                                // export
+                                exportToCsv('moodle-videodatabase-log-data-.csv', csv);
+                            }
                         });
                     }
                 },
                 components: {
-                        rating: videovue.rating 
-                    
+                    rating: videovue.rating
+
                 }
             });
 
@@ -624,8 +665,8 @@ define([
 
 
         utils.get_ws('videodatabase_videos', "POST", { 'courseid': course.id }, connection_handler);
-        
-       
+
+
 
 
 
@@ -643,9 +684,9 @@ define([
                     var result = innerValue.replace(/"/g, '""');
                     if (result.search(/("|,|\n)/g) >= 0)
                         result = '"' + result + '"';
-                    if (j > 0){
+                    if (j > 0) {
                         finalVal += ',';
-                    }    
+                    }
                     finalVal += result;
                 }
                 return finalVal + '\n';
@@ -774,6 +815,4 @@ define([
             }
         });
 
-
-        return Filters;
     }); 

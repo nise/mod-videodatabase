@@ -475,8 +475,7 @@ echo '
 							<div class="meta">
 								<router-link class="title" :to="{ path: \'/videos/\' + video.id + \'/view\'}">{{video.title}}</router-link>
 								<div>
-									<!--<rating class="right" ref="childRating" v-bind:value="video.rating" :length="5"></rating>-->
-									<span v-for="star in getRatingOfVideo(video.id)"> 
+									<span v-for="star in videoRatings[video.id]"> 
 										<span class="fa fa-star"></span>
 									</span>
 									<router-link v-if="isEditor" class="title" :to="{ path: \'/videos/\' + video.id + \'/edit\'}">

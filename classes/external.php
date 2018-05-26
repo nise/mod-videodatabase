@@ -276,7 +276,8 @@ class mod_videodatabase_ratings_external extends external_api {
     }
     public static function ratings_returns() {
         return new external_single_structure(
-                array( 'data' => new external_value(PARAM_RAW, 'data') )
+                array( 'data' => new external_value(PARAM_RAW, 'data'),
+                'info' => new external_value(PARAM_TEXT, 'data') )
         );
     }
     public static function ratings($data) {
@@ -293,13 +294,18 @@ class mod_videodatabase_ratings_external extends external_api {
             $r->userid = $data['userid'];
             $r->courseid = $data['courseid'];
             $res = $DB->insert_records($table, array($r));
+        }else if(array_key_exists('videoid', $data)){
+            // get value for a video
+            $res = $DB->get_records($table, array('courseid'=>$data['courseid'], 'videoid'=>$data['videoid']));
         }else{
-            // get value
-            $res = $DB->get_records($table, array('videoid'=>$data['videoid']));
+            // get all values
+            $res = $DB->get_records($table, array('courseid'=>$data['courseid']));
         }
         $transaction->allow_commit();
-    
-        return array('data'=> json_encode($res));
+        return array(
+            'data'=> json_encode($res), 
+            'info'=> sizeof($res)
+        );
     }    
 }
 
