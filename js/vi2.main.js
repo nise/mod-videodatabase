@@ -67,7 +67,7 @@ define([
 				output_type: 1, // 0: console log: 1: server log
 				logger_service_url: '/moodle/webservice/rest/server.php',
 				logger_service_params: {
-					wstoken: 'e321c48e338fc44830cda07824833944',
+					wstoken: Vi2.token,
 					moodlewsrestformat: 'json',
 					wsfunction: 'videodatabase_logging',
 					data: {}
@@ -80,7 +80,8 @@ define([
 		};
 
 
-		Vi2.start = function (video_data, user_data) {
+		Vi2.start = function (video_data, user_data, token) {
+			Vi2.token = token;
 			vi2.db = new Vi2.Database({ modus: 'native', data: video_data, path: '' }, 'window');
 			vi2.db.currentUser(user_data);
 			vi2.db.init(Vi2.initVideo);

@@ -67,7 +67,7 @@ define([
             const vuestore = new Store(data, course);
             const store = vuestore.store;
             const utils = new Utils();
-            const videovue = new Video(store, course, user);
+            const videovue = new Video(store, course, user, $('#token').text());
             const video = videovue.video;
 
 

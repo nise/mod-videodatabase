@@ -21,7 +21,7 @@ define([
 ], function ($, Vue, Vi2, Ratings) {
     
 
-    function Video(store, course, user) {
+    function Video(store, course, user, token) {
         this.store = store;
         this.course = course;
         this.user = user;
@@ -91,7 +91,7 @@ define([
                     video_data.metadata[0].abstract = video_data.description;
                     video_data.metadata[0].thumbnail = "still-" + video_data.filename.replace('.mp4', '_comp.jpg');
                     video_data.video = '/videos/' + video_data.filename.replace('.mp4', '.webm'); // xxx bug?
-                    Vi2.start(video_data, user);
+                    Vi2.start(video_data, user, token);
                 }
             },
             methods: {
