@@ -29,6 +29,11 @@ use Symfony\Component\Console\Exception\LogicException;
  */
 class Command
 {
+    /**
+     * @var string|null The default command name
+     */
+    protected static $defaultName;
+
     private $application;
     private $name;
     private $processTitle;
@@ -46,6 +51,17 @@ class Command
     private $helperSet;
 
     /**
+     * @return string|null The default command name or null when no default name is set
+     */
+    public static function getDefaultName()
+    {
+        $class = get_called_class();
+        $r = new \ReflectionProperty($class, 'defaultName');
+
+        return $class === $r->class ? static::$defaultName : null;
+    }
+
+    /**
      * @param string|null $name The name of the command; passing null means it must be set in configure()
      *
      * @throws LogicException When the command name is empty
@@ -54,15 +70,11 @@ class Command
     {
         $this->definition = new InputDefinition();
 
-        if (null !== $name) {
+        if (null !== $name || null !== $name = static::getDefaultName()) {
             $this->setName($name);
         }
 
         $this->configure();
-
-        if (!$this->name) {
-            throw new LogicException(sprintf('The command defined in "%s" cannot have an empty name.', get_class($this)));
-        }
     }
 
     /**
@@ -206,12 +218,11 @@ class Command
 
         if (null !== $this->processTitle) {
             if (function_exists('cli_set_process_title')) {
-                if (false === @cli_set_process_title($this->processTitle)) {
+                if (!@cli_set_process_title($this->processTitle)) {
                     if ('Darwin' === PHP_OS) {
                         $output->writeln('<comment>Running "cli_get_process_title" as an unprivileged user is not supported on MacOS.</comment>');
                     } else {
-                        $error = error_get_last();
-                        trigger_error($error['message'], E_USER_WARNING);
+                        cli_set_process_title($this->processTitle);
                     }
                 }
             } elseif (function_exists('setproctitle')) {

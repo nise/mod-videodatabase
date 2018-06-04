@@ -7,7 +7,8 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Neutron' => array($vendorDir . '/neutron/temporary-filesystem/src'),
-    'FFMpeg' => array($vendorDir . '/php-ffmpeg/php-ffmpeg/src', $vendorDir . '/php-ffmpeg/extras/src'),
+    'FFMpeg' => array($vendorDir . '/php-ffmpeg/extras/src', $vendorDir . '/php-ffmpeg/php-ffmpeg/src'),
     'Evenement' => array($vendorDir . '/evenement/evenement/src'),
+    'Doctrine\\Common\\Lexer\\' => array($vendorDir . '/doctrine/lexer/lib'),
     'Alchemy' => array($vendorDir . '/alchemy/binary-driver/src'),
 );

@@ -2,8 +2,6 @@
 
 namespace Crunz;
 
-use Symfony\Component\Process\ProcessUtils;
-
 class Schedule
 {
     /**
@@ -14,7 +12,7 @@ class Schedule
     protected $events = [];
 
     /**
-     * The array of callbacks to be run before all the events are finished
+     * The array of callbacks to be run before all the events are finished.
      *
      * @var array
      */
@@ -29,6 +27,7 @@ class Schedule
 
     /**
      * The array of callbacks to call in case of an error.
+     *
      * @var array
      */
     protected $errorCallbacks = [];
@@ -36,9 +35,8 @@ class Schedule
     /**
      * Add a new event to the schedule object.
      *
-     * @param  string  $command
-     *
-     * @param  array  $parameters
+     * @param string $command
+     * @param array  $parameters
      *
      * @return \Crunz\Event
      */
@@ -54,66 +52,37 @@ class Schedule
     }
 
     /**
-     * Generate a unique task id
-     *
-     * @return string
-     */
-    protected function id()
-    {
-        while (true) {
-            $id = uniqid();
-            if (!array_key_exists($id, $this->events)) {
-                return $id;
-            }
-        }
-    }
-
-    /**
-     * Compile parameters for a command.
-     *
-     * @param  array  $parameters
-     *
-     * @return string
-     */
-    protected function compileParameters(array $parameters)
-    {    
-        return implode(' ', array_map(function($value, $key) {
-            return is_numeric($key) ? $value : $key . '=' . (is_numeric($value) ? $value : ProcessUtils::escapeArgument($value));
-        }, $parameters, array_keys($parameters)));
-    }
-
-    /**
      * Register a callback to ping a given URL before the job runs.
      *
-     * @param  string  $url
+     * @param string $url
      *
      * @return $this
      */
     public function pingBefore($url)
     {
         return $this->before(function () use ($url) {
-            (new HttpClient)->get($url);
+            (new HttpClient())->get($url);
         });
     }
 
     /**
      * Register a callback to ping a given URL after the job runs.
      *
-     * @param  string  $url
+     * @param string $url
      *
      * @return $this
      */
     public function thenPing($url)
     {
         return $this->then(function () use ($url) {
-            (new HttpClient)->get($url);
+            (new HttpClient())->get($url);
         });
     }
 
     /**
      * Register a callback to be called before the operation.
      *
-     * @param  \Closure  $callback
+     * @param \Closure $callback
      *
      * @return $this
      */
@@ -127,7 +96,7 @@ class Schedule
     /**
      * Register a callback to be called after the operation.
      *
-     * @param  \Closure  $callback
+     * @param \Closure $callback
      *
      * @return $this
      */
@@ -139,7 +108,7 @@ class Schedule
     /**
      * Register a callback to be called after the operation.
      *
-     * @param  \Closure  $callback
+     * @param \Closure $callback
      *
      * @return $this
      */
@@ -151,9 +120,9 @@ class Schedule
     }
 
     /**
-     * Register a callback to call in case of an error
+     * Register a callback to call in case of an error.
      *
-     * @param  \Closure $callback
+     * @param \Closure $callback
      *
      * @return $this
      */
@@ -164,9 +133,8 @@ class Schedule
         return $this;
     }
 
-
     /**
-     * Return all registered before callbacks
+     * Return all registered before callbacks.
      *
      * @return array
      */
@@ -176,7 +144,7 @@ class Schedule
     }
 
     /**
-     * Return all registered after callbacks
+     * Return all registered after callbacks.
      *
      * @return array
      */
@@ -186,7 +154,7 @@ class Schedule
     }
 
     /**
-     * Return all registered error callbacks
+     * Return all registered error callbacks.
      *
      * @return array
      */
@@ -196,18 +164,18 @@ class Schedule
     }
 
     /**
-     * Get or set the events of the schedule object
+     * Get or set the events of the schedule object.
      *
-     * @param  array $events
+     * @param array $events
      *
-     * @return array
+     * @return Event[]
      */
-    public function events(Array $events = null)
+    public function events(array $events = null)
     {
-        if (!is_null($events)) {
+        if (null !== $events) {
             return $this->events = $events;
         }
-        
+
         return $this->events;
     }
 
@@ -216,17 +184,20 @@ class Schedule
      *
      * @return array
      */
-    public function dueEvents()
-    {   
-        return array_filter($this->events, function ($event) {
-            return $event->isDue();
-        });
+    public function dueEvents(\DateTimeZone $timeZone)
+    {
+        return \array_filter(
+            $this->events,
+            function (Event $event) use ($timeZone) {
+                return $event->isDue($timeZone);
+            }
+        );
     }
 
     /**
-     * Dismiss an event after it is finished
+     * Dismiss an event after it is finished.
      *
-     * @param  int $key
+     * @param int $key
      *
      * @return $this
      */
@@ -235,5 +206,41 @@ class Schedule
         unset($this->events[$key]);
 
         return $this;
+    }
+
+    /**
+     * Generate a unique task id.
+     *
+     * @return string
+     */
+    protected function id()
+    {
+        while (true) {
+            $id = \uniqid('crunz', true);
+            if (!\array_key_exists($id, $this->events)) {
+                return $id;
+            }
+        }
+    }
+
+    /**
+     * Compile parameters for a command.
+     *
+     * @param array $parameters
+     *
+     * @return string
+     */
+    protected function compileParameters(array $parameters)
+    {
+        return implode(
+            ' ',
+            \array_map(
+                function ($value, $key) {
+                    return \is_numeric($key) ? $value : "{$key}=" . (\is_numeric($value) ? $value : ProcessUtils::escapeArgument($value));
+                },
+                $parameters,
+                \array_keys($parameters)
+            )
+        );
     }
 }

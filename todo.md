@@ -3,58 +3,20 @@
 system path: ~/Documents/www/moodle/mod/videodatabase
 MOODLE version 3.1.3 !!
 
+d32db1e.online-server.cloud
+217.160.28.237
+Iz7iTZriBe
+
 
 #backlog
 https://huboard.com/nise/vi-moodle/
 https://github.com/nise/vi-moodle/issues
 
-- Admin gibt Videos frei
-- Rating
-- Suche
-
-- Kommentare on/off
-
-# nth
-
-- collaps/expand form groups
-
-
 
 # Thomas todo
 - Nutzungsbedingungen
 - Einwilligungserklärung
-
-# LISIUM / HOST
-http://lisum.berlin-brandenburg.de/lisum/
-
-# Fragen zum Server
-- Auf was für einem Server ist moodle installiert (Linux / Windows, Version)?
-- Wie sieht die Server-Architektur aus (z.B. Load Balancing, Datenbankserver, Firewall)?
-- Wie leistungsstark sind die / ist der Server (RAM, CPU)?
-- Welche Datenvolumen werden aktuell übertragen bzw. können künftig aufkommen (Videostreaming)?
-
-# Fragen zu moodle
-- Welche moodle Version wird verwendet?
-- Welches theme ist derzeit installiert?
-- Wie intensiv wird das System aktuell genutzt (Anzahl Kurse, Anzahl Nutzer, Logins pro Monat)
-
-# Fragen zur Integration des plugins 'videodatabase'
-- Gibt es bereits Erfahrungen mit der Inbetriebnahme von moodle-plugins?
-- Besteht derzeit ein Testsystem auf dem Updates, neue themes und plugins vor dem Produktiveinsatz getestet werden können?
-- Wie sieht das Verfahren aus, um ein neues plugin zum Einsatz im Produktivsystem zu überführen (Tests, Anforderungen, ...)?
-- Wer ist Ansprechpartner für technische Fragen (Administration, Server, Updates) zum moodle-System? 
-
-
-
-
-# bugs
-
-
-# tech
-- templates, see https://docs.moodle.org/dev/Templates#Blocks_.28Moodle_3.0_onwards.29
- - in PHP: render_from_template($templatename, $context)
-- js AMD, see https://docs.moodle.org/dev/Javascript_Modules#Embedding_AMD_code_in_a_page
-- xmldb, see https://docs.moodle.org/dev/XMLDB_editor 
+- Datenschutzerklärung
 
 
 # how to update the plugin on the server
@@ -63,14 +25,15 @@ http://lisum.berlin-brandenburg.de/lisum/
 
 # System setup
 remote:
-admin
-Wk*iud)l*34
+machinables
+Wk*iud)l*34u78
+
+db skUi*kGoqmPG87sr#ekl
+moodle jksh78+jd-82KHGv
 
 locale:
 admin
 Qwertz12*
-
-
 
 
 thomas
@@ -82,7 +45,6 @@ https://docs.moodle.org/31/en/MySQL_full_unicode_support
 
 
 #Kommentarfunktion
-
 
 1. Zeitlicher Bezug
 **done**	- Zeitpunkt

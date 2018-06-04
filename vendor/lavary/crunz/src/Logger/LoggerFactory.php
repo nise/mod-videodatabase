@@ -2,37 +2,39 @@
 
 namespace Crunz\Logger;
 
+use Crunz\Configuration\Configuration;
 use Monolog\Logger as MonologLogger;
-use Crunz\Logger\Logger;
-use Crunz\Configuration\Configurable;
 
-class LoggerFactory {
+class LoggerFactory
+{
+    /** @var Configuration */
+    private $configuration;
+
+    public function __construct(Configuration $configuration)
+    {
+        $this->configuration = $configuration;
+    }
 
     /**
-     * Create an instance of the Logger class
-     *
-     * @return \Logger\Logger
+     * @return Logger
      */
-    public static function makeOne(Array $streams = [])
+    public function create(array $streams = [])
     {
-        $logger = new Logger(new MonologLogger('crunz'));         
-                
+        $logger = new Logger(new MonologLogger('crunz'), $this->configuration);
+
         // Adding stream for normal output
-        foreach ($streams as $stream => $file) {           
-            
+        foreach ($streams as $stream => $file) {
             if (!$file) {
                 continue;
             }
 
-            $logger->addStream(   
+            $logger->addStream(
                 $file,
                 $stream,
                 false
             );
-            
         }
 
         return $logger;
-     }
-
+    }
 }

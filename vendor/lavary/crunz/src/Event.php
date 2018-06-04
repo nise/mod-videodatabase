@@ -1,18 +1,67 @@
 <?php
+
 namespace Crunz;
 
-use Closure;
 use Carbon\Carbon;
-use LogicException;
+use Closure;
 use Cron\CronExpression;
+use Crunz\Exception\NotImplementedException;
+use Crunz\Logger\Logger;
 use GuzzleHttp\Client as HttpClient;
-use Symfony\Component\Process\Process;
 use SuperClosure\Serializer;
+use Symfony\Component\Process\Process;
 
+/**
+ * @method self everyMinute() Run task every minute.
+ * @method self everyHour()   Run task every hour.
+ * @method self everyDay()    Run task every day.
+ * @method self everyMonth()  Run task every month.
+ */
 class Event
 {
     /**
-     * The event's unique identifier
+     * Indicates if the command should not overlap itself.
+     *
+     * @var bool
+     */
+    public $preventOverlapping = false;
+
+    /**
+     * The location that output should be sent to.
+     *
+     * @var string
+     */
+    public $output = '/dev/null';
+
+    /**
+     * Indicates whether output should be appended.
+     *
+     * @var bool
+     */
+    public $shouldAppendOutput = false;
+
+    /**
+     * The human readable description of the event.
+     *
+     * @var string
+     */
+    public $description;
+
+    /**
+     * Event generated output.
+     *
+     * @var string
+     */
+    public $outputStream;
+
+    /**
+     * Event personal logger instance.
+     *
+     * @var Logger
+     */
+    public $logger;
+    /**
+     * The event's unique identifier.
      *
      * @var string
      */
@@ -26,9 +75,9 @@ class Event
     protected $command;
 
     /**
-     * Process that runs the event
+     * Process that runs the event.
      *
-     * @var Symfony\Component\Process\Process
+     * @var \Symfony\Component\Process\Process
      */
     protected $process;
 
@@ -82,90 +131,66 @@ class Event
     protected $afterCallbacks = [];
 
     /**
-     * Current working directory
+     * Current working directory.
      *
      * @var string
      */
     protected $cwd;
 
     /**
-     * Position of cron fields
+     * Position of cron fields.
      *
      * @var array
      */
     protected $fieldsPosition = [
-        
         'minute' => 1,
-        'hour'   => 2,
-        'day'    => 3,
-        'month'  => 4,
-        'week'   => 5,
-
+        'hour' => 2,
+        'day' => 3,
+        'month' => 4,
+        'week' => 5,
     ];
-
-    /**
-     * Indicates if the command should not overlap itself.
-     *
-     * @var bool
-     */
-    public $preventOverlapping = false;
-
-    /**
-     * The location that output should be sent to.
-     *
-     * @var string
-     */
-    public $output = '/dev/null';
-
-    /**
-     * Indicates whether output should be appended.
-     *
-     * @var bool
-     */
-    public $shouldAppendOutput = false;
-
-    /**
-     * The human readable description of the event.
-     *
-     * @var string
-     */
-    public $description;
-
-    /**
-     * Event generated output
-     *
-     * @var string
-     */
-    public $outputStream;
 
     /**
      * Create a new event instance.
      *
-     * @param  string  $command
-     *
-     * @return void
+     * @param string $command
      */
     public function __construct($id, $command)
     {
         $this->command = $command;
-        $this->id      = $id;
-        $this->output  = $this->getDefaultOutput();
+        $this->id = $id;
+        $this->output = $this->getDefaultOutput();
     }
-   
+
     /**
-     * Get the default output depending on the OS.
+     * Handling dynamic frequency methods.
      *
-     * @return string
+     * @param string $methodName
+     * @param array  $params
+     *
+     * @return $this
      */
-    protected function getDefaultOutput()
+    public function __call($methodName, $params)
     {
-        return (DIRECTORY_SEPARATOR == '\\') ? 'NUL' : '/dev/null';
+        preg_match('/^every([A-Z][a-zA-Z]+)?(Minute|Hour|Day|Month)s?$/', $methodName, $matches);
+
+        if (!count($matches) || 'Zero' == $matches[1]) {
+            throw new \BadMethodCallException();
+        }
+
+        $amount = !empty($matches[1]) ? word2number($this->splitCamel($matches[1])) : 1;
+
+        if (!$amount) {
+            throw new \BadMethodCallException();
+        }
+
+        return $this->every(strtolower($matches[2]), $amount);
     }
 
     /**
      * Change the current working directory.
      *
-     * @param  string $directory
+     * @param string $directory
      *
      * @return $this
      */
@@ -179,11 +204,11 @@ class Event
     /**
      * Determine if the event's output is sent to null.
      *
-     * @return boolean
+     * @return bool
      */
     public function nullOutput()
     {
-        return  $this->output == 'NUL' ||  $this->output == '/dev/null';
+        return  'NUL' == $this->output || '/dev/null' == $this->output;
     }
 
     /**
@@ -193,41 +218,33 @@ class Event
      */
     public function buildCommand()
     {
-        $command = '';        
-        
-        if ($this->cwd) {           
-            if($this->user) {
-                $command .= $this->sudo();
+        $command = '';
+
+        if ($this->cwd) {
+            if ($this->user) {
+                $command .= $this->sudo($this->user);
             }
 
-            $command .=  'cd ' . $this->cwd . '; ';
+            // Support changing drives in Windows
+            $cdParameter = $this->isWindows() ? '/d ' : '';
+            $andSign = $this->isWindows() ? ' &' : ';';
+
+            $command .= "cd {$cdParameter}{$this->cwd}{$andSign} ";
         }
-    
+
         if ($this->user) {
-           $this->sudo();
+            $command .= $this->sudo($this->user);
         }
-        
+
         $command .= $this->isClosure() ? $this->serializeClosure($this->command) : $this->command;
 
         return trim($command, '& ');
     }
 
     /**
-     * Add sudo to the command 
-     *
-     * @param string $user
-     *
-     * @return string
-     */
-    protected function sudo($user)
-    {
-        return 'sudo -u' . $user . ' ';
-    }
-
-    /**
      * Determine whether the passed value is a closure ot not.
      *
-     * @return boolean
+     * @return bool
      */
     public function isClosure()
     {
@@ -235,58 +252,26 @@ class Event
     }
 
     /**
-     * Convert closure to an executable command
-     *
-     * @param string $closure
-     *
-     * @return string
-     *
-     */
-    protected function serializeClosure($closure)
-    {    
-        $closure = (new Serializer())->serialize($closure);
-        
-        return __DIR__ . '/../crunz closure:run ' . http_build_query([$closure]);
-    }
-
-    /**
      * Determine if the given event should run based on the Cron expression.
      *
-     * @return boolean
+     * @return bool
      */
-    public function isDue()
+    public function isDue(\DateTimeZone $timeZone)
     {
-        return $this->expressionPasses() && $this->filtersPass();
+        return $this->expressionPasses($timeZone) && $this->filtersPass();
     }
-
-    /**
-     * Determine if the Cron expression passes.
-     *
-     * @return boolean
-     */
-    protected function expressionPasses()
-    {
-        $date = Carbon::now();
-
-        if ($this->timezone) {
-            $date->setTimezone($this->timezone);
-        }
-
-        return CronExpression::factory($this->expression)->isDue($date->toDateTimeString());
-    }
-
 
     /**
      * Determine if the filters pass for the event.
      *
-     * @return boolean
+     * @return bool
      */
     public function filtersPass()
     {
         $invoker = new Invoker();
-        
+
         foreach ($this->filters as $callback) {
-            if (! $invoker->call($callback)) {
+            if (!$invoker->call($callback)) {
                 return false;
             }
         }
@@ -301,7 +286,7 @@ class Event
     }
 
     /**
-     * Start the event execution
+     * Start the event execution.
      *
      * @return int
      */
@@ -320,7 +305,7 @@ class Event
     /**
      * The Cron expression representing the event's frequency.
      *
-     * @param  string  $expression
+     * @param string $expression
      *
      * @return $this
      */
@@ -352,39 +337,36 @@ class Event
     }
 
     /**
-     * Schedule the event to run on a certain date
+     * Schedule the event to run on a certain date.
      *
-     * @param  string  $date
+     * @param string $date
      *
      * @return $this
      */
     public function on($date)
     {
-        
-        $date     = date_parse($date);
-        $segments = array_only($date, array_flip($this->fieldsPosition));
+        $date = \date_parse($date);
+        $segments = \array_only($date, \array_flip($this->fieldsPosition));
 
         if ($date['year']) {
- 
             $this->skip(function () use ($segments) {
                 return (int) date('Y') != $segments['year'];
             });
-
         }
-                
-        foreach ($segments as $key => $value) {   
-            if ($value != false) {                
+
+        foreach ($segments as $key => $value) {
+            if (false !== $value) {
                 $this->spliceIntoPosition($this->fieldsPosition[$key], (int) $value);
             }
         }
 
-        return $this;          
+        return $this;
     }
 
     /**
      * Schedule the command at a given time.
      *
-     * @param  string  $time
+     * @param string $time
      *
      * @return $this
      */
@@ -396,7 +378,7 @@ class Event
     /**
      * Schedule the event to run daily at a given time (10:00, 19:30, etc).
      *
-     * @param  string  $time
+     * @param string $time
      *
      * @return $this
      */
@@ -409,71 +391,43 @@ class Event
     }
 
     /**
-     * Set Working period
-     *
+     * Set Working period.
      */
     public function between($from, $to)
     {
         return $this->from($from)
-                    ->to($to);    
-        
+                    ->to($to);
     }
-    
-    /**
-     * Check if event should be on
-     *
-     * @param  string $datetime
-     *
-     */
-     public function from($datetime)
-     { 
-        return $this->skip(function() use ($datetime) {
-            return $this->notYet($datetime);
-        });
-     }
 
     /**
-     * Check if event should be off
+     * Check if event should be on.
      *
-     * @param  string  $datetime
+     * @param string $datetime
+     */
+    public function from($datetime)
+    {
+        return $this->skip(function () use ($datetime) {
+            return $this->notYet($datetime);
+        });
+    }
+
+    /**
+     * Check if event should be off.
      *
+     * @param string $datetime
      */
     public function to($datetime)
-    {          
-        return $this->skip(function() use ($datetime) {
+    {
+        return $this->skip(function () use ($datetime) {
             return $this->past($datetime);
         });
     }
 
     /**
-     * Check if time hasn't arrived
-     *
-     * @param  string  $time
-     *
-     * @return boolean
-     */
-    protected function notYet($datetime)
-    {  
-        return time() < strtotime($datetime);
-    }
-
-    /**
-     * Check if the time has passed
-     *
-     * @param  string $time
-     *
-     * @return boolean
-     */
-    protected function past($datetime)
-    {
-       return time() > strtotime($datetime);
-    }
-
-    /**
      * Schedule the event to run twice daily.
      *
-     * @param  int  $first
-     * @param  int  $second
+     * @param int $first
+     * @param int $second
      *
      * @return $this
      */
@@ -578,8 +532,8 @@ class Event
     /**
      * Schedule the event to run weekly on a given day and time.
      *
-     * @param  int  $day
-     * @param  string  $time
+     * @param int    $day
+     * @param string $time
      *
      * @return $this
      */
@@ -623,7 +577,7 @@ class Event
     /**
      * Set the days of the week the command should run on.
      *
-     * @param  mixed  $days
+     * @param mixed $days
      *
      * @return $this
      */
@@ -635,79 +589,79 @@ class Event
     }
 
     /**
-     * Set hour for the cron job
+     * Set hour for the cron job.
      *
-     * @param  mixed $value
+     * @param mixed $value
      *
      * @return $this
      */
     public function hour($value)
     {
         $value = is_array($value) ? $value : func_get_args();
-        
+
         return $this->spliceIntoPosition(2, implode(',', $value));
     }
 
     /**
-     * Set minute for the cron job
+     * Set minute for the cron job.
      *
-     * @param  mixed $value
+     * @param mixed $value
      *
      * @return $this
      */
     public function minute($value)
     {
         $value = is_array($value) ? $value : func_get_args();
-        
+
         return $this->spliceIntoPosition(1, implode(',', $value));
     }
 
     /**
-     * Set hour for the cron job
+     * Set hour for the cron job.
      *
-     * @param  mixed $value
+     * @param mixed $value
      *
      * @return $this
      */
     public function dayOfMonth($value)
     {
         $value = is_array($value) ? $value : func_get_args();
-        
+
         return $this->spliceIntoPosition(3, implode(',', $value));
     }
 
     /**
-     * Set hour for the cron job
+     * Set hour for the cron job.
      *
-     * @param  mixed $value
+     * @param mixed $value
      *
      * @return $this
      */
     public function month($value)
     {
         $value = is_array($value) ? $value : func_get_args();
-        
+
         return $this->spliceIntoPosition(4, implode(',', $value));
     }
 
     /**
-     * Set hour for the cron job
+     * Set hour for the cron job.
      *
-     * @param  mixed $value
+     * @param mixed $value
      *
      * @return $this
      */
     public function dayOfWeek($value)
     {
         $value = is_array($value) ? $value : func_get_args();
-        
+
         return $this->spliceIntoPosition(5, implode(',', $value));
     }
 
     /**
      * Set the timezone the date should be evaluated on.
      *
-     * @param  \DateTimeZone|string  $timezone
+     * @param \DateTimeZone|string $timezone
      *
      * @return $this
      */
@@ -721,12 +675,16 @@ class Event
     /**
      * Set which user the command should run as.
      *
-     * @param  string  $user
+     * @param string $user
      *
      * @return $this
      */
     public function user($user)
     {
+        if ($this->isWindows()) {
+            throw new NotImplementedException('Changing user on Windows is not implemented.');
+        }
+
         $this->user = $user;
 
         return $this;
@@ -735,7 +693,7 @@ class Event
     /**
      * Do not allow the event to overlap each other.
      *
-     * @param  string|int $safe_duration
+     * @param string|int $safe_duration
      *
      * @return $this
      */
@@ -749,7 +707,7 @@ class Event
         });
 
         // Delete the lock file when the event is completed
-        $this->after(function() {
+        $this->after(function () {
             $lockfile = $this->lockFile();
             if (file_exists($lockfile)) {
                 unlink($lockfile);
@@ -762,7 +720,7 @@ class Event
     /**
      * Register a callback to further filter the schedule.
      *
-     * @param  \Closure  $callback
+     * @param \Closure $callback
      *
      * @return $this
      */
@@ -776,7 +734,7 @@ class Event
     /**
      * Register a callback to further filter the schedule.
      *
-     * @param  \Closure  $callback
+     * @param \Closure $callback
      *
      * @return $this
      */
@@ -790,8 +748,8 @@ class Event
     /**
      * Send the output of the command to a given location.
      *
-     * @param  string  $location
-     * @param  bool  $append
+     * @param string $location
+     * @param bool   $append
      *
      * @return $this
      */
@@ -807,7 +765,7 @@ class Event
     /**
      * Append the output of the command to a given location.
      *
-     * @param  string  $location
+     * @param string $location
      *
      * @return $this
      */
@@ -819,21 +777,21 @@ class Event
     /**
      * Register a callback to ping a given URL before the job runs.
      *
-     * @param  string  $url
+     * @param string $url
      *
      * @return $this
      */
     public function pingBefore($url)
     {
         return $this->before(function () use ($url) {
-            (new HttpClient)->get($url);
+            (new HttpClient())->get($url);
         });
     }
 
     /**
      * Register a callback to be called before the operation.
      *
-     * @param  \Closure  $callback
+     * @param \Closure $callback
      *
      * @return $this
      */
@@ -847,21 +805,21 @@ class Event
     /**
      * Register a callback to ping a given URL after the job runs.
      *
-     * @param  string  $url
+     * @param string $url
      *
      * @return $this
      */
     public function thenPing($url)
     {
         return $this->then(function () use ($url) {
-            (new HttpClient)->get($url);
+            (new HttpClient())->get($url);
         });
     }
 
     /**
      * Register a callback to be called after the operation.
      *
-     * @param  \Closure  $callback
+     * @param \Closure $callback
      *
      * @return $this
      */
@@ -873,7 +831,7 @@ class Event
     /**
      * Register a callback to be called after the operation.
      *
-     * @param  \Closure  $callback
+     * @param \Closure $callback
      *
      * @return $this
      */
@@ -887,7 +845,7 @@ class Event
     /**
      * Set the human-friendly description of the event.
      *
-     * @param  string  $description
+     * @param string $description
      *
      * @return $this
      */
@@ -897,22 +855,23 @@ class Event
     }
 
     /**
-     * Set the event's process
+     * Set the event's process.
      *
-     * @param Symfony\Component\Process\Process $process
-     * 
+     * @param \Symfony\Component\Process\Process $process
+     *
      * @return $this
      */
     public function setProcess(\Symfony\Component\Process\Process $process = null)
     {
         $this->process = $process;
+
         return $this;
     }
 
     /**
-     * Return the event's process
+     * Return the event's process.
      *
-     * @return Symfony\Component\Process\Process $process
+     * @return \Symfony\Component\Process\Process $process
      */
     public function getProcess()
     {
@@ -922,7 +881,7 @@ class Event
     /**
      * Set the human-friendly description of the event.
      *
-     * @param  string  $description
+     * @param string $description
      *
      * @return $this
      */
@@ -934,43 +893,27 @@ class Event
     }
 
     /**
-     * Splice the given value into the given position of the expression.
+     * Another way to the frequency of the cron job.
      *
-     * @param  int  $position
-     * @param  string  $value
-     *
-     * @return $this
-     */
-    protected function spliceIntoPosition($position, $value)
-    {
-        $segments = explode(' ', $this->expression);
-
-        $segments[$position - 1] = $value;
-
-        return $this->cron(implode(' ', $segments));
-    }
-
-    /**
-     * Another way to the frequency of the cron job
-     *
-     * @param  string  $unit
-     * @param  string  $value
+     * @param string $unit
+     * @param string $value
      *
      * @return $this
      */
     public function every($unit = null, $value = null)
     {
-        if (! isset($this->fieldsPosition[$unit])) {
+        if (!isset($this->fieldsPosition[$unit])) {
             return $this;
         }
-        
-        $value = $value == 1 ? '*' : '*/' . $value;
+
+        $value = 1 == $value ? '*' : '*/' . $value;
+
         return $this->spliceIntoPosition($this->fieldsPosition[$unit], $value)
                     ->applyMask($unit);
     }
 
     /**
-     * Return the event's command
+     * Return the event's command.
      *
      * @return string
      */
@@ -994,7 +937,7 @@ class Event
     }
 
     /**
-     * Get the command for display
+     * Get the command for display.
      *
      * @return string
      */
@@ -1014,9 +957,9 @@ class Event
     }
 
     /**
-     * Set the event's command
+     * Set the event's command.
      *
-     * @param  string $command
+     * @param string $command
      *
      * @return $this
      */
@@ -1028,7 +971,7 @@ class Event
     }
 
     /**
-     * Return the event's command
+     * Return the event's command.
      *
      * @return string
      */
@@ -1038,7 +981,7 @@ class Event
     }
 
     /**
-     * Return the current working directory
+     * Return the current working directory.
      *
      * @return string
      */
@@ -1048,7 +991,7 @@ class Event
     }
 
     /**
-     * Return event's full output
+     * Return event's full output.
      *
      * @return string
      */
@@ -1058,7 +1001,7 @@ class Event
     }
 
     /**
-     * Return all registered before callbacks
+     * Return all registered before callbacks.
      *
      * @return array
      */
@@ -1068,7 +1011,7 @@ class Event
     }
 
     /**
-     * Return all registered after callbacks
+     * Return all registered after callbacks.
      *
      * @return array
      */
@@ -1078,62 +1021,37 @@ class Event
     }
 
     /**
-     * Mask a cron expression
+     * Check if another instance of the event is still running.
      *
-     * @param  string $unit
-     *
-     * @return string
-     */
-    protected function applyMask($unit) 
-    {
-        $cron = explode(' ', $this->expression);
-        $mask = ['0', '0', '1', '1', '*', '*'];
-        $fpos = $this->fieldsPosition[$unit] - 1;
-        
-        array_splice($cron, 0, $fpos, array_slice($mask, 0, $fpos));
-    
-        return $this->cron(implode(' ', $cron));
-    }
-
-    /**
-     * Lock the event
-     *
-     * @param  \Crunz\Event $event
-     *
-     * @return string
-     */
-    protected function lock()
-    {
-        file_put_contents($this->lockFile(), $this->process->getPid());
-    }
-
-    /**
-     * Check if another instance of the event is still running
-     *
-     * @return boolean
+     * @return bool
      */
     public function isLocked()
-    {        
+    {
         $pid = $this->lastPid();
+        $hasPid = (null !== $pid);
 
-        return (! is_null($pid) && posix_getsid($pid)) ? true : false;
+        // No POSIX on Windows
+        if ($this->isWindows()) {
+            return $hasPid;
+        }
+
+        return ($hasPid && posix_getsid($pid)) ? true : false;
     }
 
     /**
-     * Get the last process Id of the event
+     * Get the last process Id of the event.
      *
      * @return int
      */
     public function lastPid()
-    {        
+    {
         $lock_file = $this->lockFile();
 
-        return file_exists($lock_file) ? (int)trim(file_get_contents($lock_file)) : null;
-   
+        return file_exists($lock_file) ? (int) trim(file_get_contents($lock_file)) : null;
     }
 
     /**
-     * Get the lock file path for the task
+     * Get the lock file path for the task.
      *
      * @return string
      */
@@ -1143,28 +1061,152 @@ class Event
     }
 
     /**
-     * Handling dynamic frequency methods
+     * Get the default output depending on the OS.
      *
-     * @param  string $methodName
-     * @param  array  $params
+     * @return string
+     */
+    protected function getDefaultOutput()
+    {
+        return (DIRECTORY_SEPARATOR == '\\') ? 'NUL' : '/dev/null';
+    }
+
+    /**
+     * Add sudo to the command.
+     *
+     * @param string $user
+     *
+     * @return string
+     */
+    protected function sudo($user)
+    {
+        return "sudo -u {$user} ";
+    }
+
+    /**
+     * Convert closure to an executable command.
+     *
+     * @param string $closure
+     *
+     * @return string
+     */
+    protected function serializeClosure($closure)
+    {
+        $closure = (new Serializer())->serialize($closure);
+        $serializedClosure = \http_build_query([$closure]);
+        $crunzRoot = CRUNZ_ROOT . DIRECTORY_SEPARATOR;
+
+        return PHP_BINARY . " {$crunzRoot}crunz closure:run {$serializedClosure}";
+    }
+
+    /**
+     * Determine if the Cron expression passes.
+     *
+     * @return bool
+     */
+    protected function expressionPasses(\DateTimeZone $timeZone)
+    {
+        $date = Carbon::now();
+        $date->setTimezone($timeZone);
+
+        if ($this->timezone) {
+            $date->setTimezone($this->timezone);
+        }
+
+        return CronExpression::factory($this->expression)->isDue($date->toDateTimeString());
+    }
+
+    /**
+     * Check if time hasn't arrived.
+     *
+     * @param string $time
+     *
+     * @return bool
+     */
+    protected function notYet($datetime)
+    {
+        return time() < strtotime($datetime);
+    }
+
+    /**
+     * Check if the time has passed.
+     *
+     * @param string $time
+     *
+     * @return bool
+     */
+    protected function past($datetime)
+    {
+        return time() > strtotime($datetime);
+    }
+
+    /**
+     * Splice the given value into the given position of the expression.
+     *
+     * @param int    $position
+     * @param string $value
      *
      * @return $this
      */
-    public function __call($methodName, $params)
+    protected function spliceIntoPosition($position, $value)
     {
-        preg_match('/^every([A-Z][a-zA-Z]+)?(Minute|Hour|Day|Month)s?$/', $methodName, $matches);
+        $segments = explode(' ', $this->expression);
 
-        if (! count($matches) || $matches[1] == 'Zero') {            
-            throw new \BadMethodCallException();
-        }
+        $segments[$position - 1] = $value;
 
-        $amount = ! empty($matches[1]) ? word2number(split_camel($matches[1])) : 1;
-
-        if (! $amount) {
-            throw new \BadMethodCallException();
-        }
-
-        return $this->every(strtolower($matches[2]), $amount);
+        return $this->cron(implode(' ', $segments));
     }
 
+    /**
+     * Mask a cron expression.
+     *
+     * @param string $unit
+     *
+     * @return string
+     */
+    protected function applyMask($unit)
+    {
+        $cron = explode(' ', $this->expression);
+        $mask = ['0', '0', '1', '1', '*', '*'];
+        $fpos = $this->fieldsPosition[$unit] - 1;
+
+        array_splice($cron, 0, $fpos, array_slice($mask, 0, $fpos));
+
+        return $this->cron(implode(' ', $cron));
+    }
+
+    /**
+     * Lock the event.
+     *
+     * @param \Crunz\Event $event
+     *
+     * @return string
+     */
+    protected function lock()
+    {
+        file_put_contents($this->lockFile(), $this->process->getPid());
+    }
+
+    private function splitCamel($text)
+    {
+        $pattern = '/(?<=[a-z])(?=[A-Z])/x';
+        $segments = preg_split($pattern, $text);
+
+        return \strtolower(
+            \implode(
+                $segments,
+                ' '
+            )
+        );
+    }
+
+    private function isWindows()
+    {
+        $osCode = \substr(
+            PHP_OS,
+            0,
+            3
+        );
+
+        return 'WIN' === $osCode;
+    }
 }
