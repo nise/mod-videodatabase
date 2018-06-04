@@ -25,30 +25,52 @@ define([
 		Vi2.Utils = Utils;
 
 		/**
-             * Loads player and annotation plugins
-             *   
-             * todo:
-                var temporalBookmarks = new Vi2.TemporalBookmarks();
-                var sharing = new Vi2.Sharing();
-             */
-		Vi2.loadPlugins = function() {
-			this.plugins = [
-				{ path: 'js/vi2.core.player.volume.js' },
-				{ path: 'js/vi2.player.skip.js', options: { step: -5 } },
-				{ path: 'js/vi2.player.zoom.js' },
-				{ path: 'js/vi2.player.playback-speed.js' },
-				{ path: 'js/vi2.core.player.logger.js' },
-				{ path: 'js/vi2.annotations.comments.js' }
-			];
+		 * Loads player and annotation plugins
+		 *   
+		 * todo:
+			var temporalBookmarks = new Vi2.TemporalBookmarks();
+			var sharing = new Vi2.Sharing();
+			*/
+		Vi2.loadPlugins = function () {
+			this.plugins = {
+				volume: { path: 'js/vi2.core.player.volume.js', options: {} },
+				skip: {
+					path: 'js/vi2.player.skip.js', options: {
+						step: -5
+					}
+				},
+				zoom: { path: 'js/vi2.player.zoom.js', options: {} },
+				playbackSpeed: { path: 'js/vi2.player.playback-speed.js', options: {} },
+				logger: { path: 'js/vi2.core.player.logger.js', options: {} },
+				comments: {
+					path: 'js/vi2.annotations.comments.js', options: {
+						annotation_service_url: '/moodle/webservice/rest/server.php',
+						annotation_service_params: {
+							wstoken: Vi2.token,
+							moodlewsrestformat: 'json',
+							wsfunction: 'videodatabase_annotations',
+							data: { courseid: Vi2.courseid, videoid: Vi2.videoid }
+						}
+					}
+				}
+			};
 
-			for (var i = 0, len = this.plugins.length; i < len; i++) {
-				require([this.plugins[i].path, this.plugins[i].options], function (Plugin, options) {
-					var opt = options !== undefined ? options : {};
-					var p = new Plugin(opt);
-					vi2.observer.addWidget(p);
-				});
+			Vi2.plugins = this.plugins;
+
+			for (var i in this.plugins) {
+				if (this.plugins.hasOwnProperty(i)) {
+					require([this.plugins[i].path], function (Plugin) {
+						var p = new Plugin();
+						if (Vi2.plugins[p.name] !== undefined && Object.keys(Vi2.plugins[p.name]).length > 0 && Vi2.plugins[p.name].constructor === Object) {
+							p.options = Object.assign(p.options, Vi2.plugins[p.name].options);
+							vi2.observer.addWidget(p);
+						} else {
+							console.log('Error could not load and configure plugin:' + p.name );
+						}
+					});
+				}
 			}
-		}
+		};
 
 		Vi2.initVideo = function (db) {
 			vi2.db = db;
@@ -70,7 +92,7 @@ define([
 					wstoken: Vi2.token,
 					moodlewsrestformat: 'json',
 					wsfunction: 'videodatabase_logging',
-					data: {}
+					data: { courseid: Vi2.courseid, videoid: Vi2.videoid }
 				}
 			});
 			vi2.observer.addWidget(viLog);
@@ -80,14 +102,18 @@ define([
 		};
 
 
-		Vi2.start = function (video_data, user_data, token) {
+		Vi2.start = function (video_data, user_data, token, courseid, videoid) { 
 			Vi2.token = token;
+			Vi2.courseid = courseid;
+			Vi2.videoid = videoid; console.log(Vi2.videoid)
 			vi2.db = new Vi2.Database({ modus: 'native', data: video_data, path: '' }, 'window');
 			vi2.db.currentUser(user_data);
 			vi2.db.init(Vi2.initVideo);
 		};
 
-		Vi2.update = function (video_data) {
+	Vi2.update = function (video_data, courseid, videoid) {
+			Vi2.courseid = courseid;
+			Vi2.videoid = videoid; console.log(Vi2.videoid)
 			vi2.db = new Vi2.Database({ modus: 'native', data: video_data, path: '' }, 'window');
 			vi2.observer.parse(video_data);
 		};

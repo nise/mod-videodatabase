@@ -24,7 +24,7 @@ define([
     ) {
 
 
-        EditForm = function (store, course, datamodel) {
+        EditForm = function (store, router, course, datamodel, utils) {
             this.datamodel = datamodel;
 
             Vue.use(VueFormGenerator);
@@ -152,7 +152,9 @@ define([
                     filesChange: function (fieldName, fileList) {
                         if (!fileList.length) {
                             return;
-                        } console.log(fileList[0])
+                        } 
+                        console.log(fileList[0])
+                        $('.vue-form-generator').show();
                         this.currentStatus = STATUS_INITIAL;
                         this.uploadedFiles = [];
                         document.getElementById("file").value = "";
@@ -196,6 +198,7 @@ define([
                 },
                 mounted: function () {
                     this.reset();
+                    $('.vue-form-generator').hide();
                 }
             };
 
@@ -222,11 +225,13 @@ define([
                         } catch (e) {
                             console.log(e);
                         }
-                        if (data.error !== '') {
+                        if (data.error !== '') { // xxx: bug?
                             callback(data);
                         } else {
+                            console.log(data.files[0].upload_tmp)
+                            console.log(data.files[0].tmp_location)
                             startProgressLog(
-                                data.files[0].tmp_location,
+                                data.files[0].tmp_location,//data.files[0].upload_tmp,//
                                 data.files[0].duration,
                                 data.files[0].name_clean
                             );
@@ -337,7 +342,7 @@ define([
                     moduleid: course.module,
                 }, function (e) {
                     console.log('Got callback');
-                    console.log(e);
+                    console.log(JSON.parse(e.data));
                     //callback(e);
                 }, function (err) {
                     console.log('WS Error');

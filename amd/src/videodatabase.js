@@ -65,19 +65,16 @@ define([
             // setup vue
             Vue.use(VueRouter);
             
-
+            const utils = new Utils();
             const vuestore = new Store(data, course);
             const store = vuestore.store;
-            const form = new Form(store, course, datamodel);
-            const utils = new Utils();
+            let router = {};
+            const form = new Form(store, router, course, datamodel, utils);
             const videovue = new Video(store, course, user, $('#token').text());
             const video = videovue.video;
 
-
-            
-
             // init router
-            const router = new VueRouter({
+            router = new VueRouter({
                 routes: [
                     { path: '/videos' },
                     { path: '/videos/:id/view', component: video },
@@ -88,6 +85,8 @@ define([
                     return { x: 0, y: 405 };
                 }
             });
+
+            
 
             var Main = new Vue({
                 el: '#app-videomanager',

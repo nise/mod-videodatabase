@@ -23,7 +23,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
- $string['configrequiremodintro'] = 'xxx';
+$string['configrequiremodintro'] = 'xxx';
 $string['configdisplayoptions'] = 'Select all options that should be available, existing settings are not modified. Hold CTRL key to select multiple fields.';
 $string['content'] = 'Videodatabase content';
 $string['contentheader'] = 'Content';

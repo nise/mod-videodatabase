@@ -225,31 +225,34 @@ class mod_videodatabase_comments_external extends external_api {
 }
 
 
-class mod_videodatabase_video_comments_external extends external_api {
-    public static function get_video_comments_parameters() {
+class mod_videodatabase_annotations_external extends external_api {
+    
+    public static function annotations_parameters() {
         return new external_function_parameters(
             array(
                 'data' => 
                     new external_single_structure(
                         array(
                             'courseid' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL),
-                            'videoid' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL),
+                            'videoid' => new external_value(PARAM_INT, 'id of video', VALUE_OPTIONAL),
                         )
                 )
             )
         );
     }
-    public static function get_video_comments_returns() {
+    
+    public static function annotations_returns() {
         return new external_single_structure(
                 array( 'data' => new external_value(PARAM_RAW, 'data') )
         );
     }
-    public static function get_video_comments() {
+    
+    public static function annotations($data) {
         global $CFG, $DB;
-        $transaction = $DB->start_delegated_transaction(); //If an exception is thrown in the below code, all DB queries in this code will be rollback.
-        $table = "videodatabase_videos";
-        $res = $DB->get_records($table, $conditions = null, $sort = '', $fields = '*', $limitfrom = 0, $limitnum = 0);
-        $transaction->allow_commit();
+        //$transaction = $DB->start_delegated_transaction(); //If an exception is thrown in the below code, all DB queries in this code will be rollback.
+        $table = "videodatabase_annotations";
+        $res = $DB->get_records($table, array('courseid' => $data['courseid'], 'videoid' => $data['videoid']));//
+        //$transaction->allow_commit();
         return array('data'=> json_encode($res));
     }        
 } 
@@ -276,8 +279,10 @@ class mod_videodatabase_ratings_external extends external_api {
     }
     public static function ratings_returns() {
         return new external_single_structure(
-                array( 'data' => new external_value(PARAM_RAW, 'data'),
-                'info' => new external_value(PARAM_TEXT, 'data') )
+                array( 
+                    'data' => new external_value(PARAM_RAW, 'data'),
+                    'info' => new external_value(PARAM_TEXT, 'data') 
+                    )
         );
     }
     public static function ratings($data) {
@@ -351,28 +356,32 @@ class mod_videodatabase_files_external extends external_api {
             'timemodified'=>time()
         );
         
-        // create sha1
-        $hash = sha1_file( $_SERVER['DOCUMENT_ROOT'] . $data['location'] . $data['filename'] );
-        $data['contenthash'] = $hash;
-        $path = $CFG->dataroot.'/filedir/'. substr( $hash, 0, 2) . '/' . substr( $hash, 2, 2) . '/';
-        $res = array(
-            'error'=>'',
-            'hash'=>$hash,
-            'filename'=>$data['filename'],
-            'location'=>$path . $hash
-        );
-        if(is_dir( $path )){
-            $res['error'] .= 'File already exists. ';
+        if( ! is_file($_SERVER['DOCUMENT_ROOT'] . $data['location'] . $data['filename'])){
+            $res['error'] .= 'Wrong tmp path to file: ' . $_SERVER['DOCUMENT_ROOT'] . $data['location'] . $data['filename'];
         }else{
-            //$CFG->directorypermissions=00777;
-            mkdir($path, $CFG->directorypermissions, true);
-            if (is_dir($path) && is_writable($path)) {
-                $move = rename( $_SERVER['DOCUMENT_ROOT'] . $data['location'] . $data['filename'], $path . $hash );
-                if($move == false){
-                    $res['error'] .= 'File move error ';
-                }
+            // create sha1
+            $hash = sha1_file( $_SERVER['DOCUMENT_ROOT'] . $data['location'] . $data['filename'] );
+            $data['contenthash'] = $hash;
+            $path = $CFG->dataroot.'/filedir/'. substr( $hash, 0, 2) . '/' . substr( $hash, 2, 2) . '/';
+            $res = array(
+                'error'=>'',
+                'hash'=>$hash,
+                'filename'=>$data['filename'],
+                'location'=>$path . $hash
+            );
+            if(is_dir( $path )){
+                $res['error'] .= 'File already exists. ';
             }else{
-                $res['error'] .= 'Permission or path error. ';
+                //$CFG->directorypermissions=00777;
+                mkdir($path, $CFG->directorypermissions, true);
+                if (is_dir($path) && is_writable($path)) {
+                    $move = rename( $_SERVER['DOCUMENT_ROOT'] . $data['location'] . $data['filename'], $path . $hash );
+                    if($move == false){
+                        $res['error'] .= 'File move error ';
+                    }
+                }else{
+                    $res['error'] .= 'Permission or path error. ';
+                }
             }
         }
         //$fs->create_file_from_pathname($file_record, $data['location'] );

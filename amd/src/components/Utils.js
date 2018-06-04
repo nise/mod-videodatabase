@@ -24,7 +24,7 @@ define(['jquery'], function ($) {
                 method: method,
                 url: "/moodle/webservice/rest/server.php",
                 data: { // xxx get token: https://www.yourmoodle.com/login/token.php?username=USERNAME&password=PASSWORD&service=SERVICESHORTNAME
-                    wstoken: $('#token').text(),//'027d0289994006d503b6554df204e7a8',//'e321c48e338fc44830cda07824833944',
+                    wstoken: $('#token').text(),
                     moodlewsrestformat: 'json',
                     wsfunction: ws,
                     data: params

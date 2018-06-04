@@ -27,6 +27,8 @@ define([
         this.user = user;
         
         this.rating = new Ratings(store, course, user).ratings;
+        
+        var _this = this;
 
         this.video = {
             template: '#app-video-template',//'<div>Video {{ $route.params.id }}: {{ video.title }}</div>', 
@@ -72,7 +74,7 @@ define([
                     video_data.metadata[0].abstract = video_data['description'];
                     video_data.metadata[0].thumbnail = "still-" + video_data.filename.replace('.mp4', '_comp.jpg');
                     video_data.video = '/videos/' + video_data.filename.replace('.mp4', '.webm');
-                    Vi2.update(video_data);
+                    Vi2.update(video_data, _this.course.id, id);
                 }
                 //return video_data;    
             },
@@ -91,7 +93,7 @@ define([
                     video_data.metadata[0].abstract = video_data.description;
                     video_data.metadata[0].thumbnail = "still-" + video_data.filename.replace('.mp4', '_comp.jpg');
                     video_data.video = '/videos/' + video_data.filename.replace('.mp4', '.webm'); // xxx bug?
-                    Vi2.start(video_data, user, token);
+                    Vi2.start(video_data, user, token, _this.course.id, id);
                 }
             },
             methods: {

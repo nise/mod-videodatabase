@@ -58,12 +58,12 @@ $functions = array(
                 'type'        => 'read',
                 'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
         ),
-        'videodatabase_video_comments' => array(
-                'classname'   => 'mod_videodatabase_video_comment_external',
-                'methodname'  => 'get_video_comments',
+        'videodatabase_annotations' => array(
+                'classname'   => 'mod_videodatabase_annotations_external',
+                'methodname'  => 'annotations',
                 'classpath'   => 'mod/videodatabase/classes/external.php',
                 'description' => 'Getter for all comments related to a video',
-                'type'        => 'read',
+                'type'        => 'write',
                 'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
         ),
         'videodatabase_ratings' => array(
