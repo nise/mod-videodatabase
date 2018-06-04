@@ -287,7 +287,7 @@ echo '
 							<img :src="item.url" class="img-responsive img-thumbnail" :alt="item.originalName">
 						</li>
 					</ul>
-					<span class="fa fa-check"></span> Uploaded {{ uploadedFiles.length }} file(s) successfully.
+					<span class="fa fa-check"></span> Upload von {{ uploadedFiles.length }} Datei(en)
 					<div v-if="progthumbnail==100">
 						<span class="fa fa-check"></span> Videovorschaubild erzeugt
 					</div>

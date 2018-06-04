@@ -18,8 +18,8 @@ if ($ADMIN->fulltree) {
     $defaultdisplayoptions = array(RESOURCELIB_DISPLAY_OPEN);
 
     //--- general settings -----------------------------------------------------------------------------------
-    $settings->add(new admin_setting_configcheckbox('videodatabase/requiremodintro',
-        get_string('requiremodintro', 'admin'), get_string('configrequiremodintro', 'admin'), 1));
+    //$settings->add(new admin_setting_configcheckbox('videodatabase/requiremodintro',
+      //  get_string('requiremodintro', 'admin'), get_string('configrequiremodintro', 'admin'), 1));
     $settings->add(new admin_setting_configmultiselect('videodatabase/displayoptions',
         get_string('displayoptions', 'videodatabase'), get_string('configdisplayoptions', 'videodatabase'),
         $defaultdisplayoptions, $displayoptions));
