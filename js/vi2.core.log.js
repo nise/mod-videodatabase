@@ -13,7 +13,7 @@
 
 define(['jquery'], function ($) {
 
-    function Log(options) {
+    function Log(options) { 
         this.options = Object.assign(this.options, options);
         this.userAgent = this.getUserAgent();
     }
@@ -24,7 +24,7 @@ define(['jquery'], function ($) {
             output_type: 0, // -1: no logging, 0: console.log(), 1: server log, 
             prefix: '',
             logger_service_url: null,
-            logger_service_params: { "data": 0 }
+            logger_service_params: { "data": {} }
         },
 
         ip: '',
@@ -135,7 +135,7 @@ define(['jquery'], function ($) {
          * Makes an AJAX call to send the log data set to the server
          */
         sendLog: function (entry) {
-            this.options.logger_service_params.data = { entry: JSON.stringify(entry), courseid: 2 }; 
+            this.options.logger_service_params.data.entry = JSON.stringify(entry); 
             $.ajax({
                 method: 'POST',
                 url: this.options.logger_service_url,

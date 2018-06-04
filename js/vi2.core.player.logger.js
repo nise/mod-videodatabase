@@ -13,12 +13,13 @@ define(function () {
         ;
 
     function Logger(options) {
-
         
     }
 
     Logger.prototype = {
 
+        name:'logger',
+        options:{},
         interval:5,
         timer: null,
         lastposition:-1,

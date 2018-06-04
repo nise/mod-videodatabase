@@ -1,7 +1,6 @@
 define(['jquery'], function ($) {
 
     function Volume() {
-
         // bug: vi2.observer.player; is not available
         this.video = document.getElementById("video1");
 

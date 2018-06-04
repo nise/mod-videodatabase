@@ -372,7 +372,7 @@ define([
                     source = document.createElement('source')
                     ;
                 if (this.detectBrowser() === 'Firefox') {
-                    ext = '.mp4';  // lacy bug fix since firefox doesn't support mp4 anymore. xxx needs further testing.
+                    ext = '.webm';  // lacy bug fix since firefox doesn't support mp4 anymore. xxx needs further testing.
                     mime_type = "video/webm";
                 } else if (this.detectBrowser() === 'Chrome') {
                     ext = '.webm';

@@ -181,6 +181,9 @@ define(['jquery', 'js/vi2.core.clock.js', 'js/vi2.core.player.js'], function($, 
                 case 'log':
                     $(this.player).bind('log', function (e, msg) { obj.add(msg); });
                     break;
+                case 'comments':
+                    obj.init();
+                    break;    
             }
 
             // put widget to the list of registered / added widgets

@@ -18,10 +18,12 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
     *		@param {object} options An object containing the parameters
     */
     function Comments(options) {
-        this.options = $.extend(this.options, options); 
-        this.init();
+        //console.log(options.annotation_service_url)
+        this.options = Object.assign(this.options, options);
+        //console.log(this.options.annotation_service_url)
+        //this.init();
     }
-    
+
     // instantiate utils
     var utils = new Utils();
 
@@ -37,7 +39,9 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
             allowEditing: true,
             allowCreation: true,
             timelineSelector: '.vi2-timeline-bottom',
-            path: '/'
+            path: '/'//,
+            //annotation_service_url: {},
+            //annotation_service_params: { data: { videoid: 3, courseid: 2 } }
         },
 
         /* ... */
@@ -47,34 +51,55 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
             }
             var _this = this;
             var events = [];
-            $.each(ann, function (i, val) {
-                if (val.type === _this.name) {
-                    events.push({
-                        name: val.title,
-                        occ: [val.t1],
-                        time: [val.t1],
-                        date: val.date,
-                        author: val.author
-                    });
-                }
-            });
-            events = [{ name: 'hello', occ: [10], time: [10], date: new Date(), author: 'max' }];
-            // show comments in a menu
-            if (this.options.hasMenu) {
-                this.createMenu(events);
-            }
-            
-            // map events on the timeline
-            if (this.options.hasTimelineMarker) {
-                vi2.observer.player.timeline.addTimelineMarkers('comments', events, this.options.timelineSelector);
-            }
+        
+            $.ajax({
+                method: 'POST',
+                url: this.options.annotation_service_url,
+                data: this.options.annotation_service_params,
+                dataType: "json"
+            })
+                .done(function (msg) {
+                    try {
+                        var d = JSON.parse(msg.data); 
+                        data = Object.keys(d).map(function(o){ return d[o]; }); 
+                        for (var i in data) {
+                            if (data.hasOwnProperty(i)) {
+                                if (data[i].type === 'comment') { 
+                                    events.push({
+                                        name: data[i].content,
+                                        occ: [data[i].start],
+                                        time: [data[i].start],
+                                        date: data[i].updated,
+                                        author: data[i].author
+                                    });
+                                }
+                            }
+                        }
+                        // show comments in a menu
+                        if (_this.options.hasMenu) {
+                            _this.createMenu(events);
+                        }
+
+                        // map events on the timeline
+                        if (_this.options.hasTimelineMarker) {
+                            vi2.observer.player.timeline.addTimelineMarkers('comments', events, _this.options.timelineSelector);
+                        }
+                        
+                    } catch (e) {
+                        console.log('Could not parse comments from database');
+                        console.log(msg);
+                    }
+                })
+                .fail(function (msg) {
+                    console.log(msg);
+                }); 
         },
 
 
         /*
         *
         **/
-        createMenu: function (commentData) { 
+        createMenu: function (commentData) {
             var _this = this;
             var tmp_t = -1;
 
@@ -104,7 +129,7 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
                 }
 
 
-                var user = {name: 'Max Muster'};//vi2.db.getUserById(val.author);
+                var user = { name: 'Max Muster' };//vi2.db.getUserById(val.author);
 
                 var header = $('<span></span>')
                     .addClass('comments-header');
@@ -170,23 +195,23 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
         //<div type="toc" starttime=83 duration=1 id="">Objectives of the lecture</div>
         //
         appendToDOM: function (id) {
-        /*
-            var _this = this;
-            $(vi2.dom).find('[type="comments"]').each(function (i, val) { $(this).remove(); });
-            $.each(vi2.db.getCommentsById(id), function (i, val) {
-                var comm = $('<div></div>')
-                    .attr('type', "comments")
-                    .attr('starttime', val.start)
-                    .attr('duration', 10)
-                    .attr('author', val.author)
-                    .attr('date', val.date)
-                    .text(decodeURIComponent(val.comment))
-                    .appendTo(vi2.dom)
-                    ;
-            });
-            */
+            /*
+                var _this = this;
+                $(vi2.dom).find('[type="comments"]').each(function (i, val) { $(this).remove(); });
+                $.each(vi2.db.getCommentsById(id), function (i, val) {
+                    var comm = $('<div></div>')
+                        .attr('type', "comments")
+                        .attr('starttime', val.start)
+                        .attr('duration', 10)
+                        .attr('author', val.author)
+                        .attr('date', val.date)
+                        .text(decodeURIComponent(val.comment))
+                        .appendTo(vi2.dom)
+                        ;
+                });
+                */
         },
-        
+
 
 
         /*
