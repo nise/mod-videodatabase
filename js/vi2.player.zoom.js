@@ -10,6 +10,10 @@
 
 
 define(['jquery', 'js/jquery.panzoom.min.js'], function ($, PanZoom) {
+    var
+        vi2 = window.vi2,
+        Vi2 = window.Vi2 || {}
+        ;
 
     /** @constructs
     *		@param {object} options An object containing the parameters
@@ -17,6 +21,7 @@ define(['jquery', 'js/jquery.panzoom.min.js'], function ($, PanZoom) {
     */
     function Zoom(options) {
         this.options = $.extend(this.options, options);
+        //vi.oberserver = options.observer;
         this.init();
     }
 
@@ -61,13 +66,13 @@ define(['jquery', 'js/jquery.panzoom.min.js'], function ($, PanZoom) {
             }
 
             if (this.options.hasControls) {
-                var btn_in = $('<span class="vi2-zoom-in fa fa-plus" title="herein zoomen"></span>')
+                var btn_in = $('<span class="vi2-zoom-in fa fa-plus" title="vergrößern"></span>')
                     .click(function () {
                         _this.showScale();
                     })
                     .prependTo(container)
                     ;
-                var btn_out = $('<span class="vi2-zoom-out fa fa-minus" title="heraus zoomen"></span>')
+                var btn_out = $('<span class="vi2-zoom-out fa fa-minus" title="verkleinern"></span>')
                     .click(function () {
                         _this.showScale();
                     })

@@ -1,15 +1,16 @@
-/* 
-* name: Vi2.Observer 
-*	author: niels.seidel@nise81.com
-* license: MIT License
-* description: 
-*	todo:
-* - bug: current_stream / video is wrong
-* - complete interfaces for the player
-*	- clear overlay-container and other at updateVideo()
-*	- allow page back, offer bread crumb menu, ...
-*	- RSS: http://code.google.com/apis/youtube/2.0/reference.html
-**/
+/**
+ * name: Vi2.Observer
+ * author: niels.seidel@nise81.com
+ * license: MIT License
+ * description:
+ *	todo:
+ * - bug: current_stream / video is wrong
+ * - complete interfaces for the player
+ *	- clear overlay-container and other at updateVideo()
+ *	- allow page back, offer bread crumb menu, ...
+ *	- RSS: http://code.google.com/apis/youtube/2.0/reference.html
+ */
+
 
 //Vi2.Observer = inherit(/* @lends Observer# **/{
 
@@ -58,7 +59,7 @@ define(['jquery', 'js/vi2.core.clock.js', 'js/vi2.core.player.js'], function($, 
         /*
         *
         **/
-        setCurrentStream: function (stream, seek) {
+        setCurrentStream: function (stream, seek) { 
             this.current_stream = stream;
             this.seek = seek;
 
@@ -74,8 +75,6 @@ define(['jquery', 'js/vi2.core.clock.js', 'js/vi2.core.player.js'], function($, 
             // restart the clock
             this.clock.stopClock();
             this.clock.reset();
-            // generate and render metadata
-            //xxx var metadata = new Vi2.Metadata();
             // re-parse DOM
             this.parse(vi2.dom, 'html');
 
@@ -85,7 +84,7 @@ define(['jquery', 'js/vi2.core.clock.js', 'js/vi2.core.player.js'], function($, 
         /*
         *
         **/
-        parse: function ( data ) {
+        parse: function ( data ) { 
             this.vid_arr = [];
             this.vid_arr.push({
                 id: 'test',
@@ -95,7 +94,7 @@ define(['jquery', 'js/vi2.core.clock.js', 'js/vi2.core.player.js'], function($, 
                 annotation:[]
             });
             this.clock.stopClock();
-            this.clock.reset();
+            this.clock.reset(); 
             this.player.loadSequence(this.vid_arr, 0, this.seek);
         },
 
@@ -118,6 +117,7 @@ define(['jquery', 'js/vi2.core.clock.js', 'js/vi2.core.player.js'], function($, 
                 seek: seek === undefined ? 0 : seek
             }, this);
 
+            
             // some event bindings hooks
             $(this).bind('player.ready', function (e, id, i) {
                 _this.setAnnotations();
@@ -128,10 +128,9 @@ define(['jquery', 'js/vi2.core.clock.js', 'js/vi2.core.player.js'], function($, 
         /*
         *
         **/
-        setAnnotations: function () {
+        setAnnotations: function () { 
             var _this = this;
             this.clock.annotations = [];
-            // xxx this.vid_arr = this.parser.run();
 
             // add Annotations at the clock
             $.each(_this.vid_arr[0].annotation, function (i, val) {
@@ -182,7 +181,7 @@ define(['jquery', 'js/vi2.core.clock.js', 'js/vi2.core.player.js'], function($, 
                     $(this.player).bind('log', function (e, msg) { obj.add(msg); });
                     break;
                 case 'comments':
-                    obj.init();
+                    //obj.init();
                     break;    
             }
 

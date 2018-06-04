@@ -98,7 +98,7 @@ define([
             ;
         //vi2.debug = function(str){ return 0; }
 
-        function Player(options) {
+        function Player(options) { 
             vi2.observer.player = this;
             this.options = $.extend(this.options, options);
             this.supportedMime = this.detectVideoSupport();
@@ -142,7 +142,7 @@ define([
 
             /* load video */
             // param: url= url of video; seek = time seek within video in seconds
-            loadVideo: function (url, seek) {
+            loadVideo: function (url, seek) { 
                 var _this = this;
                 this.url = url;
                 this.seek = seek === undefined ? 0 : seek;
@@ -433,9 +433,9 @@ define([
                     mouseTimer = window.setTimeout(disappearCursor, 1000);
                 };
 
-                $('body').unbind('keydown').bind('keydown', function (e) {
+                //$('body').unbind('keydown').bind('keydown', function (e) {
                     //_this.keyboardCommandHandler(e); 
-                });
+                //});
 
             },
 
