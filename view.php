@@ -187,7 +187,7 @@ echo '
 									</div>
 								</div>
 							</div>
-							<div class="annotation-form">
+							<div id="annotation-form">
 								<div id="annotationForm" v-show="showAnnotationForm">
 									<textarea v-model="annotationContent" name="comments-entry" data-datatype="string" placeholder="" aria-describedby="comments-form1"></textarea>
 									<br/>
@@ -197,8 +197,8 @@ echo '
 									</div>
 									<div class="btn btn-primary" v-on:click="saveAnnotation">speichern</div>
 								</div>
-								<div class="btn btn-primary" v-on:click="showAnnotationForm = !showAnnotationForm"><span class="fa fa-plus"></span> Kommentar</div>
-							</div>		
+								<div class="btn btn-primary" v-on:click="toggle"><span class="fa fa-plus"></span> Kommentar</div>
+							</div>	
 						</div>
 					</div>
 					<div id="video-controls" class="video-controls col-lg-9 col-md-9 col-sm-12 col-xs-12">
@@ -216,12 +216,12 @@ echo '
 							</div>
 							<div class="vi2-volume-controls right"></div>
 							<div class="vi2-video-timer right"></div>
-							<rating class="right" ref="childRating" v-bind:value="video.rating" :length="5" @after-rate="onAfterRate"></rating>
+							<rating class="right" ref="childRating" v-bind:value="video.rating" :length="5"></rating>
 						</div>
 					</div>
 				</div>
 				
-				<!-- Modal -->
+				<!-- Modal 
 				<div hidden class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
 					<div class="modal-dialog" role="document">
 						<div class="modal-content modal-form">
@@ -238,7 +238,7 @@ echo '
 							</div>
 						</div>
 					</div>
-				</div>
+				</div>-->
 			</div>
 		</div>
 	</div>	

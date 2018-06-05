@@ -503,7 +503,7 @@ div.link{
     height:100%;
     display:inline-block;
 }
-.annotation-form {
+#annotation-form {
     margin-top:100%;
     vertical-align: bottom;
 }

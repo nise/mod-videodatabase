@@ -43,6 +43,7 @@ define([
                     vi2_player_id: 'vi2-1',
                     video_selector: 'seq',
                     video_overlay_selector: 'overlay',
+                    current_video: -1,
                     showAnnotationForm: false,
                     annotationContent: '',
                     annotationTime: '',
@@ -64,35 +65,16 @@ define([
                         video_data.video = '/videos/' + video_data.filename.replace('.mp4', '.webm');
                         return video_data;//store.getters.videoById( this.$route.params.id );
                     } else {
-                        //return null;
+                        return null;
                     }
                 }
             },
-
-            updated: function () {
-                var id = this.$route.params.id;
-                if (id === undefined) {
-                    id = 1;
-                }
-                var video_data = store.getters.videoById(id);
-                //this.$refs.childRating.setRate(video_data.rating);
-                if (video_data !== undefined) {
-                    video_data.metadata = [];
-                    video_data.metadata[0] = {};
-                    video_data.metadata[0].author = video_data['contributor'];
-                    video_data.metadata[0].title = video_data['title'];
-                    video_data.metadata[0].abstract = video_data['description'];
-                    video_data.metadata[0].thumbnail = "still-" + video_data.filename.replace('.mp4', '_comp.jpg');
-                    video_data.video = '/videos/' + video_data.filename.replace('.mp4', '.webm');
-                    Vi2.update(video_data, _this.course.id, id);
-                }
-                //return video_data;    
-            },
             mounted: function () {
-                var id = this.$route.params.id;
-                if (id === undefined) {
-                    id = 1;
-                }
+
+                var id = this.$route.params.id || 1;
+                
+                this.current_video = id;
+                
                 var video_data = store.getters.videoById(id);
 
                 if (video_data !== undefined) {
@@ -104,11 +86,37 @@ define([
                     video_data.metadata[0].thumbnail = "still-" + video_data.filename.replace('.mp4', '_comp.jpg');
                     video_data.video = '/videos/' + video_data.filename.replace('.mp4', '.webm'); // xxx bug?
                     Vi2.start(video_data, user, token, _this.course.id, id);
+                } else {
+                    console.log('mounted undefined');
+                }
+                console.log('mounted' + id)
+                console.log(video_data.title)
+            },
+            updated: function () {
+               
+                var id = this.$route.params.id || 1;
+                
+                if (this.current_video !== id) {
+                    this.current_video = id;
+                    var video_data = store.getters.videoById(id);
+                    //this.$refs.childRating.setRate(video_data.rating);
+                    if (video_data !== undefined) {
+                        video_data.metadata = [];
+                        video_data.metadata[0] = {};
+                        video_data.metadata[0].author = video_data['contributor'];
+                        video_data.metadata[0].title = video_data['title'];
+                        video_data.metadata[0].abstract = video_data['description'];
+                        video_data.metadata[0].thumbnail = "still-" + video_data.filename.replace('.mp4', '_comp.jpg');
+                        video_data.video = '/videos/' + video_data.filename.replace('.mp4', '.webm');
+                        Vi2.update(video_data, _this.course.id, id);
+                    }
                 }
             },
             methods: {
-                onAfterRate: function (rate) {
-                    //store.commit('setCurrentVideoRating', rate);
+                toggle: function () {
+                    console.log(2)
+                    this.showAnnotationForm = !this.showAnnotationForm;
+                    console.log(3)
                 },
                 saveAnnotation: function () {
                     utils.get_ws('videodatabase_annotations', "POST", {
@@ -116,18 +124,20 @@ define([
                         'videoid': this.$route.params.id,
                         'courseid': course.id,
                         'content': this.annotationContent,
-                        'playbacktime': this.annotationTime
-                    }, function (e) { 
+                        'playbacktime': this.annotationTime,
+                        'created': new Date().getTime(),
+                        'updated': new Date().getTime(),
+                    }, function (e) {
                         console.log(e);
-                    }); 
+                    });
                 }
             },
-components: {
-    'rating': this.rating,
-        'modal-template': this.modal
-}
+            components: {
+                'rating': this.rating,
+                'modal-template': this.modal
+            }
         };
     }
 
-return Video;
+    return Video;
 });   

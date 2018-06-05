@@ -237,8 +237,9 @@ class mod_videodatabase_annotations_external extends external_api {
                             'videoid' => new external_value(PARAM_INT, 'id of video', VALUE_OPTIONAL),
                             'userid' => new external_value(PARAM_TEXT, 'id of video', VALUE_OPTIONAL),
                             'content' => new external_value(PARAM_TEXT, 'id of video', VALUE_OPTIONAL),
-                            'playbacktime' => new external_value(PARAM_INT, 'id of video', VALUE_OPTIONAL)
-
+                            'playbacktime' => new external_value(PARAM_INT, 'id of video', VALUE_OPTIONAL),
+                            'updated' => new external_value(PARAM_INT, 'id of video', VALUE_OPTIONAL),
+                            'created' => new external_value(PARAM_INT, 'id of video', VALUE_OPTIONAL)
                         )
                 )
             )
@@ -267,8 +268,8 @@ class mod_videodatabase_annotations_external extends external_api {
             $r->start = $data['playbacktime'];
             //$r->duration = $data['duration'];
             $r->author = $data['userid'];
-            //$r->created = $data['posx'];
-            //$r->updated = $data['posx'];
+            $r->created = $data['created'];
+            $r->updated = $data['updated'];
             $r->videoid = $data['videoid'];
             $r->courseid = $data['courseid'];
             //  Modify	

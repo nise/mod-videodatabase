@@ -64,9 +64,8 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
                 .done(function (msg) {
                     try {
                         var d = JSON.parse(msg.data); 
-                        data = Object.keys(d).map(function(o){ return d[o]; }); 
-                        console.log('inti comments'+ JSON.stringify(data))
-                        console.log(data)
+                        var data = Object.keys(d).map(function(o){ return d[o]; }); 
+                        
                         for (var i in data) {
                             if (data.hasOwnProperty(i)) {
                                 if (data[i].type === 'comment') { 

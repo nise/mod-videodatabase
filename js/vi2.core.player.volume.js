@@ -3,7 +3,6 @@ define(['jquery'], function ($) {
     function Volume() {
         // bug: vi2.observer.player; is not available
         this.video = document.getElementById("video1");
-
     }
 
 
@@ -67,7 +66,6 @@ define(['jquery'], function ($) {
                 },
                 change: function (e, ui) {
                     // set video volume
-                    var v = document.getElementById("video1")
                     _this.video.volume = ui.value;
 
                     // button states

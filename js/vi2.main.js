@@ -98,7 +98,7 @@ define([
 			vi2.observer.addWidget(viLog);
 
 			Vi2.loadPlugins();
-			//vi2.observer.parse(videoData);
+			vi2.observer.parse(videoData);
 
 		};
 

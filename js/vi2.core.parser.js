@@ -24,7 +24,7 @@ define(['jquery'], function ($) {
     *		@param {Selector} selector Indicates the DOM selector that contains markup code to be parsed
     *		@param {String} type Defines which markup, 'wiki' or 'html', is going to be parsed
     */
-    function Parser(selector, type) {
+    function Parser(selector, type) { console.log('parser called')
         this.selector = selector;
         this.type = type;
     };

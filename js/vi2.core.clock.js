@@ -53,21 +53,21 @@ define(['jquery'], function ($) {
         },
 
 
-  	/*
-  	 * Registers a type of annotation as a hook for later use
-  	 * @param {String} name Name of the widget
-  	 * @param {object} data Annotation-related data 
-		 * @return {boolean} 
-  	 **/
+        /**
+         * Registers a type of annotation as a hook for later use
+         * @param {String} name Name of the widget
+         * @param {object} data Annotation-related data 
+         * @return {boolean} 
+        */
         addHook: function (name, data) {
             this.hooks[name] = data;
             return true;
         },
 
 
-		/* 
+		/**
 		 * push annotations on their stack by mapping the parser object to the specific annotation object structure 
-		 **/
+		 */
         addAnnotation: function (obj) {
             if (this.isHook(obj.type)) {
                 this.annotations.push({
@@ -175,9 +175,9 @@ define(['jquery'], function ($) {
         },
 
 
-		/*
+		/**
 		 * Stops the clock interval counter
-		 **/
+		 */
         stopClock: function () {
             clearInterval(this.interval);
             clearInterval(this.interval);
@@ -185,9 +185,9 @@ define(['jquery'], function ($) {
         },
 
 
-		/*
+		/**
 		 * Resets all annotations and its overlays.
-		 **/
+		 */
         reset: function () {
             $('#overlay').html('');
             this.annotations = [];
