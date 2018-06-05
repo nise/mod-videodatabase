@@ -13,15 +13,16 @@
 
 
 define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], function ($, Utils, moment) {
+    var
+        vi2 = window.vi2 || {},
+        Vi2 = window.Vi2 || {}
+        ;
     /** 
     *		@constructs 
     *		@param {object} options An object containing the parameters
     */
     function Comments(options) {
-        //console.log(options.annotation_service_url)
         this.options = Object.assign(this.options, options);
-        //console.log(this.options.annotation_service_url)
-        //this.init();
     }
 
     // instantiate utils
@@ -45,13 +46,15 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
         },
 
         /* ... */
-        init: function (ann) {
+        init: function (ann) { 
             if (ann === null) {
                 ann = {};
             }
             var _this = this;
             var events = [];
-        
+            
+            this.options.annotation_service_params.data.videoid = parseInt(localStorage.getItem('videoid'), 10);
+
             $.ajax({
                 method: 'POST',
                 url: this.options.annotation_service_url,
@@ -62,6 +65,8 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
                     try {
                         var d = JSON.parse(msg.data); 
                         data = Object.keys(d).map(function(o){ return d[o]; }); 
+                        console.log('inti comments'+ JSON.stringify(data))
+                        console.log(data)
                         for (var i in data) {
                             if (data.hasOwnProperty(i)) {
                                 if (data[i].type === 'comment') { 
@@ -84,6 +89,10 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
                         if (_this.options.hasTimelineMarker) {
                             vi2.observer.player.timeline.addTimelineMarkers('comments', events, _this.options.timelineSelector);
                         }
+
+                        if(_this.options.allowCreation){
+                            _this.addComment();
+                        }
                         
                     } catch (e) {
                         console.log('Could not parse comments from database');
@@ -93,6 +102,16 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
                 .fail(function (msg) {
                     console.log(msg);
                 }); 
+        },
+
+        /**
+         * 
+         */
+        addComment: function(){
+            var _this = this;
+            //$('#video1').click(function(){
+              //  console.log(_this.createAnnotationForm());
+            //});
         },
 
 
@@ -228,7 +247,7 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
         /*
         * { type: type, date: new Date().getTime(), time: formData.time, content: formData.content); 
         **/
-        addDOMElement: function (obj) {
+        addDOMElement: function (obj) { 
             $('<div></div>')
                 .attr('type', obj.type)
                 .attr('author', vi2.wp_user)
@@ -265,11 +284,11 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
         createAnnotationForm: function (data) {
             /*jshint multistr: true */
             var str = "\
-			<textarea name='comments-entry' data-datatype='string' placeholder='' aria-describedby='comments-form1'><%= content %></textarea>\
+			<textarea name='comments-entry' data-datatype='string' placeholder='' aria-describedby='comments-form1'>"+data.content+"</textarea>\
 			<br>\
 			<div class='input-group'>\
 				<span class='input-group-addon' id='comments-form1'>Zeitpunkt (s)</span>\
-				<input type='text' class='form-control' value='<%= time %>' name='comments-entry-time' data-datatype='decimal-time' placeholder='' aria-describedby='comments-form1'>\
+				<input type='text' class='form-control' value='"+ vi2.observer.player.currentTime()+"' name='comments-entry-time' data-datatype='decimal-time' placeholder='' aria-describedby='comments-form1'>\
 			</div>\
 			";
             if (data) {

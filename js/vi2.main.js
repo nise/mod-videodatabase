@@ -65,7 +65,7 @@ define([
 							p.options = Object.assign(p.options, vi2.plugins[p.name].options);
 							vi2.observer.addWidget(p);
 						} else {
-							console.log('Error could not load and configure plugin:' + p.name );
+							console.log('Error could not load and configure plugin:' + p.name);
 						}
 					});
 				}
@@ -92,7 +92,7 @@ define([
 					wstoken: Vi2.token,
 					moodlewsrestformat: 'json',
 					wsfunction: 'videodatabase_logging',
-					data: { courseid: Vi2.courseid}
+					data: { courseid: Vi2.courseid }
 				}
 			});
 			vi2.observer.addWidget(viLog);
@@ -103,16 +103,17 @@ define([
 		};
 
 
-		Vi2.start = function (video_data, user_data, token, courseid, videoid) { 
+		Vi2.start = function (video_data, user_data, token, courseid, videoid) {
 			Vi2.token = token;
 			Vi2.courseid = courseid;
+			vi2.wp_user = user_data.username;
 			localStorage.setItem('videoid', parseInt(videoid, 10));
 			vi2.db = new Vi2.Database({ modus: 'native', data: video_data, path: '' }, 'window');
 			vi2.db.currentUser(user_data);
 			vi2.db.init(Vi2.initVideo);
 		};
 
-	Vi2.update = function (video_data, courseid, videoid) {
+		Vi2.update = function (video_data, courseid, videoid) {
 			Vi2.courseid = courseid;
 			localStorage.setItem('videoid', parseInt(videoid, 10));
 			vi2.db = new Vi2.Database({ modus: 'native', data: video_data, path: '' }, 'window');

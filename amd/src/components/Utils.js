@@ -19,7 +19,7 @@ define(['jquery'], function ($) {
          * @param {*} params: Parameter to transfer 
          * @param {*} cb: Callback function 
          */
-        this.get_ws = function(ws, method, params, cb) {
+        this.get_ws = function (ws, method, params, cb) {
             $.ajax({
                 method: method,
                 url: "/moodle/webservice/rest/server.php",
@@ -44,7 +44,7 @@ define(['jquery'], function ($) {
                     }
                 })
                 .fail(function (data) {
-                    console.error(data);
+                    console.log(data);
                 });
         };
 

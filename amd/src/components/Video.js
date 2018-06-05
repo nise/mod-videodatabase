@@ -17,17 +17,23 @@ define([
     'jquery',
     '/moodle/mod/videodatabase/amd/src/lib/vue.js',
     '/moodle/mod/videodatabase/js/vi2.main.js',
-    '/moodle/mod/videodatabase/amd/src/components/Ratings.js'
-], function ($, Vue, Vi2, Ratings) {
-    
+    '/moodle/mod/videodatabase/amd/src/components/Ratings.js',
+    '/moodle/mod/videodatabase/amd/src/components/Utils.js'
+], function ($, Vue, Vi2, Ratings, Utils) {
+
 
     function Video(store, course, user, token) {
         this.store = store;
         this.course = course;
         this.user = user;
-        
+
+        utils = new Utils();
         this.rating = new Ratings(store, course, user).ratings;
-        
+
+        this.modal = Vue.component('modal', {
+            template: '#modal-template'
+        });
+
         var _this = this;
 
         this.video = {
@@ -37,6 +43,10 @@ define([
                     vi2_player_id: 'vi2-1',
                     video_selector: 'seq',
                     video_overlay_selector: 'overlay',
+                    showAnnotationForm: false,
+                    annotationContent: '',
+                    annotationTime: '',
+                    showModal: false// not used
                 };
             },
             computed: {
@@ -58,7 +68,7 @@ define([
                     }
                 }
             },
-            
+
             updated: function () {
                 var id = this.$route.params.id;
                 if (id === undefined) {
@@ -99,13 +109,25 @@ define([
             methods: {
                 onAfterRate: function (rate) {
                     //store.commit('setCurrentVideoRating', rate);
+                },
+                saveAnnotation: function () {
+                    utils.get_ws('videodatabase_annotations', "POST", {
+                        'userid': user.username,
+                        'videoid': this.$route.params.id,
+                        'courseid': course.id,
+                        'content': this.annotationContent,
+                        'playbacktime': this.annotationTime
+                    }, function (e) { 
+                        console.log(e);
+                    }); 
                 }
             },
-            components: {
-                'rating': this.rating
-            }
+components: {
+    'rating': this.rating,
+        'modal-template': this.modal
+}
         };
     }
 
-    return Video;
+return Video;
 });   

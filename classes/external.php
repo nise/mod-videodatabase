@@ -235,6 +235,10 @@ class mod_videodatabase_annotations_external extends external_api {
                         array(
                             'courseid' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL),
                             'videoid' => new external_value(PARAM_INT, 'id of video', VALUE_OPTIONAL),
+                            'userid' => new external_value(PARAM_TEXT, 'id of video', VALUE_OPTIONAL),
+                            'content' => new external_value(PARAM_TEXT, 'id of video', VALUE_OPTIONAL),
+                            'playbacktime' => new external_value(PARAM_INT, 'id of video', VALUE_OPTIONAL)
+
                         )
                 )
             )
@@ -249,10 +253,31 @@ class mod_videodatabase_annotations_external extends external_api {
     
     public static function annotations($data) {
         global $CFG, $DB;
-        //$transaction = $DB->start_delegated_transaction(); //If an exception is thrown in the below code, all DB queries in this code will be rollback.
+        
+        $transaction = $DB->start_delegated_transaction(); //If an exception is thrown in the below code, all DB queries in this code will be rollback.
         $table = "videodatabase_annotations";
-        $res = $DB->get_records($table, array('courseid' => $data['courseid'], 'videoid' => $data['videoid']));//
-        //$transaction->allow_commit();
+        if(array_key_exists('content', $data)){
+            $r = new stdClass();
+            $r->type = 'comment';
+            $r->content = $data['content'];
+            //$r->posx = $data['posx'];
+            //$r->posy = $data['posy'];
+            //$r->width = $data['width'];
+            //$r->height = $data['height'];
+            $r->start = $data['playbacktime'];
+            //$r->duration = $data['duration'];
+            $r->author = $data['userid'];
+            //$r->created = $data['posx'];
+            //$r->updated = $data['posx'];
+            $r->videoid = $data['videoid'];
+            $r->courseid = $data['courseid'];
+            //  Modify	
+            $res = $DB->insert_records($table, array($r));
+        }else{
+            $res = $DB->get_records($table, array('courseid' => $data['courseid'], 'videoid' => $data['videoid']));//
+        }
+        
+        $transaction->allow_commit();
         return array('data'=> json_encode($res));
     }        
 } 

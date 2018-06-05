@@ -147,7 +147,7 @@ define([
                     }, function (e) {
                         callback(e);
                     }, function (err) {
-                        console.error(err);
+                        console.log(err);
                     });
                 },
                 /**

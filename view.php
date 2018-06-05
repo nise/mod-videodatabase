@@ -111,8 +111,8 @@ echo '
 <div id="app-video-template" v-cloak >
 	<div class="page-item VIDEO">
 		<!-- Storage -->
-			<div style="display:none; visibility:hidden;" id="vi2"></div>
-			<!-- End Storage -->
+		<div style="display:none; visibility:hidden;" id="vi2"></div>
+		<!-- End Storage -->
 		<!-- Player -->
 		<div id="wrapper">
 			<div id="pagex" style="overflow:hidden;">
@@ -129,6 +129,7 @@ echo '
 						</div>
 						<div id="accordion-resizer" class="col-lg-3 col-md-3 col-sm-3 hidden-xs">
 							<div id="accordion" class="video-metadata">
+							
 								<ul class="nav nav-tabs" role="tablist">
 									<li class="nav-item">
 										<a class="nav-link active" data-toggle="tab" :href="\'#comments\'" role="tab">Kommentare</a>
@@ -138,7 +139,9 @@ echo '
 									</li>
 								</ul>
 								<div class="tab-content">
-									<div class="tab-pane active" :id="\'comments\'" role="tabpanel">Comments?</div>
+									<div class="tab-pane active" :id="\'comments\'" role="tabpanel">
+										
+									</div>
 									<div class="tab-pane" :id="\'info\'" role="tabpanel">
 										<h4>Info</h4>
 										<div>
@@ -182,8 +185,20 @@ echo '
 											<span>{{ video.publisher }}
 										</div>
 									</div>
-								</div>		
+								</div>
 							</div>
+							<div class="annotation-form">
+								<div id="annotationForm" v-show="showAnnotationForm">
+									<textarea v-model="annotationContent" name="comments-entry" data-datatype="string" placeholder="" aria-describedby="comments-form1"></textarea>
+									<br/>
+									<div class="input-group">
+										<span class="input-group-addon" id="comments-form1">Zeitpunkt (s)</span>
+										<input v-model="annotationTime" type="text" class="form-control" value="" name="comments-entry-time" data-datatype="decimal-time" placeholder="" aria-describedby="comments-form1">
+									</div>
+									<div class="btn btn-primary" v-on:click="saveAnnotation">speichern</div>
+								</div>
+								<div class="btn btn-primary" v-on:click="showAnnotationForm = !showAnnotationForm"><span class="fa fa-plus"></span> Kommentar</div>
+							</div>		
 						</div>
 					</div>
 					<div id="video-controls" class="video-controls col-lg-9 col-md-9 col-sm-12 col-xs-12">
@@ -205,6 +220,7 @@ echo '
 						</div>
 					</div>
 				</div>
+				
 				<!-- Modal -->
 				<div hidden class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
 					<div class="modal-dialog" role="document">
@@ -229,8 +245,39 @@ echo '
 </div>
 ';
 
+//echo '<button id="show-modal" class="btn btn-primary" @click="showModal = true">Kommentar hinzufügen</button>';
+//echo '<modal v-if="showModal" @close="showModal = false">';
+echo '<script type="text/x-template" id="modal-template"><!-- Modal -->
+		<transition name="modal">
+			<div class="modal-mask">
+			<div class="modal-wrapper">
+				<div class="modal-container">
 
+				<div class="modal-header">
+					<slot name="header">
+					default header
+					</slot>
+				</div>
 
+				<div class="modal-body">
+					<slot name="body">
+					default body
+					</slot>
+				</div>
+
+				<div class="modal-footer">
+					<slot name="footer">
+					default footer
+					<button class="modal-default-button" @click="$emit(\'close\')">
+						OK
+					</button>
+					</slot>
+				</div>
+				</div>
+			</div>
+			</div>
+		</transition>
+	</script>';
 
 // filter
 echo '<div id="debug" hidden class="alert alert-success" role="alert"></div>';
