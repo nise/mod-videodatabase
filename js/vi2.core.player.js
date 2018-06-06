@@ -411,30 +411,23 @@ define([
                 $(this.play_btn).bind('pause', function (e) {
                     vi2.observer.pause();
                 });
-
-                $(vi2.observer.player).bind('player.play', function (e, a, b) {
-                    //$('.navbar').hide();
-                });
-
-                $(vi2.observer.player).bind('player.pause', function (e, a, b) {
-                    //$('.navbar').show();	
-                });
             },
 
 
             /**
              * Hide mouse cursor and controls if user is inactive for more then 1000ms.
+             * todo: Limit scope to video
              */
             hideCursor: function(){
                 var mouseTimer = null, cursorVisible = true, _this = this;
-                
+                //var el = document.getElementById(this.options.selector.replace('#', ''));
                 function disappearCursor() {
                     mouseTimer = null;
                     document.body.style.cursor = "none";
                     cursorVisible = false;
                     //$(_this.options.videoControlsSelector).removeClass("open-controls");
                 }
-                var el = document.getElementById(this.options.selector.replace('#', ''));
+                
                 document.onmousemove = function () {
                     if (mouseTimer) {
                         window.clearTimeout(mouseTimer);
@@ -530,7 +523,7 @@ define([
             errorHandling: function (e) {
                 //vi2.debug('Error - Media Source not supported: ' + this.video.error.code == this.video.error.MEDIA_ERR_SRC_NOT_SUPPORTED); // true
                 //vi2.debug('Error - Network No Source: ' + this.video.networkState == this.video.NETWORK_NO_SOURCE); // true
-            }
+            },
 
 
             /** 
@@ -612,7 +605,7 @@ define([
 
 
             /**
-             * Interface to request playback status
+             * Interface to request playback status. xxx: what is this?
              */
             isPlaying: function (x) {
                 if (x === undefined) {
