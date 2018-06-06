@@ -105,6 +105,41 @@ echo "<span hidden id='token'>$videodatabase->token</span>";
 echo "<div id='alert'></div>";
 
 
+echo '
+<div id="app-comments-template" v-cloak>
+	<div class="page-item container">
+		<a href="#/videos" class="right large"><span class="fa fa-close video-close"></span></a>
+		<h3>Übersicht über alle Kommentare</h3>
+		<table class="video-table table-sm table-striped table-hover table-responsive">
+			<thead>
+				<tr>
+					<th>Video</th>
+					<th>Autor</th>
+					<th>Inhalt</th>
+					<th>Zeit</th>
+					<th>Erstellt</th>
+					<th>Bearbeitet</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr v-for="c in all_comments">
+					<td>{{ c.videoid }}</td>
+					<td>{{ c.author }}</td>
+					<td>{{ c.content }}</td>
+					<td>{{ c.start }}</td>
+					<td>{{ moment(c.created) }}</td>
+					<td>{{ moment(c.updated) }}</td>
+					<td>
+						<span class="fa fa-edit" @click="edit(c.id)"></span><br/>
+						<span class="fa fa-remove" @click="remove(c.id)"></span>
+					</td>
+				</tr>
+			</tbody>	
+		</table>
+	</div>
+</div>
+';
 
 // video player
 echo '
@@ -440,6 +475,9 @@ echo '
 			<span title="Logdaten des Kurses herunterladen" v-if="isEditor" @click="downloadLogData()" title="" class="fa fa-download large right link"></span>
 			<router-link v-if="isEditor" class="title" :to="{ path: \'/videos/new\'}">
 				<span title="Video hinzufügen" class="fa fa-plus large right"></span>	
+			</router-link>
+			<router-link v-if="isEditor" class="title" :to="{ path: \'/comments\'}">
+				<span title="Alle Kommentare anzeigen" class="fa fa-comments large right"></span>	
 			</router-link>
 			<span @click="setTableView()" title="Tabellenansicht" class="fa fa-th large right link"></span>
 			<span @click="setListView()" title="Kachelansicht" class="fa fa-list large right link"></span>
