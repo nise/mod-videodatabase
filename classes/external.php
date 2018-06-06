@@ -233,11 +233,13 @@ class mod_videodatabase_annotations_external extends external_api {
                 'data' => 
                     new external_single_structure(
                         array(
-                            'courseid' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL),
+                            'operation' => new external_value(PARAM_TEXT, 'operation', VALUE_OPTIONAL),
+                            'id' => new external_value(PARAM_INT, 'id of video', VALUE_OPTIONAL),
+                            'courseid' => new external_value(PARAM_INT, 'id of course'),
                             'videoid' => new external_value(PARAM_INT, 'id of video', VALUE_OPTIONAL),
                             'userid' => new external_value(PARAM_TEXT, 'id of video', VALUE_OPTIONAL),
                             'content' => new external_value(PARAM_TEXT, 'id of video', VALUE_OPTIONAL),
-                            'playbacktime' => new external_value(PARAM_INT, 'id of video', VALUE_OPTIONAL),
+                            'playbacktime' => new external_value(PARAM_FLOAT, 'id of video', VALUE_OPTIONAL),
                             'updated' => new external_value(PARAM_INT, 'id of video', VALUE_OPTIONAL),
                             'created' => new external_value(PARAM_INT, 'id of video', VALUE_OPTIONAL)
                         )
@@ -257,7 +259,9 @@ class mod_videodatabase_annotations_external extends external_api {
         
         $transaction = $DB->start_delegated_transaction(); //If an exception is thrown in the below code, all DB queries in this code will be rollback.
         $table = "videodatabase_annotations";
-        if(array_key_exists('content', $data)){
+        
+        if(array_key_exists('content', $data) && $data['operation'] === 'save'){
+            // save
             $r = new stdClass();
             $r->type = 'comment';
             $r->content = $data['content'];
@@ -274,9 +278,18 @@ class mod_videodatabase_annotations_external extends external_api {
             $r->courseid = $data['courseid'];
             //  Modify	
             $res = $DB->insert_records($table, array($r));
-        }else if(array_key_exists('videoid', $data) && array_key_exists('courseid', $data)){
+        }else if(array_key_exists('videoid', $data) && array_key_exists('courseid', $data) && !array_key_exists('operation', $data)){
+            // get records for a single video in a course
             $res = $DB->get_records($table, array('courseid' => $data['courseid'], 'videoid' => $data['videoid']));
+        }else if($data['operation'] === 'remove'){//array_key_exists('operation', $data) && array_key_exists('id', $data) && 
+            // delete a record
+            $res = $DB->delete_records($table, array('courseid' => $data['courseid'], 'id' => $data['id']));
+            //$transaction->allow_commit();
+            //$transaction = $DB->start_delegated_transaction();
+            // return remaining data
+            //$res = $DB->get_records($table, array('courseid' => $data['courseid']));
         }else{
+            // return all records for a given course
             $res = $DB->get_records($table, array('courseid' => $data['courseid']));
         }
         

@@ -131,5 +131,12 @@ define([
 			}
 		};
 
+		/**
+		 * Interface for the observer
+		 * @param {String} type 
+		 */
+		Vi2.getObserver = function () {
+			return vi2.observer;
+		};
 		return Vi2;
 	});// end define

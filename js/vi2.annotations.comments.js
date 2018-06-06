@@ -210,6 +210,30 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
             }); // end each
         },
 
+        removeComment:function(id){
+            var up = {
+                courseid: course.id,
+                id: id,
+                videoid: parseInt(localStorage.getItem('videoid'), 10),
+                operation: 'remove'
+            }
+            var data = this.options.annotation_service_params;
+            data.data = Object.assign(this.options.annotation_service_params.data, up);
+
+            $.ajax({
+                method: 'POST',
+                url: this.options.annotation_service_url,
+                data: data, //this.options.annotation_service_params,
+                dataType: "json"
+            })
+            .done(function (msg) {
+                
+            })
+            .fail(function (msg) {
+                console.log(msg);
+            }); 
+        },
+
         /* -- */
         //<div type="toc" starttime=83 duration=1 id="">Objectives of the lecture</div>
         //

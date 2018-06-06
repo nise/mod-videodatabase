@@ -107,36 +107,38 @@ echo "<div id='alert'></div>";
 
 echo '
 <div id="app-comments-template" v-cloak>
-	<div class="page-item container">
-		<a href="#/videos" class="right large"><span class="fa fa-close video-close"></span></a>
-		<h3>Übersicht über alle Kommentare</h3>
-		<table class="video-table table-sm table-striped table-hover table-responsive">
-			<thead>
-				<tr>
-					<th>Video</th>
-					<th>Autor</th>
-					<th>Inhalt</th>
-					<th>Zeit</th>
-					<th>Erstellt</th>
-					<th>Bearbeitet</th>
-					<th></th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr v-for="c in all_comments">
-					<td>{{ c.videoid }}</td>
-					<td>{{ c.author }}</td>
-					<td>{{ c.content }}</td>
-					<td>{{ c.start }}</td>
-					<td>{{ moment(c.created) }}</td>
-					<td>{{ moment(c.updated) }}</td>
-					<td>
-						<span class="fa fa-edit" @click="edit(c.id)"></span><br/>
-						<span class="fa fa-remove" @click="remove(c.id)"></span>
-					</td>
-				</tr>
-			</tbody>	
-		</table>
+	<div class="container-fluid">
+		<div class="page-item">
+			<a href="#/videos" class="right large"><span class="fa fa-close video-close"></span></a>
+			<h3>Übersicht über alle Kommentare</h3>
+			<table class="video-table table-sm table-striped table-hover table-responsive">
+				<thead>
+					<tr>
+						<th>Video</th>
+						<th>Autor</th>
+						<th>Inhalt</th>
+						<th>Zeit</th>
+						<th>Erstellt</th>
+						<th>Bearbeitet</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-for="c in all_comments">
+						<td>{{ c.videoid }}</td>
+						<td>{{ c.author }}</td>
+						<td>{{ c.content }}</td>
+						<td>{{ c.start }}</td>
+						<td>{{ moment(c.created) }}</td>
+						<td>{{ moment(c.updated) }}</td>
+						<td>
+							<span class="fa fa-edit" @click="edit(c.id)"></span><br/>
+							<span class="fa fa-remove" @click="remove(c.id, c.videoid)"></span>
+						</td>
+					</tr>
+				</tbody>	
+			</table>
+		</div>
 	</div>
 </div>
 ';
@@ -231,9 +233,9 @@ echo '
 										<input v-model="annotationTime" type="text" class="form-control" value="" name="comments-entry-time" data-datatype="decimal-time" placeholder="" aria-describedby="comments-form1">
 									</div>
 									<div class="btn btn-primary" v-on:click="saveAnnotation">speichern</div>
-									<a class="right btn red" v-on:click="showAnnotationForm=false">verwerfen</a>
+									<a class="right btn red" v-on:click="cancelAnnotation">verwerfen</a>
 								</div>
-								<div v-show="!showAnnotationForm" class="btn btn-primary" v-on:click="showAnnotationForm = !showAnnotationForm"><span class="fa fa-plus"></span> Kommentar</div>
+								<div v-show="!showAnnotationForm" class="btn btn-primary" v-on:click="toggle"><span class="fa fa-plus"></span> Kommentar</div>
 							</div>	
 						</div>
 					</div>

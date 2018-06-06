@@ -113,7 +113,15 @@ define([
                 }
             },
             methods: {
+                toggle: function () {
+                    this.showAnnotationForm = !this.showAnnotationForm;
+                    if (this.showAnnotationForm){
+                        this.pause();
+                        this.annotationTime = Vi2.getObserver().player.currentTime().toFixed(1);
+                    }
+                },
                 saveAnnotation: function () {
+                    var _this = this;
                     utils.get_ws('videodatabase_annotations', "POST", {
                         'userid': user.username,
                         'videoid': this.$route.params.id,
@@ -122,10 +130,38 @@ define([
                         'playbacktime': this.annotationTime,
                         'created': new Date().getTime(),
                         'updated': new Date().getTime(),
+                        'operation':'save'
                     }, function (e) {
-                        console.log(e);
+                        _this.play();
                         Vi2.updateAnnotations('comments');
+                        this.showAnnotationForm = false;
                     });
+                },
+                removeAnnotation: function (id, video) {
+                    utils.get_ws('videodatabase_annotations', 'POST', {
+                        courseid: course.id,
+                        id: id,
+                        videoid: video,
+                        operation: 'remove'
+                    }, function (msg) {
+                        try {
+                            var d = JSON.parse(msg.data);
+                            Vi2.updateAnnotations('comments');
+                        } catch (e) {
+                            console.log('Could not parse comments from database after remove');
+                            console.log(msg);
+                        }
+                    });
+                },
+                cancelAnnotation: function(){
+                    this.showAnnotationForm = false;
+                    this.play();
+                },
+                play:function(){
+                    Vi2.getObserver().player.play();
+                },
+                pause: function () {
+                    Vi2.getObserver().player.pause();
                 }
             },
             components: {
