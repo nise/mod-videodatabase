@@ -20,6 +20,7 @@ define([
     '/moodle/mod/videodatabase/amd/src/components/Store.js',
     '/moodle/mod/videodatabase/amd/src/components/Form.js',
     '/moodle/mod/videodatabase/amd/src/components/Video.js',
+    '/moodle/mod/videodatabase/amd/src/components/Comments.js',
     '/moodle/mod/videodatabase/amd/src/components/Utils.js'
 ],
     function (
@@ -34,6 +35,7 @@ define([
         Store,
         Form,
         Video,
+        Comments,
         Utils
     ) {
 
@@ -72,6 +74,8 @@ define([
             const form = new Form(store, router, course, datamodel, utils);
             const videovue = new Video(store, course, user, $('#token').text());
             const video = videovue.video;
+            const commentsvue = new Comments(store, course, user, $('#token').text(), utils);
+            const comments = commentsvue.comments;
 
             // init router
             router = new VueRouter({
@@ -79,7 +83,8 @@ define([
                     { path: '/videos' },
                     { path: '/videos/:id/view', component: video },
                     { path: '/videos/:id/edit', component: form.Form },
-                    { path: '/videos/new', component: form.Form }
+                    { path: '/videos/new', component: form.Form },
+                    { path: '/comments', component: comments }
                 ],
                 scrollBehavior: function (to, from, savedPosition) {
                     return { x: 0, y: 405 };

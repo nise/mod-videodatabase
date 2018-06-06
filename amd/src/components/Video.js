@@ -27,7 +27,7 @@ define([
         this.course = course;
         this.user = user;
 
-        utils = new Utils();
+        var utils = new Utils();
         this.rating = new Ratings(store, course, user).ratings;
 
         this.modal = Vue.component('modal', {
@@ -124,6 +124,7 @@ define([
                         'updated': new Date().getTime(),
                     }, function (e) {
                         console.log(e);
+                        Vi2.updateAnnotations('comments');
                     });
                 }
             },

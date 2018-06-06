@@ -11,7 +11,7 @@
 define(['jquery'], function ($) {
 
     Utils = function () {
-
+        
         /**
          * Obtains data from a moodle webservice
          * @param {*} ws: Name of the web service 

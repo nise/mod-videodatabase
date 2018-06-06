@@ -55,10 +55,56 @@ define(['jquery', 'js/vi2.core.clock.js', 'js/vi2.core.player.js'], function($, 
         seek: 0,
         parser: '',
 
+        /**
+         * Initialize the observer by creating the video player and the bindings to it.
+         */
+        init: function (seek) {
+            var _this = this;
 
-        /*
-        *
-        **/
+            this.player = new Vi2.Player({
+                embed: this.options.embed,
+                selector: this.options.videoSelector,
+                width: this.options.videoWidth,
+                height: this.options.videoHeight,
+                videoControlsSelector: this.options.videoControlsSelector,
+                theme: this.options.theme,
+                childtheme: this.options.childtheme,
+                thumbnail: this.options.thumbnail,
+                seek: seek === undefined ? 0 : seek
+            }, this);
+
+            // some event bindings hooks
+            $(this).bind('player.ready', function (e, id, i) {
+                _this.setAnnotations();
+            });
+        },
+
+
+        /**
+         * Sets the annotations
+         */
+        setAnnotations: function () {
+            var _this = this;
+            this.clock.annotations = [];
+
+            // add Annotations at the clock
+            $.each(_this.vid_arr[0].annotation, function (i, val) {
+                _this.clock.addAnnotation(val);
+            });
+
+            // initializes widgets
+            $.each(_this.widget_list, function (j, widget) {
+                if (widget.type !== 'player-widget') {
+                    widget.init(_this.vid_arr[0].annotation);
+                } else {
+                    widget.init();
+                }
+            });
+        },
+
+        /**
+         * 
+         */
         setCurrentStream: function (stream, seek) { 
             this.current_stream = stream;
             this.seek = seek;
@@ -81,9 +127,9 @@ define(['jquery', 'js/vi2.core.clock.js', 'js/vi2.core.player.js'], function($, 
         },
 
 
-        /*
-        *
-        **/
+        /**
+         * Parses
+         */
         parse: function ( data ) { 
             this.vid_arr = [];
             this.vid_arr.push({
@@ -98,56 +144,7 @@ define(['jquery', 'js/vi2.core.clock.js', 'js/vi2.core.player.js'], function($, 
             this.player.loadSequence(this.vid_arr, 0, this.seek);
         },
 
-
-        /*
-        * Initialize the video player and the bindings to it.
-        **/
-        init: function (seek) {
-            var _this = this;
-
-            this.player = new Vi2.Player({
-                embed: this.options.embed,
-                selector: this.options.videoSelector,
-                width: this.options.videoWidth,
-                height: this.options.videoHeight,
-                videoControlsSelector: this.options.videoControlsSelector,
-                theme: this.options.theme,
-                childtheme: this.options.childtheme,
-                thumbnail: this.options.thumbnail,
-                seek: seek === undefined ? 0 : seek
-            }, this);
-
-            
-            // some event bindings hooks
-            $(this).bind('player.ready', function (e, id, i) {
-                _this.setAnnotations();
-            });
-        },
-
-
-        /*
-        *
-        **/
-        setAnnotations: function () { 
-            var _this = this;
-            this.clock.annotations = [];
-
-            // add Annotations at the clock
-            $.each(_this.vid_arr[0].annotation, function (i, val) {
-                _this.clock.addAnnotation(val);
-            });
-
-            // initializes widgets
-            $.each(_this.widget_list, function (j, widget) {
-                if (widget.type !== 'player-widget') {
-                    widget.init(_this.vid_arr[0].annotation);
-                } else { 
-                    widget.init();
-                }
-            });
-        },
-
-
+        
         /* 
         * xxx remove
         **/

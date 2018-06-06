@@ -274,8 +274,10 @@ class mod_videodatabase_annotations_external extends external_api {
             $r->courseid = $data['courseid'];
             //  Modify	
             $res = $DB->insert_records($table, array($r));
+        }else if(array_key_exists('videoid', $data) && array_key_exists('courseid', $data)){
+            $res = $DB->get_records($table, array('courseid' => $data['courseid'], 'videoid' => $data['videoid']));
         }else{
-            $res = $DB->get_records($table, array('courseid' => $data['courseid'], 'videoid' => $data['videoid']));//
+            $res = $DB->get_records($table, array('courseid' => $data['courseid']));
         }
         
         $transaction->allow_commit();

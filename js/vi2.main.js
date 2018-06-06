@@ -113,6 +113,7 @@ define([
 			vi2.db.init(Vi2.initVideo);
 		};
 
+
 		Vi2.update = function (video_data, courseid, videoid) {
 			Vi2.courseid = courseid;
 			localStorage.setItem('videoid', parseInt(videoid, 10));
@@ -120,8 +121,15 @@ define([
 			vi2.observer.parse(video_data);
 		};
 
-
-
+		/**
+		 * Interface for propagating updates of annotations
+		 * @param {String} type 
+		 */
+		Vi2.updateAnnotations = function(type){
+			if (vi2.observer.isWidget(type)){
+				vi2.observer.widget_list[type].init();
+			}
+		};
 
 		return Vi2;
 	});// end define

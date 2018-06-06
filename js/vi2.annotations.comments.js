@@ -17,12 +17,14 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
         vi2 = window.vi2 || {},
         Vi2 = window.Vi2 || {}
         ;
+
     /** 
-    *		@constructs 
-    *		@param {object} options An object containing the parameters
+    * @constructs 
+    * @param {object} options An object containing the parameters
     */
     function Comments(options) {
         this.options = Object.assign(this.options, options);
+        this.currentUser = vi2.db.currentUser().username;
     }
 
     // instantiate utils
@@ -44,8 +46,11 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
             //annotation_service_url: {},
             //annotation_service_params: { data: { videoid: 3, courseid: 2 } }
         },
+        currentUser: null,
 
-        /* ... */
+        /**
+         * Initializes the plugin
+         */
         init: function (ann) { 
             if (ann === null) {
                 ann = {};
@@ -132,11 +137,11 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
             $.each(commentData, function (i, val) {
 
                 var a = $('<a></a>')
-                    .text(val.name)
+                    .text('@' + utils.formatTime(val.time, ':') + ' ' + val.name)
                     .addClass('id-' + val.time + ' comments-menu-question')
                     //.attr('href', '#'+vi2.options.id)
                     .click(function () {
-                        console.log(vi2.observer.player.currentTime())
+                        console.log(vi2.observer.player.currentTime());
                         vi2.observer.player.currentTime(val.time[0]);
                         vi2.observer.log({ context: 'comments', action: 'menu-click', values: [val.name, val.author, val.time[0]] });
                     })
@@ -146,15 +151,11 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
                     a.emoticonize({ /* delay: 800, animate: false, exclude: 'pre, code, .no-emoticons' */ });
                 }
 
-
-                var user = { name: 'Max Muster' };//vi2.db.getUserById(val.author);
-
                 var header = $('<span></span>')
                     .addClass('comments-header');
 
                 $('<span></span>')
-                    //.text( user.firstname +' '+user.name )
-                    .text(user.username)
+                    .text(val.author)// user.firstname +' '+user.name
                     .addClass('comments-user')
                     .appendTo(header)
                     ;
@@ -176,9 +177,9 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
                     // re-comments could be sorted desc by date. Solution needed
                     //comments.find('.t'+val.time).tsort({ attr:"date", order:'asc'}); 
                 }
-
+                
                 // edit
-                if (_this.options.allowEditing && Number(val.author) === Number(vi2.wp_user)) {
+                if (_this.options.allowEditing && val.author === _this.currentUser) {
                     var edit_btn = $('<a></a>')
                         .addClass('tiny-edit-btn fa fa-pencil')
                         .attr('data-toggle', "modal")
@@ -237,7 +238,7 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
         updateDOMElement: function (obj) {
             $(vi2.dom)
                 .find('[date="' + obj.date + '"]')
-                .attr('author', vi2.wp_user)
+                .attr('author', this.currentUser)
                 .attr('date', obj.date)  // its the creation date
                 .attr('starttime', obj.time)
                 .text(obj.content);
@@ -249,7 +250,7 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
         addDOMElement: function (obj) { 
             $('<div></div>')
                 .attr('type', obj.type)
-                .attr('author', vi2.wp_user)
+                .attr('author', this.currentUser)
                 .attr('date', new Date().getTime())
                 .attr('starttime', obj.time)
                 .text(obj.content)
@@ -297,7 +298,7 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
                     content: '',
                     time: vi2.observer.player.currentTime(),
                     date: (new Date().getTime()),
-                    author: vi2.wp_user
+                    author: this.currentUser
                 });
             }
         },
