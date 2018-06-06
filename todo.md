@@ -1,4 +1,8 @@
 
+# todo:
+- player and observer interfaces
+
+
 # General
 system path: ~/Documents/www/moodle/mod/videodatabase
 MOODLE version 3.1.3 !!

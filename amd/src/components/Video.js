@@ -113,11 +113,6 @@ define([
                 }
             },
             methods: {
-                toggle: function () {
-                    console.log(2)
-                    this.showAnnotationForm = !this.showAnnotationForm;
-                    console.log(3)
-                },
                 saveAnnotation: function () {
                     utils.get_ws('videodatabase_annotations', "POST", {
                         'userid': user.username,

@@ -189,15 +189,16 @@ echo '
 							</div>
 							<div id="annotation-form">
 								<div id="annotationForm" v-show="showAnnotationForm">
-									<textarea v-model="annotationContent" name="comments-entry" data-datatype="string" placeholder="" aria-describedby="comments-form1"></textarea>
+									<textarea class="form-control" :id="\'annotationContentText\'" v-model="annotationContent" name="comments-entry" data-datatype="string" placeholder="" aria-describedby="comments-form1"></textarea>
 									<br/>
 									<div class="input-group">
 										<span class="input-group-addon" id="comments-form1">Zeitpunkt (s)</span>
 										<input v-model="annotationTime" type="text" class="form-control" value="" name="comments-entry-time" data-datatype="decimal-time" placeholder="" aria-describedby="comments-form1">
 									</div>
 									<div class="btn btn-primary" v-on:click="saveAnnotation">speichern</div>
+									<a class="right btn red" v-on:click="showAnnotationForm=false">verwerfen</a>
 								</div>
-								<div class="btn btn-primary" v-on:click="toggle"><span class="fa fa-plus"></span> Kommentar</div>
+								<div v-show="!showAnnotationForm" class="btn btn-primary" v-on:click="showAnnotationForm = !showAnnotationForm"><span class="fa fa-plus"></span> Kommentar</div>
 							</div>	
 						</div>
 					</div>

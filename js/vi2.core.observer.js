@@ -88,7 +88,7 @@ define(['jquery', 'js/vi2.core.clock.js', 'js/vi2.core.player.js'], function($, 
             this.vid_arr = [];
             this.vid_arr.push({
                 id: 'test',
-                url: data.video,//'/videos/test/VIDEO17_Tanz_comp.mp4',// window.vi2.db.getStreamById('test').video,
+                url: data.video,
                 seek:0,
                 duration:100,
                 annotation:[]
@@ -149,11 +149,13 @@ define(['jquery', 'js/vi2.core.clock.js', 'js/vi2.core.player.js'], function($, 
 
 
         /* 
-        *
+        * xxx remove
         **/
         updateLocation: function (identifier, value) {
             window.location.replace(window.location.href.split('#')[0] + '#!' + identifier + ':' + value.replace(/\ /g, '_'));
         },
+
+
 
 
         /* 
@@ -274,4 +276,4 @@ define(['jquery', 'js/vi2.core.clock.js', 'js/vi2.core.player.js'], function($, 
     }; 
 
     return Observer;
-}); // end
+}); 
