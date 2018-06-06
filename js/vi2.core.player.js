@@ -86,23 +86,29 @@ http://dev.opera.com/articles/view/everything-you-need-to-know-about-html5-video
 define([
     'jquery',
     'js/vi2.core.player.timeline.js',
+    'js/vi2.core.utils.js',
     'js/spin.js'
 ], function (
     $,
     Timeline,
+    Utils,
     Spinner
 ) {
         var
             vi2 = window.vi2 || {},
-            Vi2 = window.Vi2 || {}
+            Vi2 = window.Vi2 || {},
+            utils = new Utils()
             ;
-        //vi2.debug = function(str){ return 0; }
-
+        
         function Player(options) { 
             vi2.observer.player = this;
-            this.options = $.extend(this.options, options);
-            this.supportedMime = this.detectVideoSupport();
-            this.loadUI();
+            this.options = Object.assign(this.options, options);
+            this.supportedMime = utils.detectVideoSupport();
+            if (this.supportedMime){
+                this.createUI();
+            }else{
+                console.log('No HTML5 video supported');
+            }
         }
 
         Player.prototype = {
@@ -116,9 +122,12 @@ define([
                 seek: 0,
                 videoControlsSelector: '.video-controls',
                 thumbnail: '/static/img/placeholder.jpg',
-                defaultVolume: 1 // 0..1
+                defaultVolume: 1, // 0..1
+                enableKeyboardShortcuts: false,
+                autoHideCursor: true
             },
             supportedMime: '',
+            currentBrowser: '',
             video: null,
             timeline: null,
             observer: null,
@@ -140,9 +149,12 @@ define([
             percentLoaded: 0,
             buffclick: 0,
 
-            /* load video */
-            // param: url= url of video; seek = time seek within video in seconds
-            loadVideo: function (url, seek) { 
+            /**
+             * Creates a video element including timeline and necessary event listeners
+             * @param url URL of the video 
+             * @param seek Seek time within the video (in seconds)
+             */
+            createVideo: function (url, seek) { 
                 var _this = this;
                 this.url = url;
                 this.seek = seek === undefined ? 0 : seek;
@@ -300,81 +312,38 @@ define([
             },
 
 
-            // xxx should separated
-            /* HTML5 playback detection 
-            * 	returns: mime type of supported video or empty string if there is no support
-            *		called-by: loadVideo()
-            * 	toDo: check support for video element
-            **/
-            detectVideoSupport: function () {
-                var dummy_video = document.createElement('video');
-
-                // prefer mp4 over webm over ogv 
-                if (dummy_video.canPlayType('video/mp4; codecs="avc1.42E01E, mp4a.40.2"') !== '') {
-                    vi2.observer.log({ context: 'player', action: 'video-support-mp4', values: ['1'] });
-                    return 'video/mp4';
-                } else if (dummy_video.canPlayType('video/webm; codecs="vp8, vorbis"') !== '') {
-                    vi2.observer.log({ context: 'player', action: 'video-support-webm', values: ['1'] });
-                    return 'video/webm';
-                } else if (dummy_video.canPlayType('video/ogg; codecs="theora, vorbis"') !== '') {
-                    vi2.observer.log({ context: 'player', action: 'video-support-ogv', values: ['1'] });
-                    return 'video/ogv';
-                } else {
-                    // no suitable video format is avalable
-                    vi2.observer.log({ context: 'player', action: 'video-support-none', values: ['1'] });
-                    $('#page').html('<h3>We appologize that video application is currently not supported by your browser.</h3>The provided video material can be played on Mozilla Firefox, Google Chrome and Opera. If you prefer Internet Explorer 9 you need to install a <a href="https://tools.google.com/dlpage/webmmf">webm video extension</a> provided by Google. In the near future we are going to server further video formats which will be supported by all major browsers.<br /><br /> Thank you for your understanding.');
-                }
-                return '';
-            },
-
-            // xxx should separated
-            detectBrowser: function () {
-                var ua = navigator.userAgent, tem,
-                    M = ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
-                if (/trident/i.test(M[1])) {
-                    tem = /\brv[ :]+(\d+)/g.exec(ua) || [];
-                    return 'IE ' + (tem[1] || '');
-                }
-                if (M[1] === 'Chrome') {
-                    tem = ua.match(/\b(OPR|Edge)\/(\d+)/);
-                    if (tem != null) return tem.slice(1).join(' ').replace('OPR', 'Opera');
-                }
-                M = M[2] ? [M[1], M[2]] : [navigator.appName, navigator.appVersion, '-?'];
-                if ((tem = ua.match(/version\/(\d+)/i)) != null) M.splice(1, 1, tem[1]);
-                return M[0];//.join(' ');
-            },
-
-
-            /* load sequence */
-            loadSequence: function (sources, num, seek) {
+            /**
+             * Stores a sequences of videos and starts playback of the first one.
+             * @param sources Array of videos source urls
+             * @param index Array index of the sourse parameter that indicates the video to be played
+             * @param seek Seek position in seconds
+             */
+            loadSequence: function (sources, index, seek) {
                 this.seqList = sources;
                 this.seek = seek;
                 this.isSequence = true;
-                if (num === undefined) {
-                    this.seqNum = 0;
-                } else {
-                    this.seqNum = num;// % this.seqList.length;
-                }
-                this.loadVideo(this.seqList[this.seqNum].url, this.seek);
+                this.seqNum = index === undefined ? 0 : index;
+                this.createVideo(this.seqList[this.seqNum].url, this.seek);
             },
 
 
             /** 
-            * build video source element
-            * @param src = video url; mime_type = mime_type of video
-            *	@returns: video source element including src and type attribute
-            */
+             * build video source element
+             * @param src = video url; mime_type = mime_type of video
+             * @returns: video source element including src and type attribute
+             */
             createSource: function (src) {
                 this.video_source = src;
+                this.currentBrowser = utils.detectBrowser();
                 var
                     mime_type = this.supportedMime,
                     ext = '.mp4',
                     source = document.createElement('source')
                     ;
-                if (this.detectBrowser() === 'Firefox') {
-                    ext = '.webm';  // lacy bug fix since firefox doesn't support mp4 anymore. xxx needs further testing.
-                    mime_type = "video/webm";
-                } else if (this.detectBrowser() === 'Chrome') {
+                if (this.currentBrowser === 'Firefox') {
+                    ext = '.mp4';  // lacy bug fix since firefox doesn't support mp4 anymore. xxx needs further testing.
+                    mime_type = "video/mp4";
+                } else if (this.currentBrowser=== 'Chrome') {
                     ext = '.webm';
                     mime_type = "video/webm";
                 }
@@ -387,16 +356,24 @@ define([
 
 
 
-            /** 
-            * load UI 
-            **/
-            loadUI: function () {
-                var _this = this;
-                // load other ui elements
-                this.createPlaybackControl();
+            /**
+             * Creates the video player interface
+             */
+            createUI: function () {
+               var _this = this; 
+               this.createPlaybackControl();
 
+                if (this.options.autoHideCursor) {
+                    this.hideCursor();
+                }
 
-                // show/hide video controls
+                if(this.options.enableKeyboardShortcuts){
+                    $('body').unbind('keydown').bind('keydown', function (e) {
+                        _this.keyboardCommandHandler(e); 
+                    });
+                }
+            
+                // show/hide video controls, xxx
                 //$(_this.options.videoControlsSelector).addClass("open-controls");
                 /*$("#overlay, #seq, #video1 #video-controls #accordion-resizer").hover(
                     function() {  
@@ -410,38 +387,12 @@ define([
                 //$('#overlay').css('height', $('video').height() );
                 //$('#overlay').css('width', $('#video1').width() );
 
-
-                // hide cursor and controls if inactive
-                var mouseTimer = null, cursorVisible = true;
-
-                function disappearCursor() {
-                    mouseTimer = null;
-                    document.body.style.cursor = "none";
-                    cursorVisible = false;
-                    //$(_this.options.videoControlsSelector).removeClass("open-controls");
-                }
-                var el = document.getElementById(this.options.selector.replace('#', ''));
-                document.onmousemove = function () {
-                    if (mouseTimer) {
-                        window.clearTimeout(mouseTimer);
-                    }
-                    if (!cursorVisible) {
-                        document.body.style.cursor = "default";
-                        cursorVisible = true;
-                        //$(_this.options.videoControlsSelector).addClass("open-controls");
-                    }
-                    mouseTimer = window.setTimeout(disappearCursor, 1000);
-                };
-
-                //$('body').unbind('keydown').bind('keydown', function (e) {
-                    //_this.keyboardCommandHandler(e); 
-                //});
-
             },
 
+
             /**
-            * Creates video playback control
-            */
+             * Creates video playback control
+             */
             createPlaybackControl: function () {
                 var _this = this;
 
@@ -468,10 +419,36 @@ define([
                 $(vi2.observer.player).bind('player.pause', function (e, a, b) {
                     //$('.navbar').show();	
                 });
-
-
-
             },
+
+
+            /**
+             * Hide mouse cursor and controls if user is inactive for more then 1000ms.
+             */
+            hideCursor: function(){
+                var mouseTimer = null, cursorVisible = true, _this = this;
+                
+                function disappearCursor() {
+                    mouseTimer = null;
+                    document.body.style.cursor = "none";
+                    cursorVisible = false;
+                    //$(_this.options.videoControlsSelector).removeClass("open-controls");
+                }
+                var el = document.getElementById(this.options.selector.replace('#', ''));
+                document.onmousemove = function () {
+                    if (mouseTimer) {
+                        window.clearTimeout(mouseTimer);
+                    }
+                    if (!cursorVisible) {
+                        document.body.style.cursor = "default";
+                        cursorVisible = true;
+                        //$(_this.options.videoControlsSelector).addClass("open-controls");
+                    }
+                    mouseTimer = window.setTimeout(disappearCursor, 1000);
+                };
+            },
+
+
 
             /********* LOADING Indicator *********************************/
 
@@ -500,9 +477,10 @@ define([
                 position: 'absolute' // Element positioning
             },
 
-            /* 
-            * Starts the loading indicator in terms of a spinner. Function is called if video data is loading 
-            **/
+
+            /** 
+             * Starts the loading indicator in terms of a spinner. Function is called if video data is loading 
+             */
             startSpinning: function () {
                 var target = document.getElementById('overlay');
                 this.spinner.spin();
@@ -510,9 +488,9 @@ define([
                 //$('.spinner').css('top', '200px'); // xxx hardcoded repositioning of spinner element
             },
 
-            /* 
-            * Stops the loading indicator 
-            **/
+            /** 
+             * Stops the loading indicator 
+             */
             stopSpinning: function () {
                 this.spinner.stop();
             },
@@ -521,20 +499,16 @@ define([
             /* EVENT HANDLER *************************/
 
             /** 
-            * event handler: on can play. Notifies the observer about a new video.
-            */
+             * Event handler: on can play. Notifies the observer about a new video.
+             */
             readyStateHandler: function (e) {
                 vi2.observer.updateVideo(this.seqList[this.seqNum].id, this.seqNum);
             },
 
 
-
-
-
-
-            /*
-            * event handler: on ended
-            **/
+            /**
+             * Event handler that is called when the video has finished.
+             */
             endedHandler: function (e) {
                 vi2.observer.log({ context: 'player', action: 'video-ended', values: [this.url] });
                 vi2.observer.ended();
@@ -544,16 +518,24 @@ define([
                 // load next video clip if its a sequence
                 if (this.isSequence && ((this.seqNum + 1) < this.seqList.length || this.seqLoop)) {
                     this.seqNum = (this.seqNum + 1) % this.seqList.length;
-                    this.loadVideo(this.seqList[this.seqNum].url);
+                    this.createVideo(this.seqList[this.seqNum].url);
                 } else {
                     $(vi2.observer.player).trigger('video.end', null);
                 }
             },
 
+            /**
+             * Event handler to print out errors
+             */
+            errorHandling: function (e) {
+                //vi2.debug('Error - Media Source not supported: ' + this.video.error.code == this.video.error.MEDIA_ERR_SRC_NOT_SUPPORTED); // true
+                //vi2.debug('Error - Network No Source: ' + this.video.networkState == this.video.NETWORK_NO_SOURCE); // true
+            }
 
-            /* 
-            * Handles certain keyboad commends 
-            **/
+
+            /** 
+             * Handles certain keyboad commends, xxx buggy
+             */
             keyboardCommandHandler: function (e) {
 
                 e.preventDefault();
@@ -598,7 +580,9 @@ define([
 
             /* INTERFACES *************************/
 
-            /* just play */
+            /**
+             * Playback interface
+             */
             play: function () {
                 if (this.video.paused === false) {
                     this.video.pause();
@@ -615,7 +599,10 @@ define([
                 }
             },
 
-            /* just pause */
+
+            /**
+             * Pause interface
+             */
             pause: function () {
                 this.video.pause();
                 this.isPlaying(false);
@@ -623,8 +610,10 @@ define([
                 vi2.observer.log({ context: 'player', action: 'pause2-click', values: ['1'] });
             },
 
-            /*
-            **/
+
+            /**
+             * Interface to request playback status
+             */
             isPlaying: function (x) {
                 if (x === undefined) {
                     return this.videoIsPlaying;
@@ -633,7 +622,10 @@ define([
                 }
             },
 
-            /* returns duration of video */
+
+            /**
+             * Returns the video playback duration
+             */
             dur : 0,
             duration: function () {
                 if (this.video !== null){
@@ -650,7 +642,9 @@ define([
             },
 
 
-            /* return current playback time or set the time */
+            /**
+             * Get or set the playback time.
+             */
             currentTime: function (x) {
                 if (x === undefined && this.video !== null) {
                     return this.video.currentTime; //$(this.options.selector).attr('currentTime');
@@ -665,7 +659,9 @@ define([
             },
 
 
-            /* sets or returns video width */
+            /**
+             * Get or set the video width
+             */
             width: function (x) {
                 if (x === null) {
                     return $(this.options.selector).width();
@@ -674,24 +670,16 @@ define([
                 }
             },
 
-            /* sets or return video width */
+            /**
+             * Get or set the video height
+             */
             height: function (x) {
                 if (x === null) {
                     return $(this.options.selector).height();
                 } else {
                     //this.video.height = x;
                 }
-            },
-
-
-            /* prints errors */
-            errorHandling: function (e) {
-                //vi2.debug('Error - Media Source not supported: ' + this.video.error.code == this.video.error.MEDIA_ERR_SRC_NOT_SUPPORTED); // true
-                //vi2.debug('Error - Network No Source: ' + this.video.networkState == this.video.NETWORK_NO_SOURCE); // true
             }
-
-
-
 
         };
 

@@ -61,9 +61,6 @@ define(['jquery'], function ($) {
         }
         return cat;
     }
-    
-
-
 
 
 
@@ -89,8 +86,59 @@ define(['jquery'], function ($) {
     Utils.prototype = {
         name: 'utils',
 
+        /**
+         * Detects the web browser in use
+         */
+        detectBrowser: function () {
+            var ua = navigator.userAgent, tem,
+                M = ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
+            if (/trident/i.test(M[1])) {
+                tem = /\brv[ :]+(\d+)/g.exec(ua) || [];
+                return 'IE ' + (tem[1] || '');
+            }
+            if (M[1] === 'Chrome') {
+                tem = ua.match(/\b(OPR|Edge)\/(\d+)/);
+                if (tem != null) return tem.slice(1).join(' ').replace('OPR', 'Opera');
+            }
+            M = M[2] ? [M[1], M[2]] : [navigator.appName, navigator.appVersion, '-?'];
+            if ((tem = ua.match(/version\/(\d+)/i)) != null) M.splice(1, 1, tem[1]);
+            return M[0];//.join(' ');
+        },
 
-        /* Converts seconds into decimal format */
+        /**
+         * HTML5 playback detection
+         * 	returns: mime type of supported video or empty string if there is no support
+         *	called-by: vi2.core.player.loadVideo()
+         */
+        detectVideoSupport: function () {
+            var dummy_video = document.createElement('video');
+
+            if(typeof (dummy_video.canPlayType) === 'undefined'){
+                return false;
+            }
+
+            // prefer mp4 over webm over ogv 
+            if (dummy_video.canPlayType('video/mp4; codecs="avc1.42E01E, mp4a.40.2"') !== '') {
+                vi2.observer.log({ context: 'player', action: 'video-support-mp4', values: ['1'] });
+                return 'video/mp4';
+            } else if (dummy_video.canPlayType('video/webm; codecs="vp8, vorbis"') !== '') {
+                vi2.observer.log({ context: 'player', action: 'video-support-webm', values: ['1'] });
+                return 'video/webm';
+            } else if (dummy_video.canPlayType('video/ogg; codecs="theora, vorbis"') !== '') {
+                vi2.observer.log({ context: 'player', action: 'video-support-ogv', values: ['1'] });
+                return 'video/ogv';
+            } else {
+                // no suitable video format is avalable
+                vi2.observer.log({ context: 'player', action: 'video-support-none', values: ['1'] });
+                $('#page').html('<h3>We appologize that video application is currently not supported by your browser.</h3>The provided video material can be played on Mozilla Firefox, Google Chrome and Opera. If you prefer Internet Explorer 9 you need to install a <a href="https://tools.google.com/dlpage/webmmf">webm video extension</a> provided by Google. In the near future we are going to server further video formats which will be supported by all major browsers.<br /><br /> Thank you for your understanding.');
+            }
+            return false;
+        },
+
+
+        /**
+         * Converts seconds into decimal format
+         */ 
         seconds2decimal: function (seconds) {
             d = Number(seconds);
             var h = Math.floor(d / 3600);
