@@ -50,7 +50,6 @@ define([
                         try {
                             var d = JSON.parse(msg.data);
                             _this.all_comments = Object.keys(d).map(function (o) { return d[o]; });
-                            console.log(_this.all_comments);
                             this.$forceUpdate();
                         } catch (e) {
                             console.log('Could not parse comments from database after remove');

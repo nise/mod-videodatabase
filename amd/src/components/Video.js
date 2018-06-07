@@ -89,8 +89,6 @@ define([
                 } else {
                     console.log('mounted undefined');
                 }
-                console.log('mounted' + id)
-                console.log(video_data.title)
             },
             updated: function () {
                
@@ -134,7 +132,7 @@ define([
                     }, function (e) {
                         _this.play();
                         Vi2.updateAnnotations('comments');
-                        this.showAnnotationForm = false;
+                        _this.showAnnotationForm = false;
                     });
                 },
                 removeAnnotation: function (id, video) {

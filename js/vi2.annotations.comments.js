@@ -38,10 +38,11 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
             hasMenu: true,
             menuSelector: '#comments',
             allowEmoticons: false,
-            allowReplies: true,
-            allowEditing: true,
+            allowReplies: false, // not implemented
+            allowEditing: false, // not implemented
             allowCreation: true,
-            timelineSelector: '.vi2-timeline-bottom',
+            allowDeletions: true, 
+            timelineSelector: '.vi2-timeline-top',
             path: '/'//,
             //annotation_service_url: {},
             //annotation_service_params: { data: { videoid: 3, courseid: 2 } }
@@ -59,7 +60,10 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
             var events = [];
             
             this.options.annotation_service_params.data.videoid = parseInt(localStorage.getItem('videoid'), 10);
-
+            this.options.annotation_service_params2 = this.options.annotation_service_params;
+            this.options.annotation_service_params.data.operation = 'read';
+            //delete this.options.annotation_service_params.data.operation;
+            
             $.ajax({
                 method: 'POST',
                 url: this.options.annotation_service_url,
@@ -70,11 +74,13 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
                     try {
                         var d = JSON.parse(msg.data); 
                         var data = Object.keys(d).map(function(o){ return d[o]; }); 
-                        
+                        //console.log(data)
+                        //console.log(_this.options.annotation_service_params.data)
                         for (var i in data) {
                             if (data.hasOwnProperty(i)) {
                                 if (data[i].type === 'comment') { 
                                     events.push({
+                                        id: data[i].id,
                                         name: data[i].content,
                                         occ: [data[i].start],
                                         time: [data[i].start],
@@ -141,7 +147,7 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
                     .addClass('id-' + val.time + ' comments-menu-question')
                     //.attr('href', '#'+vi2.options.id)
                     .click(function () {
-                        console.log(vi2.observer.player.currentTime());
+                        //console.log(vi2.observer.player.currentTime());
                         vi2.observer.player.currentTime(val.time[0]);
                         vi2.observer.log({ context: 'comments', action: 'menu-click', values: [val.name, val.author, val.time[0]] });
                     })
@@ -206,28 +212,45 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
                         ;
                 }
 
+                // delete-btn
+                if (_this.options.allowDeletions) {
+                    var reply_btn = $('<a></a>')
+                        .addClass('tiny-edit-btn fa fa-remove right')
+                        .click(function(){
+                            _this.removeComment(val.id);
+                        })
+                        //.attr('data-annotationtype', 'comments')
+                        //.data('annotationdata', { content: '', time: val.time, date: (new Date().getTime()) })
+                        .appendTo(header)
+                        ;
+                    
+                }
                 tmp_t = val.time;
             }); // end each
         },
 
-        removeComment:function(id){
+        /**
+         * Removes a single comment
+         */
+        removeComment:function(id){ console.log(id)
             var up = {
-                courseid: course.id,
+                courseid: this.options.annotation_service_params.data.courseid,//bad fix
                 id: id,
                 videoid: parseInt(localStorage.getItem('videoid'), 10),
                 operation: 'remove'
-            }
-            var data = this.options.annotation_service_params;
-            data.data = Object.assign(this.options.annotation_service_params.data, up);
-
+            };
+            var _this = this;
+            this.options.annotation_service_params2.data = up;
+            
             $.ajax({
                 method: 'POST',
                 url: this.options.annotation_service_url,
-                data: data, //this.options.annotation_service_params,
+                data: this.options.annotation_service_params2,
                 dataType: "json"
             })
             .done(function (msg) {
-                
+                console.log(msg);
+                _this.init();
             })
             .fail(function (msg) {
                 console.log(msg);

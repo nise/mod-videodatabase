@@ -500,6 +500,8 @@ div.link{
 
 #accordion-resizer{
     height:inherit;
+    max-height: 500px;
+    overflow-y: auto;
     display:inline-block;
 }
 #annotation-form {

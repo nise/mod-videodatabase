@@ -293,7 +293,7 @@ width: 100%;
 	color:#fff;
 	margin:0;
 	border:0;
-	padding: 0px 4px;
+	padding: 2px 6px !important;
 	vertical-align:bottom;
 	height:12px;
 }

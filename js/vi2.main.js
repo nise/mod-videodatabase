@@ -96,10 +96,8 @@ define([
 				}
 			});
 			vi2.observer.addWidget(viLog);
-
 			Vi2.loadPlugins();
 			vi2.observer.parse(videoData);
-
 		};
 
 
@@ -111,6 +109,7 @@ define([
 			vi2.db = new Vi2.Database({ modus: 'native', data: video_data, path: '' }, 'window');
 			vi2.db.currentUser(user_data);
 			vi2.db.init(Vi2.initVideo);
+			
 		};
 
 
@@ -119,6 +118,7 @@ define([
 			localStorage.setItem('videoid', parseInt(videoid, 10));
 			vi2.db = new Vi2.Database({ modus: 'native', data: video_data, path: '' }, 'window');
 			vi2.observer.parse(video_data);
+			vi2.observer.setAnnotations();
 		};
 
 		/**

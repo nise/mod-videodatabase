@@ -165,6 +165,7 @@ echo '
 							<div id="screen" class="col-md-9"></div>
 						</div>
 						<div id="accordion-resizer" class="col-lg-3 col-md-3 col-sm-3 hidden-xs">
+							
 							<div id="accordion" class="video-metadata">
 							
 								<ul class="nav nav-tabs" role="tablist">
@@ -175,6 +176,19 @@ echo '
 										<a class="nav-link" data-toggle="tab" :href="\'#info\'" role="tab">Informationen</a>
 									</li>
 								</ul>
+								<div id="annotation-form">
+								<div id="annotationForm" v-show="showAnnotationForm">
+									<textarea class="form-control" :id="\'annotationContentText\'" v-model="annotationContent" name="comments-entry" data-datatype="string" placeholder="" aria-describedby="comments-form1"></textarea>
+									<br/>
+									<div class="input-group">
+										<span class="input-group-addon" id="comments-form1">Zeitpunkt (s)</span>
+										<input v-model="annotationTime" type="text" class="form-control" value="" name="comments-entry-time" data-datatype="decimal-time" placeholder="" aria-describedby="comments-form1">
+									</div>
+									<div class="btn btn-primary" v-on:click="saveAnnotation">speichern</div>
+									<a class="right btn red" v-on:click="cancelAnnotation">verwerfen</a>
+								</div>
+								<div v-show="!showAnnotationForm" class="btn btn-primary" v-on:click="toggle"><span class="fa fa-plus"></span> Kommentar</div>
+							</div>	
 								<div class="tab-content">
 									<div class="tab-pane active" :id="\'comments\'" role="tabpanel">
 										
@@ -224,19 +238,7 @@ echo '
 									</div>
 								</div>
 							</div>
-							<div id="annotation-form">
-								<div id="annotationForm" v-show="showAnnotationForm">
-									<textarea class="form-control" :id="\'annotationContentText\'" v-model="annotationContent" name="comments-entry" data-datatype="string" placeholder="" aria-describedby="comments-form1"></textarea>
-									<br/>
-									<div class="input-group">
-										<span class="input-group-addon" id="comments-form1">Zeitpunkt (s)</span>
-										<input v-model="annotationTime" type="text" class="form-control" value="" name="comments-entry-time" data-datatype="decimal-time" placeholder="" aria-describedby="comments-form1">
-									</div>
-									<div class="btn btn-primary" v-on:click="saveAnnotation">speichern</div>
-									<a class="right btn red" v-on:click="cancelAnnotation">verwerfen</a>
-								</div>
-								<div v-show="!showAnnotationForm" class="btn btn-primary" v-on:click="toggle"><span class="fa fa-plus"></span> Kommentar</div>
-							</div>	
+							
 						</div>
 					</div>
 					<div id="video-controls" class="video-controls col-lg-9 col-md-9 col-sm-12 col-xs-12">

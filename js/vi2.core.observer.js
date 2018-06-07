@@ -94,7 +94,7 @@ define(['jquery', 'js/vi2.core.clock.js', 'js/vi2.core.player.js'], function($, 
 
             // initializes widgets
             $.each(_this.widget_list, function (j, widget) {
-                if (widget.type !== 'player-widget') {
+                if (widget.type !== 'player-widget') { 
                     widget.init(_this.vid_arr[0].annotation);
                 } else {
                     widget.init();
@@ -142,9 +142,10 @@ define(['jquery', 'js/vi2.core.clock.js', 'js/vi2.core.player.js'], function($, 
             this.clock.stopClock();
             this.clock.reset(); 
             this.player.loadSequence(this.vid_arr, 0, this.seek);
+            this.setAnnotations();
         },
 
-        
+
         /* 
         * xxx remove
         **/
