@@ -11,6 +11,21 @@ d32db1e.online-server.cloud
 217.160.28.237
 Iz7iTZriBe
 
+remote:
+machinables
+Wk*iud)l*34u78
+
+db skUi*kGoqmPG87sr#ekl
+moodle jksh78+jd-82KHGv
+
+locale:
+admin
+Qwertz12*
+
+
+thomas
+Sp0rtpl4tz*
+
 
 #backlog
 https://huboard.com/nise/vi-moodle/
@@ -28,20 +43,7 @@ https://github.com/nise/vi-moodle/issues
 2. open http://localhost/moodle/admin/index.php and select upgrade
 
 # System setup
-remote:
-machinables
-Wk*iud)l*34u78
 
-db skUi*kGoqmPG87sr#ekl
-moodle jksh78+jd-82KHGv
-
-locale:
-admin
-Qwertz12*
-
-
-thomas
-Sp0rtpl4tz*
 
 
 # todo server
