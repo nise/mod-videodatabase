@@ -224,7 +224,7 @@ width: 100%;
 
 .vi2-zoom-controls span.vi2-zoom-disabled{
 	background-color:#ddd;
-	color:#167ac6;
+	color:#999;
 	cursor: auto;
 }
 

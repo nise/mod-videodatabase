@@ -38,7 +38,7 @@ define(['jquery'], function ($) {
         * Initializes the skip back button of content and handles options
         */
         init: function () {
-            var selector = document.querySelectorAll( this.options.player_selector +' '+this.options.selector)[0];
+            var selector = document.querySelectorAll(this.options.player_selector + ' ' + this.options.selector)[0];
             // clear selector
             var el = document.querySelectorAll(this.options.selector + ' > .vi2-skipback-controls')[0]; // select the first returned <div> element 
             if (el) {
@@ -55,19 +55,21 @@ define(['jquery'], function ($) {
 
             $(this.options.selector).append(template.join('')); // todo: wroite in plain js
             //selector.innerHTML += template.join('');
-            
+
             var _this = this;
             var t = document.querySelectorAll('.vi2-skipback-controls')[0];//.addEventListener('keydown', this.handler);
-            t.onclick = function (e) {
-                var 
-                    current = Number(vi2.observer.player.currentTime()),
-                    next = current + _this.options.step
-                    ;
-                next = typeof next === 'number' ? next : current;    
-                next = next < 0 ? 0 : next;   
-                vi2.observer.player.currentTime(next);
-                vi2.observer.log({ context: 'skipBack', action: 'skip-back', values: [current, String(next)] });
-            };
+            if (t !== undefined) {
+                t.onclick = function (e) {
+                    var
+                        current = Number(vi2.observer.player.currentTime()),
+                        next = current + _this.options.step
+                        ;
+                    next = typeof next === 'number' ? next : current;
+                    next = next < 0 ? 0 : next;
+                    vi2.observer.player.currentTime(next);
+                    vi2.observer.log({ context: 'skipBack', action: 'skip-back', values: [current, String(next)] });
+                };
+            }
         }
     };
 

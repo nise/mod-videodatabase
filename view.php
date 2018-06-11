@@ -98,12 +98,18 @@ $content = format_text($content, $videodatabase->contentformat, $formatoptions);
 */
 
 
+
+// some meta data
 echo "<span hidden id='courseid'>$cm->course</span>";
 echo "<span hidden id='moduleid'>$cm->id</span>";
 echo "<span hidden id='token'>$videodatabase->token</span>";
 echo "<div id='alert'></div>";
 
+// alert box
+echo '<div id="debug" hidden class="alert alert-success" role="alert"></div>';
 
+
+// comments overview
 echo '
 <div id="app-comments-template" v-cloak>
 	<div class="container-fluid">
@@ -152,7 +158,7 @@ echo '
 		<!-- Player -->
 		<div id="wrapper">
 			<div id="pagex" style="overflow:hidden;">
-				<a href="#/videos" class="right large"><span class="fa fa-close video-close"></span></a>
+				<a href="#/videos" @click="destroy" class="right large"><span class="fa fa-close video-close"></span></a>
 				<!-- Main -->
 				<div :id="vi2_player_id" class="container-fluid">
 					<h2>{{ video.title }}</h2>
@@ -318,11 +324,9 @@ echo '<script type="text/x-template" id="modal-template"><!-- Modal -->
 		</transition>
 	</script>';
 
-// filter
-echo '<div id="debug" hidden class="alert alert-success" role="alert"></div>';
 
 
-
+// file upload and preprocessing
 echo '
 <div v-cloak id="form-upload-template">
 	<div>
@@ -410,12 +414,13 @@ echo '
 ';
 
 
+// save edit form
 echo '
 <div v-cloak id="form-submit-template">
-	<div class="col-md-12">
+	<div id="submit_video_form" class="col-md-12">
 		<button v-on:click="submitForm" class="btn btn-primary">Speichern</button>
 		<a class="btn btn-link" href="#/videos">abbrechen</a>
-		<a v-on:click="removeVideo" class="btn btn-link right red">Video löschen</a>
+		<a v-on:click="removeVideo" class="btn btn-link right red">Video verwerfen/löschen</a>
 	</div>
 </div>
 ';

@@ -238,6 +238,7 @@ define([
 
         /**
          * CSV Export
+         * xxx: auslagern
          */
         function exportToCsv(filename, rows) {
             var processRow = function (row) {
@@ -284,6 +285,7 @@ define([
 
         /**
          * Filter
+         * xxx: auslagern
          */
         // render filter
         $(function () {

@@ -155,6 +155,7 @@ define([
                         } 
                         console.log(fileList[0])
                         $('.vue-form-generator').show();
+                        $('#submit_video_form').show();
                         this.currentStatus = STATUS_INITIAL;
                         this.uploadedFiles = [];
                         document.getElementById("file").value = "";
@@ -199,6 +200,7 @@ define([
                 mounted: function () {
                     this.reset();
                     $('.vue-form-generator').hide();
+                    $('#submit_video_form').hide();
                 }
             };
 

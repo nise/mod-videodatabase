@@ -160,6 +160,10 @@ define([
                 },
                 pause: function () {
                     Vi2.getObserver().player.pause();
+                },
+                destroy: function(){
+                    Vi2.getObserver().player.pause();
+                    // xxx more things need to be done
                 }
             },
             components: {

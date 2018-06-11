@@ -5,15 +5,15 @@
  * license: MIT License
  *	description:
  * dependencies:
- *  - jquery-1.11.2.min.js
+ *  - $-1.11.2.min.js
  */
 
 
-define(['jquery'], function ($) {
+define(['$'], function ($) {
 
 
     /* Defines custom drop out box  (style: #div.klappe)*/
-    jQuery.fn.dropdown = function (obj) {
+    $.fn.dropdown = function (obj) {
         var head = $(this).find('h4');
         var all = $(this).html();
         $(this).toggle(
@@ -28,7 +28,7 @@ define(['jquery'], function ($) {
 
 
     /* ...*/
-    jQuery.fn.hidetext = function (obj) {
+    $.fn.hidetext = function (obj) {
         var text = $(this).text();
         var el = $(this).text(text.substr(0, 250) + ' ').append($('<span>more</span>')); //.button()
         return el;
@@ -36,7 +36,7 @@ define(['jquery'], function ($) {
 
 
 
-    jQuery.fn.round = function (dec) {
+    $.fn.round = function (dec) {
         if (!dec) { dec = 0; }
         return Math.round(this * Math.pow(10, dec)) / Math.pow(10, dec);
     };
