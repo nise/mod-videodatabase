@@ -10,10 +10,10 @@
  */
 define([
     'jquery',
-    '/moodle/mod/videodatabase/amd/src/lib/vue.js',
-    '/moodle/mod/videodatabase/amd/src/lib/vfg.js',
-    '/moodle/mod/videodatabase/amd/src/lib/axios.min.js',
-    '/moodle/mod/videodatabase/amd/src/components/Utils.js'
+    'amd/src/lib/vue.js',
+    'amd/src/lib/vfg.js',
+    'amd/src/lib/axios.min.js',
+    'amd/src/components/Utils.js'
 ],
     function (
         $,

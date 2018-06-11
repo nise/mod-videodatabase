@@ -11,8 +11,8 @@
 define([
     'jquery',
     'core/log',
-    '/moodle/mod/videodatabase/amd/src/lib/vue.js',
-    '/moodle/mod/videodatabase/amd/src/lib/vuex.js'
+    'amd/src/lib/vue.js',
+    'amd/src/lib/vuex.js'
 ],
     function (
         $,

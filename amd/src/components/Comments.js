@@ -15,8 +15,8 @@
 
 define([
     'jquery',
-    '/moodle/mod/videodatabase/amd/src/lib/vue.js',
-    '/moodle/mod/videodatabase/amd/src/components/Utils.js',
+    'amd/src/lib/vue.js',
+    'amd/src/components/Utils.js',
     'js/moment-with-locales.min.js'
 ], function ($, Vue, Utils, moment) {
     

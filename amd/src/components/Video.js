@@ -15,10 +15,10 @@
 
 define([
     'jquery',
-    '/moodle/mod/videodatabase/amd/src/lib/vue.js',
-    '/moodle/mod/videodatabase/js/vi2.main.js',
-    '/moodle/mod/videodatabase/amd/src/components/Ratings.js',
-    '/moodle/mod/videodatabase/amd/src/components/Utils.js'
+    'amd/src/lib/vue.js',
+    'js/vi2.main.js',
+    'amd/src/components/Ratings.js',
+    'amd/src/components/Utils.js'
 ], function ($, Vue, Vi2, Ratings, Utils) {
 
 

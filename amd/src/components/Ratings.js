@@ -21,8 +21,8 @@
 define([
     'jquery',
     'core/log',
-    '/moodle/mod/videodatabase/amd/src/lib/vue.js',
-    '/moodle/mod/videodatabase/amd/src/components/Utils.js'
+    'amd/src/lib/vue.js',
+    'amd/src/components/Utils.js'
 ], function ($, log, Vue, Utils) {
 
     function Ratings(store, course, user) {

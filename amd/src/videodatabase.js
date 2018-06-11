@@ -11,17 +11,17 @@
 define([
     'jquery',
     'core/log',
-    '/moodle/mod/videodatabase/amd/src/lib/vue.js',
-    '/moodle/mod/videodatabase/amd/src/lib/vue-router.js',
-    //'/moodle/mod/videodatabase/amd/src/lib/vfg.js',
-    //'/moodle/mod/videodatabase/amd/src/lib/axios.min.js',
-    '/moodle/mod/videodatabase/amd/src/datamodel.js',
-    // '/moodle/mod/videodatabase/amd/src/vuejs-paginator.js',
-    '/moodle/mod/videodatabase/amd/src/components/Store.js',
-    '/moodle/mod/videodatabase/amd/src/components/Form.js',
-    '/moodle/mod/videodatabase/amd/src/components/Video.js',
-    '/moodle/mod/videodatabase/amd/src/components/Comments.js',
-    '/moodle/mod/videodatabase/amd/src/components/Utils.js'
+    'amd/src/lib/vue.js',
+    'amd/src/lib/vue-router.js',
+    //'amd/src/lib/vfg.js',
+    //'amd/src/lib/axios.min.js',
+    'amd/src/datamodel.js',
+    // 'amd/src/vuejs-paginator.js',
+    'amd/src/components/Store.js',
+    'amd/src/components/Form.js',
+    'amd/src/components/Video.js',
+    'amd/src/components/Comments.js',
+    'amd/src/components/Utils.js'
 ],
     function (
         $,
