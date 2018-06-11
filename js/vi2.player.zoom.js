@@ -16,11 +16,11 @@ define(['jquery', 'js/jquery.panzoom.min.js'], function ($, PanZoom) {
         ;
 
     /** @constructs
-    *		@param {object} options An object containing the parameters
+    *	@param {object} options An object containing the parameters
     *		
     */
     function Zoom(options) {
-        this.options = $.extend(this.options, options);
+        this.options = Object.assign(this.options, options);
         //vi.oberserver = options.observer;
         this.init();
     }
@@ -66,13 +66,15 @@ define(['jquery', 'js/jquery.panzoom.min.js'], function ($, PanZoom) {
             }
 
             if (this.options.hasControls) {
-                var btn_in = $('<span class="vi2-zoom-in fa fa-plus" title="vergrößern"></span>')
+                $('<span class="vi2-zoom-in fa fa-plus" title="vergrößern"></span>')
+                    .attr('id', 'vi2zoomin')
                     .click(function () {
                         _this.showScale();
                     })
                     .prependTo(container)
                     ;
-                var btn_out = $('<span class="vi2-zoom-out fa fa-minus" title="verkleinern"></span>')
+                $('<span class="vi2-zoom-out fa fa-minus vi2-zoom-disabled" title="verkleinern"></span>')
+                    .attr('id', 'vi2zoomout')
                     .click(function () {
                         _this.showScale();
                     })
@@ -82,7 +84,7 @@ define(['jquery', 'js/jquery.panzoom.min.js'], function ($, PanZoom) {
             }
 
             if (this.options.hasReset) {
-                var btn_reset = $('<span class="vi2-zoom-reset fa fa-undo" title="Zoom zurücksetzen"></span>')
+                $('<span class="vi2-zoom-reset fa fa-undo" title="Zoom zurücksetzen"></span>')
                     .click(function () {
                         _this.showScale();
                     })
@@ -93,7 +95,6 @@ define(['jquery', 'js/jquery.panzoom.min.js'], function ($, PanZoom) {
             if(this.options.showScale){
                 this.scaledisplay = $('<span></span>')
                     .addClass('vi2-zoom-display')
-                    .text(999)
                     .appendTo('#overlay')
                     ;
             }
@@ -124,7 +125,8 @@ define(['jquery', 'js/jquery.panzoom.min.js'], function ($, PanZoom) {
         /**
          * Displays a short text about the current zoom level 
          */
-        showScale: function () { 
+        showScale: function () {
+            //alert('zoom init')
             var num = this.element.panzoom("getMatrix")[0];
             num = Math.round(4*num)/4;
             var _this = this;
@@ -133,6 +135,18 @@ define(['jquery', 'js/jquery.panzoom.min.js'], function ($, PanZoom) {
                 .addClass('vi2-zoom-flash')
                 .show()
                 ;
+            var 
+                zoomin = document.getElementById("vi2zoomin"),
+                zoomout = document.getElementById("vi2zoomout")
+                ;
+            zoomin.classList.remove('vi2-zoom-disabled');
+            zoomout.classList.remove('vi2-zoom-disabled');          
+            if(num === 4){
+                zoomin.classList.add('vi2-zoom-disabled');
+            }
+            if (num === 1) {
+                zoomout.classList.add('vi2-zoom-disabled');
+            }    
             setTimeout(function(){
                 _this.scaledisplay.hide();
             }, 2000);    

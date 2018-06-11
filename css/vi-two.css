@@ -171,6 +171,8 @@ width: 100%;
 	margin-left:20px;
 }
 
+
+
 .vi2-zoom-controls span {
 	display: inline;
 	position: relative;
@@ -217,6 +219,13 @@ width: 100%;
 @-moz-keyframes vi2-zoom-fade  {
     0% { opacity: 0;  }
     100% { opacity: 0.6;  }
+}
+
+
+.vi2-zoom-controls span.vi2-zoom-disabled{
+	background-color:#ddd;
+	color:#167ac6;
+	cursor: auto;
 }
 
 
