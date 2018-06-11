@@ -94,7 +94,7 @@ define([
 					wsfunction: 'videodatabase_logging',
 					data: { courseid: Vi2.courseid }
 				}
-			});
+			}, vi2.observer);
 			vi2.observer.addWidget(viLog);
 			Vi2.loadPlugins();
 			vi2.observer.parse(videoData);

@@ -341,7 +341,7 @@ echo '
 					class="dropbox"
 					>
 					<label class="file-label">
-						<div class="">Videodatei auswählen</div>
+						<div class="">Wählen Sie eine Videodatei aus</div>
 						<input id="file" type="file" multiple :name="uploadFieldName"  @change="filesChange($event.target.name, $event.target.files); fileCount = $event.target.files.length" accept="video/*" class="input-file" />
 					</label>
 				</form>

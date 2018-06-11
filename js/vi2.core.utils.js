@@ -80,7 +80,7 @@ define(['jquery'], function ($) {
         return size;
     };
 
-    function Utils(options) { };
+    function Utils(ob) { };
 
 
     Utils.prototype = {
@@ -119,17 +119,17 @@ define(['jquery'], function ($) {
 
             // prefer mp4 over webm over ogv 
             if (dummy_video.canPlayType('video/mp4; codecs="avc1.42E01E, mp4a.40.2"') !== '') {
-                vi2.observer.log({ context: 'player', action: 'video-support-mp4', values: ['1'] });
+                //vi2.observer.log({ context: 'player', action: 'video-support-mp4', values: ['1'] });
                 return 'video/mp4';
             } else if (dummy_video.canPlayType('video/webm; codecs="vp8, vorbis"') !== '') {
-                vi2.observer.log({ context: 'player', action: 'video-support-webm', values: ['1'] });
+                //vi2.observer.log({ context: 'player', action: 'video-support-webm', values: ['1'] });
                 return 'video/webm';
             } else if (dummy_video.canPlayType('video/ogg; codecs="theora, vorbis"') !== '') {
-                vi2.observer.log({ context: 'player', action: 'video-support-ogv', values: ['1'] });
+                //vi2.observer.log({ context: 'player', action: 'video-support-ogv', values: ['1'] });
                 return 'video/ogv';
             } else {
                 // no suitable video format is avalable
-                vi2.observer.log({ context: 'player', action: 'video-support-none', values: ['1'] });
+                //vi2.observer.log({ context: 'player', action: 'video-support-none', values: ['1'] });
                 $('#page').html('<h3>We appologize that video application is currently not supported by your browser.</h3>The provided video material can be played on Mozilla Firefox, Google Chrome and Opera. If you prefer Internet Explorer 9 you need to install a <a href="https://tools.google.com/dlpage/webmmf">webm video extension</a> provided by Google. In the near future we are going to server further video formats which will be supported by all major browsers.<br /><br /> Thank you for your understanding.');
             }
             return false;

@@ -13,8 +13,9 @@
 
 define(['jquery'], function ($) {
 
-    function Log(options) { 
+    function Log(options, observer) { 
         this.options = Object.assign(this.options, options);
+        vi2.observer = observer;
         this.userAgent = this.getUserAgent();
     }
 
