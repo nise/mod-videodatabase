@@ -70,7 +70,6 @@ $PAGE->set_context($context);
 // custome CSS
 $PAGE->requires->css( '/mod/videodatabase/css/bootstrap.min.css');
 $PAGE->requires->css( '/mod/videodatabase/styles.css', true );
-//$PAGE->requires->css( '/mod/videodatabase/css/animate.css', true );
 $PAGE->requires->css( '/mod/videodatabase/css/vfg.css', true );
 $PAGE->requires->css( '/mod/videodatabase/css/vi-two.css', true );
 echo $OUTPUT->header();

@@ -1,14 +1,14 @@
 
 define([
 	'jquery',
-	'js/jquery.inherit.js',
+	//'js/jquery.inherit.js',
 	'js/vi2.core.observer.js',
 	'js/vi2.core.database.js',
 	'js/vi2.core.log.js',
 	'js/vi2.core.utils.js'
 ], function (
 	$,
-	inherit,
+	//inherit,
 	Observer,
 	Database,
 	Log,
@@ -28,9 +28,8 @@ define([
 		 * Loads player and annotation plugins
 		 *   
 		 * todo:
-			var temporalBookmarks = new Vi2.TemporalBookmarks();
-			var sharing = new Vi2.Sharing();
-			*/
+		 * - the static paths should be removed
+		 */
 		Vi2.loadPlugins = function () {
 			this.plugins = {
 				volume: { path: 'js/vi2.core.player.volume.js', options: {} },
