@@ -68,8 +68,9 @@ class mod_videodatabase_mod_form extends moodleform_mod {
         $mform->addRule('token', null, 'required', null, 'client');
         $mform->addRule('token', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
 
-        $this->add_intro_editor($config->requiremodintro);
-
+        //$this->add_intro_editor($config->requiremodintro);
+        moodleform_mod::standard_intro_elements($config->requiremodintro);
+        
         //-------------------------------------------------------
         $mform->addElement('header', 'contentsection', get_string('contentheader', 'videodatabase'));
         $mform->addElement('editor', 'videodatabase', get_string('content', 'videodatabase'), null, videodatabase_get_editor_options($this->context));
