@@ -34,7 +34,7 @@ define(['jquery'], function ($) {
                     console.log(data);
                 }
             })
-                .done(function (msg) {
+                .done(function (msg) { console.log(msg)
                     if (msg.hasOwnProperty('exception')) {
                         $('#alert')
                             .html('Die Prozedur ' + ws + ' konnte nicht als Webservice geladen werden.<br>')
