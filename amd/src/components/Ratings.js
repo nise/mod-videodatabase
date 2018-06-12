@@ -19,11 +19,9 @@
  */
 
 define([
-    'jquery',
-    'core/log',
     'amd/src/lib/vue.js',
     'amd/src/components/Utils.js'
-], function ($, log, Vue, Utils) {
+], function (Vue, Utils) {
 
     function Ratings(store, course, user) {
 

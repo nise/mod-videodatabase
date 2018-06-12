@@ -10,7 +10,6 @@
  */
 define([
     'jquery',
-    'core/log',
     'amd/src/lib/vue.js',
     'amd/src/lib/vue-router.js',
     //'amd/src/lib/vfg.js',
@@ -25,7 +24,6 @@ define([
 ],
     function (
         $,
-        log,
         Vue,
         VueRouter,
       //  VueFormGenerator,

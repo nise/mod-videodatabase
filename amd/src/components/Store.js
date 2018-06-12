@@ -9,14 +9,10 @@
  * @since      3.1
  */
 define([
-    'jquery',
-    'core/log',
     'amd/src/lib/vue.js',
     'amd/src/lib/vuex.js'
 ],
     function (
-        $,
-        log,
         Vue,
         Vuex
     ) {

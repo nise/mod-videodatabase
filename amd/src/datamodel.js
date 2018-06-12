@@ -6,7 +6,7 @@
  * @class      Data model
  * @copyright  2018 Niels Seidel, info@social-machinables.com
  * @license    MIT
- * @since      3.1
+ * @since      3.3
  */
 define(['/moodle/mod/videodatabase/amd/src/lib/vfg.js'], function (VueFormGenerator) {
     return function () {

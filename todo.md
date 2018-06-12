@@ -5,7 +5,8 @@
 
 # General
 system path: ~/Documents/www/moodle/mod/videodatabase
-MOODLE version 3.1.3 !!
+MOODLE version 3.3 !!
+3818e7aa87466e01d5a14235b01dd221
 
 d32db1e.online-server.cloud
 217.160.28.237

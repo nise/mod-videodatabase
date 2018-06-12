@@ -1,4 +1,4 @@
-Vi-Moodle is a video database, player, and video annotation tool for moodle.
+Vi-Moodle is a database, player, and annotation tool for video-based learning resources in moodle.
 
 **System Features:**
 * Upload and convert video files
@@ -9,8 +9,9 @@ Vi-Moodle is a video database, player, and video annotation tool for moodle.
 * Video annotations (e.g. comments)
 * User rating per video
 
+---
 # Installation
-Tested with Moodle v3.x
+Tested with Moodle v3.3
 
 ## Install depenencies
 [Video Upload Manager](https://github.com/nise/php-video-upload-chain)
@@ -44,16 +45,17 @@ Please follow the instuction and substitute your domain or install location when
 * Rename the plugin folder: `mv vi-moodle videodatabase`
 * Now you can add the videodatabase as an activity to your course. During this setup you are required to enter the Moodle webservice token.
 
+---
 # Development
 ## Tools
-Helpful tools for moode development: 
+Helpful tools for moodle development: 
 * adminer
 * moodle plugin upgradedb (https://moodle.org/plugins/local_upgradedb)
     Unzip it into local/ folder in your Moodle.
 
 
 ## Update from github
-* cd to the moodle/mod/videodatabase
+* cd to moodle/mod/videodatabase
 * Update the code: `git fetch --all && git reset --hard origin/master`
 
 

@@ -22,6 +22,16 @@
  * @subpackage videodatabase
  * @copyright  Niels Seidel, niels.seidel@nise81.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * 
+ * 
+ * BUG: 
+ * Function moodleform_mod::add_intro_editor() is deprecated, use moodleform_mod::standard_intro_elements() instead.
+
+    line 879 of /course/moodleform_mod.php: call to debugging()
+    line 61 of /mod/videodatabase/mod_form.php: call to moodleform_mod->add_intro_editor()
+    line 204 of /lib/formslib.php: call to mod_videodatabase_mod_form->definition()
+    line 95 of /course/moodleform_mod.php: call to moodleform->__construct()
+    line 255 of /course/modedit.php: call to moodleform_mod->__construct()
  */
 
 defined('MOODLE_INTERNAL') || die;

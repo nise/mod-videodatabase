@@ -14,12 +14,11 @@
  */
 
 define([
-    'jquery',
     'amd/src/lib/vue.js',
     'js/vi2.main.js',
     'amd/src/components/Ratings.js',
     'amd/src/components/Utils.js'
-], function ($, Vue, Vi2, Ratings, Utils) {
+], function (Vue, Vi2, Ratings, Utils) {
 
 
     function Video(store, course, user, token) {

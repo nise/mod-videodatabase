@@ -14,11 +14,10 @@
  */
 
 define([
-    'jquery',
     'amd/src/lib/vue.js',
     'amd/src/components/Utils.js',
     'js/moment-with-locales.min.js'
-], function ($, Vue, Utils, moment) {
+], function (Vue, Utils, moment) {
     
   
 
