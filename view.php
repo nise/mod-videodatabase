@@ -352,7 +352,7 @@ echo '
 				<div v-if="isSuccess" style="margin:0 20px;">
 					<div v-cloak v-for="file in uploadedFiles">
 						Für Upload ausgewählt:<br> {{ file.name }} ({{ Math.round( file.size / 1024 / 1024 ) }}MB)					
-						<video width="100%" height="auto" controls preload="none">
+						<video v-if="file.location" width="100%" height="auto" controls preload="none">
 							<source v-if="file.location" @change="file.location" :src="file.tmp_rel_location" :type="file.type" >
 							Your browser does not support the video tag.
 						</video>
