@@ -14,7 +14,6 @@ define([
 	Log,
 	Utils
 ) {
-
 		var
 			vi2 = {}, // global variable				
 			Vi2 = {}  // set the Namespace for the classes

@@ -50,7 +50,7 @@ $completion->set_module_viewed($cm);
 
 /* begin header*/
 $PAGE->set_url('/mod/videodatabase/view.php', array('id' => $cm->id));
-$PAGE->navbar->add('Video Manager');// , new moodle_url('vdb_video-manager.php'.'?id='.$cm->id));
+//$PAGE->navbar->add('Video Manager');// , new moodle_url('vdb_video-manager.php'.'?id='.$cm->id));
 
 //$options = empty($videodatabase->displayoptions) ? array() : unserialize($videodatabase->displayoptions);
 
@@ -594,6 +594,8 @@ echo ""; // end fluid container
 
 
 // load the main Javascript including vue.js and vi-two.js
+//$PAGE->requires->js_amd_inline("require(['jquery', 'jqueryui', 'mod_videodatabase/videodatabase']);");
+
 $PAGE->requires->js_amd_inline("require(['jquery', 'jqueryui', 'mod_videodatabase/videodatabase']);");
 
 

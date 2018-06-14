@@ -9,8 +9,6 @@
  * @copyright  2018 Niels Seidel, info@social-machinables.com
  * @license    MIT
  * @since      3.1
- * 
- * 
  */
 
 define([
@@ -19,7 +17,6 @@ define([
     'amd/src/components/Ratings.js',
     'amd/src/components/Utils.js'
 ], function (Vue, Vi2, Ratings, Utils) {
-
 
     function Video(store, course, user, token) {
         this.store = store;

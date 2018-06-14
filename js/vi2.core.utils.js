@@ -9,7 +9,7 @@
  */
 
 
-define(['$'], function ($) {
+define(['jquery'], function ($) {
 
 
     /* Defines custom drop out box  (style: #div.klappe)*/

@@ -12,31 +12,31 @@ define([
     'jquery',
     'amd/src/lib/vue.js',
     'amd/src/lib/vue-router.js',
-    //'amd/src/lib/vfg.js',
-    //'amd/src/lib/axios.min.js',
     'amd/src/datamodel.js',
-    // 'amd/src/vuejs-paginator.js',
     'amd/src/components/Store.js',
     'amd/src/components/Form.js',
     'amd/src/components/Video.js',
     'amd/src/components/Comments.js',
     'amd/src/components/Utils.js'
+     // 'amd/src/vuejs-paginator.js',
+       //'amd/src/lib/vfg.js',
+    //'amd/src/lib/axios.min.js',
 ],
     function (
         $,
         Vue,
         VueRouter,
-      //  VueFormGenerator,
-       // Axios,
         Datamodel,
-        // VuePaginator,
         Store,
         Form,
         Video,
         Comments,
         Utils
+        // VuePaginator,
+        //  VueFormGenerator,
+       // Axios,
     ) {
-
+        
         var datamodel = new Datamodel();
 
         var course = {
