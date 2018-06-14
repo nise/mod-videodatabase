@@ -1,7 +1,7 @@
 /**
  * Javascript Video for the Moodle videodatabase
  * 
- * The component takes user ratings for a video and calculated the Wilson coefficient by considering the previous positive and negative ratings. A user is only allowed to vote once on a video.
+ * This component arranges the video player.
  * 
  * @module     mod_videodatabase/videodatabase
  * @package    mod_videodatabase
