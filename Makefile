@@ -1,2 +1,2 @@
 # This target aims to update a remote plugin from github
-update: sudo git fetch --all && sudo git reset --hard origin/master
+update: git fetch --all && git reset --hard origin/master
