@@ -38,6 +38,7 @@ define([
 					}
 				},
 				zoom: { path: 'js/vi2.player.zoom.js', options: { /*observer: Vi2.observer*/ } },
+				//loop: { path: 'js/vi2.player.loop.js', options: { /*observer: Vi2.observer*/ } },
 				playbackSpeed: { path: 'js/vi2.player.playback-speed.js', options: {} },
 				logger: { path: 'js/vi2.core.player.logger.js', options: {} },
 				comments: {

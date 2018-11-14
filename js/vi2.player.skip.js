@@ -20,7 +20,7 @@ define(['jquery'], function ($) {
     *		
     */
     function Skip(options) {
-        this.options = $.extend(this.options, options); // todo: wroite in plain js
+        this.options = Object.assign(this.options, options);
     }
 
     Skip.prototype = {

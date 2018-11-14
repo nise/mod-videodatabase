@@ -597,7 +597,7 @@ echo ""; // end fluid container
 //$PAGE->requires->js_amd_inline("require(['jquery', 'jqueryui', 'mod_videodatabase/videodatabase']);");
 
 $PAGE->requires->js_amd_inline("require(['jquery', 'jqueryui', 'mod_videodatabase/videodatabase']);");
-
+//$PAGE->requires->js_call_amd('mod_videodatabase/videodatabase', 'init');
 
 /*
  * 

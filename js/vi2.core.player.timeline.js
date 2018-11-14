@@ -340,7 +340,50 @@ define(['jquery', 'js/vi2.core.utils.js'], function ($, Utils) {
         },
 
 
-        /**/
+        /**
+         * 
+         */
+        highlightTimeline: function (videoElement, timelineSelector, firstLoopPoint, secondLoopPoint, countLoopTimelinePoints) {
+            if (timelineSelector === undefined) {
+                timelineSelector = this.options.timelineSelector;
+            }
+            var videoDuration = videoElement.duration;
+            var loopMarker = document.createElement('span');
+            loopMarker.classList.add('vi2-timeline-marker');
+
+            if (countLoopTimelinePoints === 0) {
+                timelineSelector.appendChild(loopMarker);
+                loopMarker.style.left = (firstLoopPoint / videoDuration * 100) + '%';
+
+            } else if (countLoopTimelinePoints === 1) {
+                var firstCreatedLoopMarker = timelineSelector.querySelector('.vi2-timeline-marker');
+                firstCreatedLoopMarker.parentNode.removeChild(firstCreatedLoopMarker);
+                timelineSelector.appendChild(loopMarker);
+                loopMarker.style.left = (firstLoopPoint / videoDuration * 100) + '%';
+                loopMarker.style.width = (secondLoopPoint / videoDuration * 100) - (firstLoopPoint / videoDuration * 100) + '%';
+
+            }
+        },
+
+
+        /**
+         * 
+         */
+        deleteHighlightTimeline: function (timelineSelector) {
+            if (timelineSelector === undefined) {
+                timelineSelector = this.options.timelineSelector;
+            }
+            var loopMarkersArray = timelineSelector.querySelectorAll('.vi2-timeline-marker');
+
+            for (var i = 0; i < loopMarkersArray.length; i++) {
+                loopMarkersArray[i].parentNode.removeChild(loopMarkersArray[i]);
+            }
+        },
+
+
+        /**
+         * 
+         */
         pixelInTime: function () { }
 
     };

@@ -97,6 +97,20 @@ width: 100%;
 	overflow:hidden;
 }
 
+.vi2-timeline-marker {
+	position: absolute;
+	top: 0;
+	z-index: 10000;
+	opacity: 0.5;
+
+	display: inline-block;
+	vertical-align: top;
+	width: 3px;
+	height: 14px;
+
+	background-color: red;
+}
+
 .vi2-timeline-main:hover .vi2-timeline-preview { 
 	display:block;
 }	
@@ -498,5 +512,62 @@ video {
   font-size: 1em;
   font-weight: normal;
 }
+
+
+
+.vi2-loop-controls {
+	position: relative;
+	display:inline-block;
+	width:34px;
+	height:29px;
+	padding: 0 4px;
+	margin:0;
+	-webkit-border-radius: 1px;
+	-moz-border-radius: 1px;
+	border-radius: 1px;
+
+	background-color:#555;
+	color:#fff;
+	font-size:10px;
+	text-align: center;
+	z-index:5000;
+}
+
+.vi2-loop-controls:hover {
+  background: #fff;
+  color:#003366;
+}
+
+.vi2-loop-controls::before {
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  content: "";
+
+  display: block;
+  width: 25px;
+  height: 20px;
+
+  -webkit-transform: translateX(-50%);
+  -moz-transform: translateX(-50%);
+  transform: translateX(-50%);
+
+  background-size: 20px;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.vi2-loop-controls-first-point::before {
+  background-image: url(../images/loop-icon-first.png);
+}
+
+.vi2-loop-controls-last-point::before {
+  background-image: url(../images/loop-icon-second.png);
+}
+
+.vi2-loop-controls-delete::before {
+  background-image: url(../images/loop-icon-close.png);
+}
+
 
 

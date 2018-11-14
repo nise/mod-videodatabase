@@ -97,7 +97,7 @@ define([
                     }
                     utils.get_ws('videodatabase_ratings', "POST", {
                         'videoid': videoid,
-                        'courseid': course.id,
+                        'courseid': course.id
                     }, function (e) {
                         callback(e);
                     }, function (err) {
