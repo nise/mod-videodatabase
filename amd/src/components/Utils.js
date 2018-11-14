@@ -20,14 +20,6 @@ define(['jquery', 'core/ajax'], function ($, ajax) {
          * @param {*} cb: Callback function 
          */
         this.get_ws = function (ws, method, params, cb) {
-            console.log('mod_' + ws)
-
-            /*ajax.call([{
-                methodname: 'mod_videodatabase_pluginname',
-                args: { courseid:2 },
-                done: function(e){ console.log(e); },
-                fail: function (e) { console.log(e); }
-            }]);*/
             ajax.call([{
                 methodname: 'mod_' + ws,
                 args: { data: params },
@@ -40,7 +32,7 @@ define(['jquery', 'core/ajax'], function ($, ajax) {
                         cb(msg);
                     }
                  },
-                fail: function (e) { console.log(888); console.log(e); }
+                fail: function (e) { console.log(e); }
             }]);
         };
 
