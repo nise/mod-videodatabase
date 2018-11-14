@@ -6,10 +6,39 @@ require_once($CFG->libdir . '/externallib.php');
 //require_once($CFG->dirroot . '/mod/chat/lib.php');
 
 
+class mod_videodatabase_external extends external_api {
+    
+     public static function name_parameters() {
+        //  VALUE_REQUIRED, VALUE_OPTIONAL, or VALUE_DEFAULT. If not mentioned, a value is VALUE_REQUIRED 
+        return new external_function_parameters(
+            array('courseid' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL))
+        );
+    }
+
+    public static function name_is_allowed_from_ajax() {
+        return true;
+    }
+
+    public static function name_returns() {
+        return new external_single_structure(
+                array(
+                    'data' => new external_value(PARAM_TEXT, 'username')
+                )
+        );
+    }
+
+    public static function name($data) {
+        return array(
+            'data' => 'video db'
+        );
+    }
+//}
+
+
 /**
  * Get the metadata of videos that are related to a course
  */
-class mod_videodatabase_videos_external extends external_api {
+//class mod_videodatabase_videos_external extends external_api {
     
      public static function get_all_videos_parameters() {
         //  VALUE_REQUIRED, VALUE_OPTIONAL, or VALUE_DEFAULT. If not mentioned, a value is VALUE_REQUIRED 
@@ -22,6 +51,10 @@ class mod_videodatabase_videos_external extends external_api {
                 )
             )
         );
+    }
+
+    public static function get_all_videos_is_allowed_from_ajax() {
+        return true;
     }
 
     public static function get_all_videos_returns() {

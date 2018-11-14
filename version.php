@@ -25,7 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2017064211;       // The current module version (Date: YYYYMMDDXX)
+$plugin->version   = 2017064231;       // The current module version (Date: YYYYMMDDXX)
 $plugin->requires  = 2014062500;    // Requires this Moodle version
 $plugin->component = 'mod_videodatabase';       // Full name of the plugin (used for diagnostics)
 $plugin->cron      = 0;
