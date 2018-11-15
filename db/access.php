@@ -1,6 +1,5 @@
 <?php
 
-
 /**
  * Page module capability definition
  *
