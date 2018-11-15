@@ -16,7 +16,6 @@ $functions = array(
                 'classpath'   => 'mod/videodatabase/classes/external.php',
                 'description' => 'get name',
                 'type'        => 'read'
-                //'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
         ),
         'mod_videodatabase_videos' => array(
                 'classname'   => 'mod_videodatabase_external',
@@ -24,50 +23,44 @@ $functions = array(
                 'classpath'   => 'mod/videodatabase/classes/external.php',
                 'description' => 'Getter for course-related videos',
                 'type'        => 'read'
-                //'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
         ),
         'mod_videodatabase_video' => array(
-                'classname'   => 'mod_videodatabase_get_video_external',
+                'classname'   => 'mod_videodatabase_external',
                 'methodname'  => 'get_video',
                 'classpath'   => 'mod/videodatabase/classes/external.php',
                 'description' => 'Getter for a video',
                 'type'        => 'read'
-                //'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
         ),
          'mod_videodatabase_store_video' => array( 
-                'classname'   => 'mod_videodatabase_set_video_external',
+                'classname'   => 'mod_videodatabase_external',
                 'methodname'  => 'set_video',
                 'classpath'   => 'mod/videodatabase/classes/external.php',
                 'description' => 'Setter for a video',
                 'type'        => 'write'
-                //'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
         ),
           'mod_videodatabase_logging' => array( 
-                'classname'   => 'mod_videodatabase_logging',
+                'classname'   => 'mod_videodatabase_external',
                 'methodname'  => 'log',
                 'classpath'   => 'mod/videodatabase/classes/external.php',
                 'description' => 'Store log to DB',
                 'type'        => 'write'
-                //'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
         ),
           'mod_videodatabase_get_log' => array( 
-                'classname'   => 'mod_videodatabase_get_log',
+                'classname'   => 'mod_videodatabase_external',
                 'methodname'  => 'get_log',
                 'classpath'   => 'mod/videodatabase/classes/external.php',
                 'description' => 'Obtains log data from the client',
                 'type'        => 'read'
-                //'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
         ),
         'mod_videodatabase_comments' => array(
-                'classname'   => 'mod_videodatabase_comments_external',
+                'classname'   => 'mod_videodatabase_external',
                 'methodname'  => 'get_all_comments',
                 'classpath'   => 'mod/videodatabase/classes/external.php',
                 'description' => 'Getter for course-related comments',
                 'type'        => 'read'
-                //'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
         ),
         'mod_videodatabase_annotations' => array(
-                'classname'   => 'mod_videodatabase_annotations_external',
+                'classname'   => 'mod_videodatabase_external',
                 'methodname'  => 'annotations',
                 'classpath'   => 'mod/videodatabase/classes/external.php',
                 'description' => 'Getter for all comments related to a video',
@@ -75,12 +68,11 @@ $functions = array(
                 'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
         ),
         'mod_videodatabase_ratings' => array(
-                'classname'   => 'mod_videodatabase_ratings_external',
+                'classname'   => 'mod_videodatabase_external',
                 'methodname'  => 'ratings',
                 'classpath'   => 'mod/videodatabase/classes/external.php',
                 'description' => 'Getter for video-related ratings',
                 'type'        => 'write'
-                //'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
         ),
       /*   'mod_hyperaudio_save_answer' => array(
         'classname'   => 'mod_hyperaudio_external',
@@ -90,12 +82,12 @@ $functions = array(
         'type'        => 'write'
     ),*/
          'mod_videodatabase_files' => array(
-                'classname'   => 'mod_videodatabase_files_external',
+                'classname'   => 'mod_videodatabase_external',
                 'methodname'  => 'files',
                 'classpath'   => 'mod/videodatabase/classes/external.php',
                 'description' => 'Store files to moodle',
                 'type'        => 'write'
-                //'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
+                
         )
 );
 

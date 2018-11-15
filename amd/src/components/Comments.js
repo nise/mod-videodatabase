@@ -41,7 +41,7 @@ define([
                 },
                 edit: function(id){},
                 remove: function (id, video) { 
-                    utils.get_ws('videodatabase_annotations', 'POST', { 
+                    utils.get_ws('annotations', { 
                         courseid: course.id, 
                         id:id, 
                         videoid:video,
@@ -59,7 +59,7 @@ define([
             },
             created: function () {
                 var _this = this;
-                utils.get_ws('videodatabase_annotations', 'POST', { courseid: course.id }, function (msg) {
+                utils.get_ws('annotations', { courseid: course.id }, function (msg) {
                     try {
                         var d = JSON.parse(msg.data);
                         _this.all_comments = Object.keys(d).map(function (o) { return d[o]; });
@@ -71,7 +71,7 @@ define([
             },
             updated: function () {
                 var _this = this;
-                utils.get_ws('videodatabase_annotations', 'POST', { courseid: course.id }, function (msg) {
+                utils.get_ws('annotations', { courseid: course.id }, function (msg) {
                     try {
                         var d = JSON.parse(msg.data);
                         _this.all_comments = Object.keys(d).map(function (o) { return d[o]; });

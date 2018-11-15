@@ -95,7 +95,7 @@ define([
                     if(videoid === null){
                         videoid = this.currentvideo
                     }
-                    utils.get_ws('videodatabase_ratings', "POST", {
+                    utils.get_ws('ratings', {
                         'videoid': videoid,
                         'courseid': course.id
                     }, function (e) {
@@ -109,7 +109,7 @@ define([
                  */
                 userHasRatedVideo: function (callback) {
                     var _this = this;
-                    utils.get_ws('videodatabase_ratings', "POST", {
+                    utils.get_ws('ratings', {
                         'videoid': this.currentvideo,
                         'courseid': course.id,
                         'userid': user.id,
@@ -137,7 +137,7 @@ define([
                  * Interface for the web service
                  */
                 storeRating: function (rating, callback) {
-                    utils.get_ws('videodatabase_ratings', "POST", {
+                    utils.get_ws('ratings', {
                         'videoid': this.currentvideo,
                         'courseid': course.id,
                         'userid': user.id,

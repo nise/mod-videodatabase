@@ -336,7 +336,7 @@ define([
             function storeFileToMoodle(filename, location, area) {
 
                 console.log('start storing' + '---' + filename + '---' + location + '---' + area);
-                utils.get_ws('videodatabase_files', "POST", {
+                utils.get_ws('files', {
                     filename: filename,
                     location: location,
                     filearea: area,
@@ -430,7 +430,7 @@ define([
                         });
                         */
                         // save data to videodatabase
-                        utils.get_ws('videodatabase_store_video', "POST", {
+                        utils.get_ws('store_video', {
                             'nu': nu,
                             'id': id,
                             'data': JSON.stringify(data)

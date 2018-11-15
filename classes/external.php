@@ -3,9 +3,10 @@
 defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->libdir . '/externallib.php');
-//require_once($CFG->dirroot . '/mod/chat/lib.php');
 
-
+/**
+ * Very inefficient class. Needs to be refactored as an object of parameters and return objects.
+ */
 class mod_videodatabase_external extends external_api {
     
      public static function name_parameters() {
@@ -14,10 +15,8 @@ class mod_videodatabase_external extends external_api {
             array('courseid' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL))
         );
     }
-
-    public static function name_is_allowed_from_ajax() {
-        return true;
-    }
+    
+    public static function name_is_allowed_from_ajax() { return true; }
 
     public static function name_returns() {
         return new external_single_structure(
@@ -26,20 +25,15 @@ class mod_videodatabase_external extends external_api {
                 )
         );
     }
-
     public static function name($data) {
         return array(
             'data' => 'video db'
         );
     }
-//}
-
 
 /**
  * Get the metadata of videos that are related to a course
- */
-//class mod_videodatabase_videos_external extends external_api {
-    
+ */    
      public static function get_all_videos_parameters() {
         //  VALUE_REQUIRED, VALUE_OPTIONAL, or VALUE_DEFAULT. If not mentioned, a value is VALUE_REQUIRED 
         return new external_function_parameters(
@@ -52,11 +46,9 @@ class mod_videodatabase_external extends external_api {
             )
         );
     }
-
     public static function get_all_videos_is_allowed_from_ajax() {
         return true;
     }
-
     public static function get_all_videos_returns() {
         return new external_single_structure(
                 array(
@@ -69,7 +61,6 @@ class mod_videodatabase_external extends external_api {
                 )
         );
     }
-
     public static function get_all_videos($data) {
         global $CFG, $DB, $USER;
         
@@ -86,16 +77,12 @@ class mod_videodatabase_external extends external_api {
             'userimage' => '/moodle/user/pix.php/'.$USER->id.'/f1.jpg'
         );
     }
-}
+    public static function get_all_videos_is_allowed_from_ajax() { return true; }
+    
 
-
-
-
-
-/**
- * Make video metadata persistent
- */
-class mod_videodatabase_set_video_external extends external_api {
+    /**
+     * Make video metadata persistent
+     */
     public static function set_video_parameters() {
         return new external_function_parameters(
             array(
@@ -126,15 +113,13 @@ class mod_videodatabase_set_video_external extends external_api {
         }
         $transaction->allow_commit();
         return array('data'=> '{ "status":"ok", "msg":"Successfully saved meta data of video with id '.'."}');
-    } 
-}
+    }
+    public static function set_video_is_allowed_from_ajax() { return true; }
 
 
-/**
- * Takes video player log data form the client
- */
-class mod_videodatabase_logging extends external_api {
-    
+    /**
+     * Takes video player log data form the client
+     */
     public static function log_parameters() {
         return new external_function_parameters(
             array(
@@ -148,13 +133,11 @@ class mod_videodatabase_logging extends external_api {
             )
         );
     }
-    
     public static function log_returns() {
         return new external_single_structure(
                 array( 'response' => new external_value(PARAM_RAW, 'Server respons to the incomming log') )
         );
     }
-
     public static function log($data) {
         global $CFG, $DB;
         /*
@@ -187,14 +170,12 @@ class mod_videodatabase_logging extends external_api {
         
         return array('response'=> json_encode($res));
     } 
-}
-
-
-/**
- * Takes video player log data form the client
- */
-class mod_videodatabase_get_log extends external_api {
+    public static function log_is_allowed_from_ajax() { return true; }
     
+
+    /**
+     * Takes video player log data form the client
+     */ 
     public static function get_log_parameters() {
         return new external_function_parameters(
             array(
@@ -207,13 +188,11 @@ class mod_videodatabase_get_log extends external_api {
             )
         );
     }
-    
     public static function get_log_returns() {
         return new external_single_structure(
                 array( 'response' => new external_value(PARAM_RAW, 'Server respons to the incomming log') )
         );
     }
-
     public static function get_log($data) {
         global $CFG, $DB;
         $transaction = $DB->start_delegated_transaction(); //If an exception is thrown in the below code, all DB queries in this code will be rollback.
@@ -223,13 +202,12 @@ class mod_videodatabase_get_log extends external_api {
         
         return array('response'=> json_encode($res));
     } 
-}
+    public static function get_log_is_allowed_from_ajax() { return true; }
+    
 
-
-/**
- * Get the entiry log of the course
- */
-class mod_videodatabase_comments_external extends external_api {
+    /**
+     * Get the entiry log of the course
+     */
     public static function get_all_comments_parameters() {
         return new external_function_parameters(
             array(
@@ -254,12 +232,11 @@ class mod_videodatabase_comments_external extends external_api {
         $res = $DB->get_records($table, $conditions = null, $sort = '', $fields = '*', $limitfrom = 0, $limitnum = 0);
         $transaction->allow_commit();
         return array('data'=> json_encode($res));
-    }    
-}
+    } 
+    public static function get_all_comments_is_allowed_from_ajax() { return true; }
+       
 
-
-class mod_videodatabase_annotations_external extends external_api {
-    
+    //
     public static function annotations_parameters() {
         return new external_function_parameters(
             array(
@@ -280,13 +257,11 @@ class mod_videodatabase_annotations_external extends external_api {
             )
         );
     }
-    
     public static function annotations_returns() {
         return new external_single_structure(
                 array( 'data' => new external_value(PARAM_RAW, 'data') )
         );
     }
-    
     public static function annotations($data) {
         global $CFG, $DB;
         
@@ -328,14 +303,13 @@ class mod_videodatabase_annotations_external extends external_api {
         
         $transaction->allow_commit();
         return array('data'=> json_encode($res));
-    }        
-} 
+    }       
+    public static function annotations_is_allowed_from_ajax() { return true; }
+     
 
-
-/**
- * Get or set video ratings
- */
-class mod_videodatabase_ratings_external extends external_api {
+    /**
+     * Get or set video ratings
+     */
     public static function ratings_parameters() {
         return new external_function_parameters(
             array(
@@ -385,14 +359,13 @@ class mod_videodatabase_ratings_external extends external_api {
             'data'=> json_encode($res), 
             'info'=> sizeof($res)
         );
-    }    
-}
+    }  
+    public static function ratings_is_allowed_from_ajax() { return true; }  
 
 
-/**
- * Store files in Moodle
- */
-class mod_videodatabase_files_external extends external_api {
+    /**
+     * Store files in Moodle
+     */
     public static function files_parameters() {
         return new external_function_parameters(
             array(
@@ -464,43 +437,10 @@ class mod_videodatabase_files_external extends external_api {
         }
     
         return array('data'=> json_encode($res));
-    }    
-}
-
-
-
-
-/*
- 
-class mod_videodatabase_get_video_external extends external_api {
-    public static function get_video_parameters() {
-        return new external_function_parameters(
-            array(
-                'data' => 
-                    new external_single_structure(
-                        array(
-                            'courseid' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL),
-                            'videoid' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL)
-                        )
-                )
-            )
-        );
     }
-    public static function get_video_returns() {
-        return new external_single_structure(
-                array( 'data' => new external_value(PARAM_RAW, 'data') )
-        );
-    }
-    public static function get_video() {
-        global $CFG, $DB;
-        $transaction = $DB->start_delegated_transaction(); //If an exception is thrown in the below code, all DB queries in this code will be rollback.
-        $table = "videodatabase_videos";
-        $res = $DB->get_records($table, array('id'=>165 ), $sort = '', $fields = '*', $limitfrom = 0, $limitnum = 0);
-        $transaction->allow_commit();
-        return array('data'=> json_encode($res));
-    } 
+    public static function files_is_allowed_from_ajax() { return true; }   
+
 }
-*/
 
 
 ?>

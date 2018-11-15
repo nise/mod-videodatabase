@@ -116,7 +116,7 @@ define([
                 },
                 saveAnnotation: function () {
                     var _this = this;
-                    utils.get_ws('videodatabase_annotations', "POST", {
+                    utils.get_ws('annotations', {
                         'userid': user.username,
                         'videoid': this.$route.params.id,
                         'courseid': course.id,
@@ -132,7 +132,7 @@ define([
                     });
                 },
                 removeAnnotation: function (id, video) {
-                    utils.get_ws('videodatabase_annotations', 'POST', {
+                    utils.get_ws('annotations', {
                         courseid: course.id,
                         id: id,
                         videoid: video,

@@ -119,7 +119,7 @@ define([
                 },
                 created: function () {
                     var _this = this;
-                    utils.get_ws('videodatabase_ratings', "POST", {
+                    utils.get_ws('ratings', {
                         'courseid': course.id,
                     }, function (e) {
                         try {
@@ -198,7 +198,7 @@ define([
                         ].join(' ');
                     },
                     downloadLogData: function () {
-                        utils.get_ws('videodatabase_get_log', "POST", {
+                        utils.get_ws('get_log', {
                             'courseid': course.id,
                         }, function (data) { //console.log(data)
 
@@ -228,7 +228,7 @@ define([
         } // callback to webservice
 
 
-        utils.get_ws('videodatabase_videos', "POST", { 'courseid': course.id }, connection_handler);
+        utils.get_ws('videos', { 'courseid': course.id }, connection_handler);
 
 
 

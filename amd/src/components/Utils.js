@@ -15,13 +15,12 @@ define(['jquery', 'core/ajax'], function ($, ajax) {
         /**
          * Obtains data from a moodle webservice
          * @param {*} ws: Name of the web service 
-         * @param {*} method: GET or POST 
          * @param {*} params: Parameter to transfer 
          * @param {*} cb: Callback function 
          */
-        this.get_ws = function (ws, method, params, cb) {
+        this.get_ws = function (ws, params, cb) {
             ajax.call([{
-                methodname: 'mod_' + ws,
+                methodname: 'mod_videodatabase_' + ws,
                 args: { data: params },
                 done: function (msg) { 
                     if (msg.hasOwnProperty('exception')) {
@@ -32,7 +31,9 @@ define(['jquery', 'core/ajax'], function ($, ajax) {
                         cb(msg);
                     }
                  },
-                fail: function (e) { console.log(e); }
+                fail: function (e) { 
+                    console.log(ws, e); 
+                }
             }]);
         };
 
