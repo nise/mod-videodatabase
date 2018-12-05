@@ -18,9 +18,10 @@ define(['jquery', 'core/ajax'], function ($, ajax) {
          * @param {*} params: Parameter to transfer 
          * @param {*} cb: Callback function 
          */
-        this.get_ws = function (ws, params, cb) {
+        this.get_ws = function (ws, params, cb, external) {
+            external = external === undefined ?  false : external;
             ajax.call([{
-                methodname: 'mod_videodatabase_' + ws,
+                methodname: external ? ws : 'mod_videodatabase_' + ws,
                 args: { data: params },
                 done: function (msg) { 
                     if (msg.hasOwnProperty('exception')) {

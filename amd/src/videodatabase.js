@@ -230,8 +230,11 @@ define([
 
         utils.get_ws('videos', { 'courseid': course.id }, connection_handler);
 
+        /*utils.get_ws('mod_videofiles_video_pool', function(data){
+            console.log(data.data);
+        }, true);*/
 
-
+       
 
 
         /**

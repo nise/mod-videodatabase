@@ -325,6 +325,29 @@ echo '<script type="text/x-template" id="modal-template"><!-- Modal -->
 	</script>';
 
 
+	// file upload and preprocessing
+echo '
+<div v-cloak id="pool">
+	<div>
+		<div class="col-md-12 col-sm-12  col-xs-12">
+			<h3>Video Pool</h3>
+			<div class="container-fluid">
+			<div v-for="video in videos" class="col-xs-12 col-sm-5 col-md-2 video-item">
+				<div >
+					<div class="form-head"><span class="fa fa-check selecta"></span> <span class="bold">{{ video.name }}</span></div>
+					<video width="200" controls="controls">
+						<source :src="video.url" type="video/mp4" />
+					</video>
+				</div>	
+				<!-- 
+				{ "id": "2", "course": "4", "name": "dd", "intro": "", "introformat": "1", 
+				  "width": "800", "height": "500", "responsive": "0", "url": "/moodle/pluginfile.php/45/mod_videofile/videos/0/1522328392-pn3260p.mp4", "timecreated": "1543955681", "timemodified": "1543955681" } 
+				-->
+			</div>
+			</div>
+		</div>
+	</div>	
+</div>';
 
 // file upload and preprocessing
 echo '
@@ -420,7 +443,6 @@ echo '
 	<div id="submit_video_form" class="col-md-12">
 		<button v-on:click="submitForm" class="btn btn-primary">Speichern</button>
 		<a class="btn btn-link" href="#/videos">abbrechen</a>
-		<a v-on:click="removeVideo" class="btn btn-link right red">Video verwerfen/löschen</a>
 	</div>
 </div>
 ';
@@ -482,10 +504,10 @@ echo '
 		<div class="page-controls">
 			<span title="Logdaten des Kurses herunterladen" v-if="isEditor" @click="downloadLogData()" title="" class="fa fa-download large right link"></span>
 			<router-link v-if="isEditor" class="title" :to="{ path: \'/videos/new\'}">
-				<span title="Video hinzufügen" class="fa fa-plus large right"></span>	
+				<span title="Video hinzufügen" class="fa fa-cog large right link"></span>	
 			</router-link>
 			<router-link v-if="isEditor" class="title" :to="{ path: \'/comments\'}">
-				<span title="Alle Kommentare anzeigen" class="fa fa-comments large right"></span>	
+				<span title="Alle Kommentare anzeigen" class="fa fa-comments large right link"></span>	
 			</router-link>
 			<span @click="setTableView()" title="Tabellenansicht" class="fa fa-th large right link"></span>
 			<span @click="setListView()" title="Kachelansicht" class="fa fa-list large right link"></span>
@@ -502,7 +524,7 @@ echo '
 						<table class="video-table table-sm table-striped table-hover table-responsive">
 							<thead>
 								<tr>
-									<th></th>
+									<!--<th></th>-->
 									<th>Titel</th>
 									<th>Sportart</th>
 									<th>Klassenstufe</th>
@@ -517,13 +539,13 @@ echo '
 							</thead>
 							<tbody>
 								<tr v-for="video in filteredList">
-									<td>
+									<!--<td>
 										<div v-if="isEditor">
 											<router-link v-if="isEditor" class="" :to="{ path: \'/videos/\' + video.id + \'/edit\'}">
 												<span class="fa fa-pencil"></span>
 											</router-link>
 										</div>
-									</td>
+									</td>-->
 									<td>
 										<router-link class="title" :to="{ path: \'/videos/\' + video.id + \'/view\'}">
 											{{ video.title }}
@@ -572,9 +594,9 @@ echo '
 									<span v-for="star in videoRatings[video.id]"> 
 										<span class="fa fa-star"></span>
 									</span>
-									<router-link v-if="isEditor" class="title" :to="{ path: \'/videos/\' + video.id + \'/edit\'}">
+									<!--<router-link v-if="isEditor" class="title" :to="{ path: \'/videos/\' + video.id + \'/edit\'}">
 										<span class="fa fa-pencil right"></span>
-									</router-link>
+									</router-link>-->
 								</div>
 							</div>
 						</div>

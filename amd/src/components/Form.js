@@ -152,7 +152,7 @@ define([
                     filesChange: function (fieldName, fileList) {
                         if (!fileList.length) {
                             return;
-                        } 
+                        }
                         console.log(fileList[0])
                         $('.vue-form-generator').show();
                         $('#submit_video_form').show();
@@ -401,35 +401,7 @@ define([
                 template: '#form-submit-template',
                 methods: {
                     submitForm() {
-                        var id = -1, data = {}, nu = 0;
-                        if (this.$route.params.id !== undefined) {
-                            id = store.getters.currentVideoData().id;
-                            data = store.getters.currentVideoData();
-                        } else {
-                            data = store.getters.newvideo();
-                            nu = 1;
-                            id = (data.title + data.description).hashCode();
-                            data.id = id;
-                            //store.commit('addVideo', data );
-                            //store.commit('setCurrentVideo', id);
-                        }
-                        // move files into the moodledata diretory
-                        var name = data.filename.split('.')[0];
-                        var tmp_path = '/videos/tmp/';
-                        storeFileToMoodle('still-' + name + '_comp.jpg', tmp_path, 'thumbnail');
-                        storeFileToMoodle('still-' + name + '_comp.gif', tmp_path, 'animation');
-                        storeFileToMoodle(data.filename, tmp_path, 'video');
-                        for (var i = 0, len = data.length; i < len; i++) {
-                            storeFileToMoodle('preview-' + name + '-' + i + '.jpg', tmp_path, 'preview');
-                        }
-                        // move files outside moodle
-                        /*
-                        complete_upload(data.filename.split('.')[0], data.length, function(msg){
-                            console.log('Moving files is done.');
-                            console.log(msg);
-                        });
-                        */
-                        // save data to videodatabase
+                        // save selection to videodatabase
                         utils.get_ws('store_video', {
                             'nu': nu,
                             'id': id,
@@ -442,21 +414,40 @@ define([
                             router.push({ path: '/videos' });
                         });
                     },
-                    removeVideo() {
-                        var id = this.$route.params.id;
-                        if (id !== undefined) {
-                            if (window.confirm('Wollen Sie das Video wirklich löschen?')) {
-                                router.push({ path: '/videos' });
-                                store.commit('removeVideo', id);
-                            }
-                        }
-                    },
                     response(res) {
                         console.log(res);
                     }
 
                 }
             };
+
+            /**
+             * Generates a matrix of videos that have been uploaded via the plugin videofiles
+             */
+            const SimpleForm = {
+                template: '#pool',
+                data: function () {
+                    return {
+                        videos: []
+                    };
+                },
+                created() {
+                    var vm = this;
+                    utils.get_ws('video_pool', { 'courseid': course.id }, function (res) {
+                        var data = JSON.parse(res.data);
+                        vm.videos = data;
+
+                        console.log(data);
+                    }, false);
+
+                },
+                methods: {
+                    videosxx() {
+                        return this.videos;
+                    }
+                }
+            };
+
 
             String.prototype.hashCode = function () {
                 var hash = 0, i, chr;
@@ -472,10 +463,11 @@ define([
             // combine the parts of the form
             const Form = {
                 render(h) {
-                    const upload = h(UploadForm);
-                    const meta = h(MetadataForm);
-                    const submit = h(SubmitForm);//h('input', { class: { 'btn-primary':true, btn:true }, attrs: { type: 'submit' } }, 'speichern');
-                    return h("div", [upload, meta, submit]);
+                    //const upload = h(UploadForm);
+                    //const meta = h(MetadataForm);
+                    //const submit = h(SubmitForm);//h('input', { class: { 'btn-primary':true, btn:true }, attrs: { type: 'submit' } }, 'speichern');
+                    //return h("div", [upload, meta, submit]);
+                    return h("div", [h(SimpleForm), h(SubmitForm)]);
                 }
             };
             this.Form = Form;
