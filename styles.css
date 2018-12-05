@@ -162,7 +162,7 @@ display:block;
 	font-weight:bold;
 	margin-top:.3em;
 	max-height: 2.6em;
-	color: #167ac6;
+	color: #f60;
 	line-height: 1.3em;
   overflow-wrap: break-word;
   white-space: normal;
@@ -187,7 +187,7 @@ a {
 }
 
 div.link{
-    color:#167ac6;
+    color:#f60;
     cursor: pointer;
     text-decoration: none;
     margin-bottom: 10px;
@@ -195,13 +195,13 @@ div.link{
 }
 
 .link {
-    color:#167ac6;
+    color:#f60;
     cursor: pointer;
     text-decoration: none;
 }
 
 .link:hover, a:hover {
-    color:#0c4a75;
+    color:rgb(182, 74, 3);
 }
 
 .video-close {
@@ -233,7 +233,7 @@ div.link{
 .row .coll, thumbnail{
     display:inline;
     border: solid red 1px;
-    color: #0070a8;
+    color: #f60;
     max-width: 300px !important;
 }
 
@@ -336,7 +336,20 @@ div.link{
     font-size:0.8em !important;
 }
 
+.selecta {
+    border-radius: 100%;
+    background-color: #767676;
+    color:#fff;
+    padding:3px;
+}
 
+.selecta:hover {
+    background-color: #42b983; 
+}
+
+.form-head {
+    margin-bottom:4px;
+}
 
 
 @media all and (max-width: 575px) {
@@ -460,11 +473,11 @@ div.link{
 }
 
 .Rate__star.hover{
-    color: #167ac6;
+    color: #f60;
     stroke: currentColor;
     fill: currentColor;
 }
-.Rate__star.filled{color: #167ac6;}
+.Rate__star.filled{color: #f60;}
 
 .Rate__star:hover, 
 .Rate__star:focus{text-decoration: none;}
@@ -477,8 +490,8 @@ div.link{
 }
 
 .Rate.has-error .Rate__star{color: #f37a77;}
-.Rate.has-error .Rate__star.hover{color: #167ac6;}
-.Rate.has-error .Rate__star.filled{color: #167ac6;}
+.Rate.has-error .Rate__star.hover{color: #f60;}
+.Rate.has-error .Rate__star.filled{color: #f60;}
 
 .Rate__star[disabled]{
   color: #CCC;

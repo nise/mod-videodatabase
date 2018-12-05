@@ -47,7 +47,7 @@
 
 .vi2-timeline-main .ui-slider-range {
 	height:inherit;
-	background-color: #167ac6;
+	background-color: #f60;
 	border-radius:0;
 	opacity:1;
 	cursor: pointer;
@@ -134,13 +134,13 @@ width: 100%;
 	border-radius: 1px;
 	cursor: pointer;
 	z-index:5000;
-	background-color:#167ac6;
+	background-color:#f60;
 	color:#fff;
 	margin:0;
 }
 
 .vi2-speed-controls:hover {
-	background: #fff; color:#167ac6;
+	background: #fff; color:#f60;
 }
 
 .vi2-speed-controls > ul { 
@@ -152,7 +152,7 @@ width: 100%;
 	z-index:5001;
 	margin:0;
 	padding:0;   
-	background-color:#167ac6; 
+	background-color:#f60; 
 	list-style:none;
 	line-height:12px;
 	-webkit-border-radius: 1px;
@@ -174,7 +174,7 @@ width: 100%;
 	vertical-align:middle; 
 	border-bottom: solid 1px #333;
 	}
-.vi2-speed-controls:hover > ul > li:hover { border:0 none; background: #fff; color:#167ac6;}
+.vi2-speed-controls:hover > ul > li:hover { border:0 none; background: #fff; color:#f60;}
 
 
 
@@ -195,7 +195,7 @@ width: 100%;
 	height: 30px;
 	font-size: 20px;
 	text-align: center;
-	background-color: #167ac6;
+	background-color: #f60;
 	-webkit-border-radius: 1px;
 	-moz-border-radius: 1px;
 	border-radius: 1px;
@@ -206,7 +206,7 @@ width: 100%;
 }
 
 .vi2-zoom-controls span:hover {
-	background: #fff; color:#167ac6;
+	background: #fff; color:#f60;
 }
 
 .vi2-zoom-display {
@@ -255,7 +255,7 @@ width: 100%;
 	-webkit-border-radius: 1px;
 	-moz-border-radius: 1px;
 	border-radius: 1px;
-	background-color:#167ac6;
+	background-color:#f60;
 	color:#fff;
 	cursor: pointer;
 	z-index:5000;
@@ -264,7 +264,7 @@ width: 100%;
 
 
 .vi2-skipback-controls:hover {
-	background: #fff; color:#167ac6;
+	background: #fff; color:#f60;
 }
 
 
@@ -355,12 +355,12 @@ author: niels.seidel@nise81.com
 
 /* player controls */
 
-video {
+.videowrapper video {
 	width:100%;
 }
 
 .video-controls {
-	background-color: rgb(205, 231, 255);
+	background-color: #88b77b;
 	clear: both;
 	display: block;
 	height: 90px;
@@ -400,14 +400,14 @@ video {
 	-webkit-border-radius: 1px;
 	-moz-border-radius: 1px;
 	border-radius: 1px;
-	background-color:#167ac6;
+	background-color:#f60;
 	color:#fff;
 	cursor: pointer;
 }
 
 .vi2-video-play-pause:hover{
 	background-color:#fff;
-	color:#167ac6;
+	color:#f60;
 }
 
 
@@ -420,7 +420,7 @@ video {
 	position:relative;
 	
 	height: 30px;
-	color: #167ac6;
+	color: #f60;
 	border:0 none;
 	padding: 0px 8px;
 	float: right;
@@ -456,13 +456,13 @@ video {
 	top:0; 
 	width:0px; 
 	height:inherit;
-	background: #167ac6;
+	background: #f60;
 	border:0 none;
 	padding:0;
 	margin:0;	
 }
 .vi2-volume-controls .vi2-volume-slider .ui-slider-handle:hover {
-	background-color: #167ac6;	
+	background-color: #f60;	
 }
 
 .vi2-volume-controls .vi2-volume-slider .ui-slider-handle .ui-state-hover {	background-color: orange; }
@@ -471,7 +471,7 @@ video {
 .vi2-volume-controls .vi2-volume-slider .ui-slider-range {
 	display:inline-block;
 	height:inherit;
-	background-color: #167ac6;
+	background-color: #f60;
 	position:absolute;
 	top:0;
 	border:0 none;
@@ -487,7 +487,7 @@ video {
 	width: 22px;
 	height: 22px;
 	font-size:20px;
-	color:#167ac6;
+	color:#f60;
 }
 
 .vi2-volume-button:hover {
