@@ -10,54 +10,69 @@
 
 
 $functions = array(
-         'mod_videodatabase_pluginname' => array(
+        'mod_videodatabase_pluginname' => array(
                 'classname'   => 'mod_videodatabase_external',
                 'methodname'  => 'name',
                 'classpath'   => 'mod/videodatabase/classes/external.php',
                 'description' => 'get name',
-                'type'        => 'read'
+                'type'        => 'read',
+                'ajax'        => true 
         ),
         'mod_videodatabase_videos' => array(
                 'classname'   => 'mod_videodatabase_external',
                 'methodname'  => 'get_all_videos',
                 'classpath'   => 'mod/videodatabase/classes/external.php',
                 'description' => 'Getter for course-related videos',
-                'type'        => 'read'
+                'type'        => 'read',
+                'ajax'        => true 
+        ),
+        'mod_videodatabase_video_pool' => array(
+                'classname'   => 'mod_videodatabase_external',
+                'methodname'  => 'get_video_pool',
+                'classpath'   => 'mod/videodatabase/classes/external.php',
+                'description' => 'Getter pool of uploaded videos from the plugin videofiles',
+                'type'        => 'read',
+                'ajax'        => true 
         ),
         'mod_videodatabase_video' => array(
                 'classname'   => 'mod_videodatabase_external',
                 'methodname'  => 'get_video',
                 'classpath'   => 'mod/videodatabase/classes/external.php',
                 'description' => 'Getter for a video',
-                'type'        => 'read'
+                'type'        => 'read',
+                'ajax'        => true 
         ),
          'mod_videodatabase_store_video' => array( 
                 'classname'   => 'mod_videodatabase_external',
                 'methodname'  => 'set_video',
                 'classpath'   => 'mod/videodatabase/classes/external.php',
                 'description' => 'Setter for a video',
-                'type'        => 'write'
+                'type'        => 'write',
+                'ajax'        => true 
         ),
           'mod_videodatabase_logging' => array( 
                 'classname'   => 'mod_videodatabase_external',
                 'methodname'  => 'log',
                 'classpath'   => 'mod/videodatabase/classes/external.php',
                 'description' => 'Store log to DB',
-                'type'        => 'write'
+                'type'        => 'write',
+                'ajax'        => true 
         ),
           'mod_videodatabase_get_log' => array( 
                 'classname'   => 'mod_videodatabase_external',
                 'methodname'  => 'get_log',
                 'classpath'   => 'mod/videodatabase/classes/external.php',
                 'description' => 'Obtains log data from the client',
-                'type'        => 'read'
+                'type'        => 'read',
+                'ajax'        => true 
         ),
         'mod_videodatabase_comments' => array(
                 'classname'   => 'mod_videodatabase_external',
                 'methodname'  => 'get_all_comments',
                 'classpath'   => 'mod/videodatabase/classes/external.php',
                 'description' => 'Getter for course-related comments',
-                'type'        => 'read'
+                'type'        => 'read',
+                'ajax'        => true 
         ),
         'mod_videodatabase_annotations' => array(
                 'classname'   => 'mod_videodatabase_external',
@@ -65,14 +80,15 @@ $functions = array(
                 'classpath'   => 'mod/videodatabase/classes/external.php',
                 'description' => 'Getter for all comments related to a video',
                 'type'        => 'write',
-                'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
+                'ajax'        => true 
         ),
         'mod_videodatabase_ratings' => array(
                 'classname'   => 'mod_videodatabase_external',
                 'methodname'  => 'ratings',
                 'classpath'   => 'mod/videodatabase/classes/external.php',
                 'description' => 'Getter for video-related ratings',
-                'type'        => 'write'
+                'type'        => 'write',
+                'ajax'        => true 
         ),
       /*   'mod_hyperaudio_save_answer' => array(
         'classname'   => 'mod_hyperaudio_external',
@@ -86,7 +102,8 @@ $functions = array(
                 'methodname'  => 'files',
                 'classpath'   => 'mod/videodatabase/classes/external.php',
                 'description' => 'Store files to moodle',
-                'type'        => 'write'
+                'type'        => 'write',
+                'ajax'        => true 
                 
         )
 );

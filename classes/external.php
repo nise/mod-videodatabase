@@ -46,9 +46,6 @@ class mod_videodatabase_external extends external_api {
             )
         );
     }
-    public static function get_all_videos_is_allowed_from_ajax() {
-        return true;
-    }
     public static function get_all_videos_returns() {
         return new external_single_structure(
                 array(
@@ -77,8 +74,65 @@ class mod_videodatabase_external extends external_api {
             'userimage' => '/moodle/user/pix.php/'.$USER->id.'/f1.jpg'
         );
     }
-    public static function get_all_videos_is_allowed_from_ajax() { return true; }
+    //public static function get_all_videos_is_allowed_from_ajax() { return true; }
     
+
+/**
+ * Get the metadata of videos that are related to a course
+ */    
+     public static function get_video_pool_parameters() {
+        //  VALUE_REQUIRED, VALUE_OPTIONAL, or VALUE_DEFAULT. If not mentioned, a value is VALUE_REQUIRED 
+        return new external_function_parameters(
+            array(
+                'data' => new external_single_structure(
+                    array(
+                        'courseid' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL),
+                    )
+                )
+            )
+        );
+    }
+    public static function get_video_pool_returns() {
+        return new external_single_structure(
+                array(
+                    'data' => new external_value(PARAM_RAW, 'data')
+                )
+        );
+    }
+    public static function get_video_pool($data) {
+        global $CFG, $DB, $USER;
+        
+        //$transaction = $DB->start_delegated_transaction(); 
+        $table = "course";
+        /* Default exception handler: 
+        Can not find data record in database table external_functions. 
+        Debug: SELECT * FROM {external_functions} WHERE name = ?\n[array (\n  0 => 'video_pool',\n)]\n
+        Error code: invalidrecord\n* line 1533 of /lib/dml/moodle_database.php: dml_missing_record_exception thrown\n* line 1509 of /lib/dml/moodle_database.php: call to moodle_database->get_record_select()\n* line 73 of /lib/externallib.php: call to moodle_database->get_record()\n* line 185 of /lib/externallib.php: call to external_api::external_function_info()\n* line 59 of /lib/ajax/service.php: call to external_api::call_external_function()\n, referer: http://localhost/moodle/mod/videodatabase/view.php?id=1
+        */
+ 
+        //$res = $DB->get_records($table, array()); 
+        //$res = $DB->get_records_sql('SELECT * FROM {table}');
+        //$transaction->allow_commit();
+        $context = context_course::instance((int)$data['courseid']);
+
+        if (!has_capability('mod/videodatabase:view', $context)) {
+            require_capability('mod/videodatabase:view', $context);
+        }
+
+        $sql='SELECT * FROM '.$CFG->prefix.'videofile'; //WHERE course = 4 '.(int)$data['courseid']
+        $res = $DB->get_records_sql($sql);
+        // get url
+        /* $filename = "test-video.mp4";
+        $table_files = "files";
+        $results = $DB->get_record($table_files, array('filename' => $filename, 'sortorder' => 1));
+        $baseurl = "$CFG->wwwroot/pluginfile.php/$results->contextid/$results->component/$results->filearea/$results->itemid/$filename";
+        */
+
+        return array(
+            'data' => json_encode($res)
+        );
+    }
+    //public static function get_video_pool_is_allowed_from_ajax() { return true; }
 
     /**
      * Make video metadata persistent
@@ -114,7 +168,7 @@ class mod_videodatabase_external extends external_api {
         $transaction->allow_commit();
         return array('data'=> '{ "status":"ok", "msg":"Successfully saved meta data of video with id '.'."}');
     }
-    public static function set_video_is_allowed_from_ajax() { return true; }
+    //public static function set_video_is_allowed_from_ajax() { return true; }
 
 
     /**
@@ -170,7 +224,7 @@ class mod_videodatabase_external extends external_api {
         
         return array('response'=> json_encode($res));
     } 
-    public static function log_is_allowed_from_ajax() { return true; }
+    //public static function log_is_allowed_from_ajax() { return true; }
     
 
     /**
@@ -202,7 +256,7 @@ class mod_videodatabase_external extends external_api {
         
         return array('response'=> json_encode($res));
     } 
-    public static function get_log_is_allowed_from_ajax() { return true; }
+    //public static function get_log_is_allowed_from_ajax() { return true; }
     
 
     /**
@@ -233,7 +287,7 @@ class mod_videodatabase_external extends external_api {
         $transaction->allow_commit();
         return array('data'=> json_encode($res));
     } 
-    public static function get_all_comments_is_allowed_from_ajax() { return true; }
+    //public static function get_all_comments_is_allowed_from_ajax() { return true; }
        
 
     //
@@ -304,7 +358,7 @@ class mod_videodatabase_external extends external_api {
         $transaction->allow_commit();
         return array('data'=> json_encode($res));
     }       
-    public static function annotations_is_allowed_from_ajax() { return true; }
+    //public static function annotations_is_allowed_from_ajax() { return true; }
      
 
     /**
@@ -360,7 +414,7 @@ class mod_videodatabase_external extends external_api {
             'info'=> sizeof($res)
         );
     }  
-    public static function ratings_is_allowed_from_ajax() { return true; }  
+    //public static function ratings_is_allowed_from_ajax() { return true; }  
 
 
     /**
@@ -438,7 +492,7 @@ class mod_videodatabase_external extends external_api {
     
         return array('data'=> json_encode($res));
     }
-    public static function files_is_allowed_from_ajax() { return true; }   
+    //public static function files_is_allowed_from_ajax() { return true; }   
 
 }
 
