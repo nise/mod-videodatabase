@@ -1,7 +1,7 @@
 Vi-Moodle is a database, player, and annotation tool for video-based learning resources in moodle.
 
 **System Features:**
-* Upload and convert video files
+* Select video files from a pool of videos
 * Comprehensive meta data description of video files (dublin core, pedagogic metadata, technical descriptions)
 * Browse and search a video collection
 * Having multiple video databases in a course or course module
@@ -11,10 +11,11 @@ Vi-Moodle is a database, player, and annotation tool for video-based learning re
 
 ---
 # Installation
-Tested with Moodle v3.3
+Tested with Moodle v3.5
 
 ## Install depenencies
-[Video Upload Manager](https://github.com/nise/php-video-upload-chain)
+[Moodle Video Pool](https://github.com/nise/moodle-video-pool)
+
 
 ## Configure the webserver
 **Apache2**
@@ -26,7 +27,7 @@ In order to support the file workflow the permissions of the moodledata folder n
 * `cmod -R 0750 /path/to/moodledata`
 
 **nginx**
-...
+(tba)
 
 
 ## Install the plugin
@@ -49,8 +50,8 @@ Helpful tools for moodle development:
 
 
 # Related Moodle plugins
-* https://moodle.org/plugins/mod_mediagallery
 * https://moodle.org/plugins/mod_videofile
+* https://moodle.org/plugins/mod_mediagallery
 * https://docs.moodle.org/26/en/mod/videofile/view#Download
 * https://moodle.org/plugins/repository_ensemble
 * https://moodle.org/plugins/mod_eduplayer
