@@ -25,8 +25,8 @@
 
 $string['configrequiremodintro'] = 'xxx';
 $string['configdisplayoptions'] = 'Select all options that should be available, existing settings are not modified. Hold CTRL key to select multiple fields.';
-$string['content'] = 'Description';
-$string['contentheader'] = 'Content';
+$string['content'] = 'Beschreibung';
+$string['contentheader'] = 'Inhalt';
 $string['createvideodatabase'] = 'Create a new videodatabase resource';
 $string['displayoptions'] = 'Available display options';
 $string['displayselect'] = 'Display';
@@ -62,4 +62,4 @@ $string['popupwidth'] = 'Pop-up width (in pixels)';
 $string['popupwidthexplain'] = 'Specifies default width of popup windows.';
 $string['printintro'] = 'Display videodatabase description';
 $string['printintroexplain'] = 'Display videodatabase description above content?';
-$string['description'] = 'Description';
+$string['description'] = 'Beschreibung';
