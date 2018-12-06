@@ -397,29 +397,7 @@ define([
             };
 
 
-            const SubmitForm = {
-                template: '#form-submit-template',
-                methods: {
-                    submitForm() {
-                        // save selection to videodatabase
-                        utils.get_ws('store_video', {
-                            'nu': nu,
-                            'id': id,
-                            'data': JSON.stringify(data)
-                        }, function (res) {
-                            if (nu) {
-                                store.commit('addVideo', data);
-                                store.commit('setCurrentVideo', id);
-                            }
-                            router.push({ path: '/videos' });
-                        });
-                    },
-                    response(res) {
-                        console.log(res);
-                    }
-
-                }
-            };
+          
 
             /**
              * Generates a matrix of videos that have been uploaded via the plugin videofiles
@@ -428,23 +406,49 @@ define([
                 template: '#pool',
                 data: function () {
                     return {
-                        videos: []
+                        videos: [],
+                        selectedVideos: []
                     };
                 },
                 created() {
                     var vm = this;
                     utils.get_ws('video_pool', { 'courseid': course.id }, function (res) {
                         var data = JSON.parse(res.data);
+                        vm.selectedVideos = Object.keys(data).filter(function(d){
+                            if (data[d].selected){
+                                return data[d].id;
+                            }
+                        });
                         vm.videos = data;
-
-                        console.log(data);
                     }, false);
 
                 },
                 methods: {
-                    videosxx() {
-                        return this.videos;
-                    }
+                    submitForm() {
+                        // store selection from pool in plugin database and inside store
+                        utils.get_ws('store_video', {
+                            'data': JSON.stringify(data)
+                        }, function (res) {
+                            if (nu) {
+                                store.commit('addVideo', data); // videofileid, courseid
+                                //store.commit('setCurrentVideo', id);
+                            }
+                            router.push({ path: '/videos' });
+                        });
+                    },
+                    getVideoById(id){
+                        for (var v in this.videos){
+                            if(this.videos.hasOwnProperty(v)){
+                                if(this.videos[v].id === id){
+                                    return this.videos[v];
+                                }
+                            }
+                        }
+                        return false;
+                    },
+                    select(id) { console.log('click'+id)
+                        this.getVideoById(id).selected = !this.getVideoById(id).selected;
+                    },
                 }
             };
 
@@ -467,7 +471,7 @@ define([
                     //const meta = h(MetadataForm);
                     //const submit = h(SubmitForm);//h('input', { class: { 'btn-primary':true, btn:true }, attrs: { type: 'submit' } }, 'speichern');
                     //return h("div", [upload, meta, submit]);
-                    return h("div", [h(SimpleForm), h(SubmitForm)]);
+                    return h("div", [h(SimpleForm)]);
                 }
             };
             this.Form = Form;

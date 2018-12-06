@@ -76,7 +76,7 @@ echo $OUTPUT->header();
 /* end header */
 
 
-//echo $OUTPUT->heading(format_string($videodatabase->name), 2);
+echo $videodatabase->intro;//$OUTPUT->heading(format_string($videodatabase->content), 2);
 
 echo format_string($course->summary);
 
@@ -329,13 +329,19 @@ echo '<script type="text/x-template" id="modal-template"><!-- Modal -->
 echo '
 <div v-cloak id="pool">
 	<div>
-		<div class="col-md-12 col-sm-12  col-xs-12">
+		<div class="container">
 			<h3>Video Pool</h3>
-			<div class="container-fluid">
+			<div class="">
 			<div v-for="video in videos" class="col-xs-12 col-sm-5 col-md-2 video-item">
-				<div >
-					<div class="form-head"><span class="fa fa-check selecta"></span> <span class="bold">{{ video.name }}</span></div>
-					<video width="200" controls="controls">
+				<div style="margin-right:6px;">
+					<div class="form-head">
+						<label class="bold" :for="video.id">
+							{{ video.name }}
+							<input type="checkbox" :id="video.id" :value="video.id" v-model="selectedVideos" />
+							<span class="checkmark"></span>
+						</label>
+					</div>
+					<video controls="controls">
 						<source :src="video.url" type="video/mp4" />
 					</video>
 				</div>	
@@ -345,6 +351,10 @@ echo '
 				-->
 			</div>
 			</div>
+		</div>
+		<div id="submit_video_form" class="col-md-12">
+			<button v-on:click="submitForm" class="btn btn-primary">Auswahl übernehmen</button>
+			<a class="btn btn-link" href="#/videos">abbrechen</a>
 		</div>
 	</div>	
 </div>';
@@ -437,15 +447,6 @@ echo '
 ';
 
 
-// save edit form
-echo '
-<div v-cloak id="form-submit-template">
-	<div id="submit_video_form" class="col-md-12">
-		<button v-on:click="submitForm" class="btn btn-primary">Speichern</button>
-		<a class="btn btn-link" href="#/videos">abbrechen</a>
-	</div>
-</div>
-';
 
 
 // rating
@@ -604,7 +605,7 @@ echo '
 			</div>
 		</div>	
 	</div>
-	<div class="page-item" v-if="isEditor">
+	<div hidden class="page-item" v-if="isEditor">
 		<a href="/moodle/mod/videodatabase/view.php?id='. $id .'&dummy=true">import dummy data</a>
 	</div>
 </div>';
