@@ -181,18 +181,27 @@ echo '
 										<a class="nav-link" data-toggle="tab" :href="\'#info\'" role="tab">Informationen</a>
 									</li>
 								</ul>
+								
+								
 								<div id="annotation-form">
-								<div id="annotationForm" v-show="showAnnotationForm">
-									<textarea class="form-control" :id="\'annotationContentText\'" v-model="annotationContent" name="comments-entry" data-datatype="string" placeholder="" aria-describedby="comments-form1"></textarea>
-									<br/>
-									<div class="input-group">
-										<span class="input-group-addon" id="comments-form1">Zeitpunkt (s)</span>
-										<input v-model="annotationTime" type="text" class="form-control" value="" name="comments-entry-time" data-datatype="decimal-time" placeholder="" aria-describedby="comments-form1">
+									<div id="annotationForm" v-show="showAnnotationForm">
+										<textarea class="form-control" :id="\'annotationContentText\'" v-model="annotationContent" name="comments-entry" data-datatype="string" placeholder="" aria-describedby="comments-form1"></textarea>
+										<br/>
+										<div class="input-group">
+											<span class="input-group-addon" id="comments-form1">Zeitpunkt (s)</span>
+											<input v-model="annotationTime" type="text" class="form-control" value="" name="comments-entry-time" data-datatype="decimal-time" placeholder="" aria-describedby="comments-form1">
+										</div>
+										<div class="btn btn-primary" v-on:click="saveAnnotation">speichern</div>
+										<a class="right btn red" v-on:click="cancelAnnotation">verwerfen</a>
 									</div>
-									<div class="btn btn-primary" v-on:click="saveAnnotation">speichern</div>
-									<a class="right btn red" v-on:click="cancelAnnotation">verwerfen</a>
+									<div v-show="!showAnnotationForm"  v-on:click="toggle">
+										<div  class="btn btn-primary">
+											<span style="font-weight:bold; font-size:200% !important;">+</span> Kommentar
+										</div>
+									</div>
+									
+									
 								</div>
-								<div v-show="!showAnnotationForm" class="btn btn-primary" v-on:click="toggle"><span class="fa fa-plus"></span> Kommentar</div>
 							</div>	
 								<div class="tab-content">
 									<div class="tab-pane active" :id="\'comments\'" role="tabpanel">
@@ -337,7 +346,7 @@ echo '
 					<div class="form-head">
 						<label class="bold" :for="video.id">
 							{{ video.name }}
-							<input type="checkbox" :id="video.id" :value="video.id" v-model="selectedVideos" />
+							<input type="checkbox" :id="video.id" :selected="video.xxx" :value="video.id" v-model="selectedVideos" />
 							<span class="checkmark"></span>
 						</label>
 					</div>
@@ -352,6 +361,7 @@ echo '
 			</div>
 			</div>
 		</div>
+		{{ selectedVideos }}
 		<div id="submit_video_form" class="col-md-12">
 			<button v-on:click="submitForm" class="btn btn-primary">Auswahl übernehmen</button>
 			<a class="btn btn-link" href="#/videos">abbrechen</a>

@@ -67,14 +67,13 @@ define([
             
             const utils = new Utils();
             const vuestore = new Store(data, course);
-            const store = vuestore.store;
-            let router = {};
-            const form = new Form(store, router, course, datamodel, utils);
+            const store = vuestore.store; 
             const videovue = new Video(store, course, user, $('#token').text());
             const video = videovue.video;
             const commentsvue = new Comments(store, course, user, $('#token').text(), utils);
             const comments = commentsvue.comments;
-
+            const form = new Form(store, course, datamodel, utils);
+            
             // init router
             router = new VueRouter({
                 routes: [
@@ -250,8 +249,9 @@ define([
                         innerValue = row[j].toLocaleString();
                     };
                     var result = innerValue.replace(/"/g, '""');
-                    if (result.search(/("|,|\n)/g) >= 0)
+                    if (result.search(/("|,|\n)/g) >= 0){
                         result = '"' + result + '"';
+                    }
                     if (j > 0) {
                         finalVal += ',';
                     }
@@ -319,7 +319,6 @@ define([
                 }
                 applyFilter();
             });
-
 
             // multi
             $(document.body).on('change', '.multi-filter', function () {

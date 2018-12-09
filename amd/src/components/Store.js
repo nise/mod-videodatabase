@@ -21,9 +21,10 @@ define([
             this.data = data;
             this.course = course;
             Vue.use(Vuex);
-     
+            // see best practice: id as keys: https://forum.vuejs.org/t/vuex-best-practices-for-complex-objects/10143/2
             // init vue store
             this.store = new Vuex.Store({
+                strict: this.NODE_ENV !== 'production',
                 state: {
                     myValue: 0,
                     videos: this.data,
@@ -78,6 +79,16 @@ define([
                             }
                         };
                     },
+                    isVideo(state) {
+                        var self = this;
+                        return function (id) {
+                            if (state.videos[id] !== undefined && id !== undefined) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        };
+                    },
                     currentVideoData(state) {
                         var self = this;
                         return function () {
@@ -88,6 +99,22 @@ define([
                 mutations: {
                     addVideo(state, video) {
                         state.videos[video.id] = video;
+                    },
+                    updateVideos(state, videos){
+                        // add new videos
+                        for (var v in videos) {
+                            if (state.videos[v] === undefined){ console.log(videos[v])
+                                state.videos[v] = videos[v];
+                            }
+                        }
+                        var ids = Object.values(state.videos);
+                        // remove deleted videos from store
+                        for(var v in state.videos){ 
+                            if(ids.indexOf(v) === -1){
+                                state.videos[v] = null;
+                                delete state.videos[v];
+                            }
+                        }
                     },
                     removeVideo(state, video_id) {
                         //var index = state.videos.indexOf(video_id);

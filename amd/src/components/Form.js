@@ -24,7 +24,7 @@ define([
     ) {
 
 
-        EditForm = function (store, router, course, datamodel, utils) {
+        EditForm = function (store, course, datamodel, utils) {
             this.datamodel = datamodel;
 
             Vue.use(VueFormGenerator);
@@ -96,8 +96,8 @@ define([
                                 video_data.metadata[0].author = video_data['contributor'];
                                 video_data.metadata[0].title = video_data['title'];
                                 video_data.metadata[0].abstract = video_data['description'];
-                                video_data.metadata[0].thumbnail = "still-" + video_data.filename.replace('.mp4', '_comp.jpg');
-                                video_data.video = '/videos/' + video_data.filename.replace('.mp4', '.webm');
+                                video_data.metadata[0].thumbnail = "";// "still-" + video_data.filename.replace('.mp4', '_comp.jpg');
+                                video_data.video = video_data.filename;// '/videos/' + video_data.filename.replace('.mp4', '.webm');
                                 return video_data;//store.getters.videoById( this.$route.params.id );
                             } else {
                                 //return null;
@@ -402,6 +402,7 @@ define([
             /**
              * Generates a matrix of videos that have been uploaded via the plugin videofiles
              */
+            
             const SimpleForm = {
                 template: '#pool',
                 data: function () {
@@ -414,6 +415,13 @@ define([
                     var vm = this;
                     utils.get_ws('video_pool', { 'courseid': course.id }, function (res) {
                         var data = JSON.parse(res.data);
+                        for(var i in data){
+                            if(data.hasOwnProperty(i)){
+                                if (store.getters.isVideo(data[i].id)){
+                                    data[i].selected = true;
+                                }
+                            }
+                        }
                         vm.selectedVideos = Object.keys(data).filter(function(d){
                             if (data[d].selected){
                                 return data[d].id;
@@ -424,17 +432,23 @@ define([
 
                 },
                 methods: {
+                    
                     submitForm() {
                         // store selection from pool in plugin database and inside store
+                        var _this = this;
                         utils.get_ws('store_video', {
-                            'data': JSON.stringify(data)
+                                courseid: course.id,
+                                videos: this.selectedVideos.toString()
                         }, function (res) {
-                            if (nu) {
-                                store.commit('addVideo', data); // videofileid, courseid
+                            //if (nu) {
+                                //store.commit('addVideo', data); // videofileid, courseid
                                 //store.commit('setCurrentVideo', id);
-                            }
-                            router.push({ path: '/videos' });
+                            //}
+                            store.commit('updateVideos', JSON.parse(res.data));
+                            
+                            _this.$router.push({ path: '/videos' });
                         });
+                        
                     },
                     getVideoById(id){
                         for (var v in this.videos){
