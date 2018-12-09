@@ -48,7 +48,6 @@ class mod_videodatabase_mod_form extends moodleform_mod {
 
         $config = get_config('videodatabase');
 
-        //-------------------------------------------------------
         $mform->addElement('header', 'general', get_string('general', 'form'));
         $mform->addElement('text', 'name', get_string('name'), array('size'=>'48'));
         if (!empty($CFG->formatstringstriptags)) {
@@ -59,24 +58,14 @@ class mod_videodatabase_mod_form extends moodleform_mod {
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
 
-        /*
-        $mform->addElement('text', 'token', 'Token', array('size'=>'48'));
-        if (!empty($CFG->formatstringstriptags)) {
-            $mform->setType('token', PARAM_TEXT);
-        } else {
-            $mform->setType('token', PARAM_CLEANHTML);
-        }
-        $mform->addRule('token', null, 'required', null, 'client');
-        $mform->addRule('token', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
-        */
-        
-        //$this->add_intro_editor($config->requiremodintro);
-        moodleform_mod::standard_intro_elements($config->requiremodintro);
-        
+        $this->standard_intro_elements(false);
+
+          
         //-------------------------------------------------------
-        $mform->addElement('header', 'contentsection', get_string('contentheader', 'videodatabase'));
-        $mform->addElement('editor', 'videodatabase', get_string('content', 'videodatabase'), null, videodatabase_get_editor_options($this->context));
-        $mform->addRule('videodatabase', get_string('required'), 'required', null, 'client');
+        //$mform->addElement('header', 'contentsection', get_string('contentheader', 'videodatabase'));
+        $mform->addElement('text', 'videodatabase', get_string('content', 'videodatabase'));//, null, videodatabase_get_editor_options($this->context));
+        $mform->setType('videodatabase', PARAM_TEXT);
+        //$mform->addRule('videodatabase', get_string('required'), 'required', null, 'client');
 
         //-------------------------------------------------------
         $mform->addElement('header', 'appearancehdr', get_string('appearance'));

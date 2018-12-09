@@ -47,12 +47,6 @@ $PAGE->set_url('/mod/videodatabase/index.php', array('id' => $course->id));
 $PAGE->set_title($course->shortname.': '.$strvideodatabases);
 $PAGE->set_heading($course->fullname);
 $PAGE->navbar->add($strvideodatabases);
-echo $OUTPUT->header();
-echo $OUTPUT->heading($strvideodatabases);
-if (!$videodatabases = get_all_instances_in_course('videodatabase', $course)) {
-    notice(get_string('thereareno', 'moodle', $strvideodatabases), "$CFG->wwwroot/course/view.php?id=$course->id");
-    exit;
-}
 
 $usesections = course_format_uses_sections($course->format);
 
