@@ -344,8 +344,8 @@ define([
                     ext = '.mp4';  // lacy bug fix since firefox doesn't support mp4 anymore. xxx needs further testing.
                     mime_type = "video/mp4";
                 } else if (this.currentBrowser=== 'Chrome') {
-                    ext = '.webm';
-                    mime_type = "video/webm";
+                    ext = '.mp4';
+                    mime_type = "video/mp4";
                 }
 
                 // extract file type out of mime type

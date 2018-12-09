@@ -57,8 +57,8 @@ define([
                         video_data.metadata[0].author = video_data['contributor'];
                         video_data.metadata[0].title = video_data['title'];
                         video_data.metadata[0].abstract = video_data['description'];
-                        video_data.metadata[0].thumbnail = "still-" + video_data.filename.replace('.mp4', '_comp.jpg');
-                        video_data.video = '/videos/' + video_data.filename.replace('.mp4', '.webm');
+                        video_data.metadata[0].thumbnail = "";//"still-" + video_data.filename.replace('.mp4', '_comp.jpg');
+                        video_data.video = video_data.filename;//'/videos/' + video_data.filename.replace('.mp4', '.mp4');
                         return video_data;//store.getters.videoById( this.$route.params.id );
                     } else {
                         return null;
@@ -72,15 +72,15 @@ define([
                 this.current_video = id;
                 
                 var video_data = store.getters.videoById(id);
-
+                console.log(video_data.filename)
                 if (video_data !== undefined) {
                     video_data.metadata = [];
                     video_data.metadata[0] = {};
                     video_data.metadata[0].author = video_data.contributor;
                     video_data.metadata[0].title = video_data.title;
                     video_data.metadata[0].abstract = video_data.description;
-                    video_data.metadata[0].thumbnail = "still-" + video_data.filename.replace('.mp4', '_comp.jpg');
-                    video_data.video = '/videos/' + video_data.filename.replace('.mp4', '.webm'); // xxx bug?
+                    video_data.metadata[0].thumbnail = "";//"still-" + video_data.filename.replace('.mp4', '_comp.jpg');
+                    video_data.video = video_data.filename;//'/videos/' + video_data.filename.replace('.mp4', '.mp4'); // xxx bug?
                     Vi2.start(video_data, user, token, _this.course.id, id);
                 } else {
                     console.log('mounted undefined');
@@ -100,8 +100,8 @@ define([
                         video_data.metadata[0].author = video_data['contributor'];
                         video_data.metadata[0].title = video_data['title'];
                         video_data.metadata[0].abstract = video_data['description'];
-                        video_data.metadata[0].thumbnail = "still-" + video_data.filename.replace('.mp4', '_comp.jpg');
-                        video_data.video = '/videos/' + video_data.filename.replace('.mp4', '.webm');
+                        video_data.metadata[0].thumbnail = '';//"still-" + video_data.filename.replace('.mp4', '_comp.jpg');
+                        video_data.video = video_data.filename;//'/videos/' + video_data.filename.replace('.mp4', '.mp4');
                         Vi2.update(video_data, _this.course.id, id);
                     }
                 }
