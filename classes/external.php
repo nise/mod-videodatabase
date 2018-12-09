@@ -62,9 +62,10 @@ class mod_videodatabase_external extends external_api {
         global $CFG, $DB, $USER;
         
         $transaction = $DB->start_delegated_transaction(); 
-        $table = "videodatabase_videos";
-        $res = $DB->get_records($table, array('courseid'=> (int)$data['courseid'] )); 
+        $sql='SELECT * FROM '.$CFG->prefix.'videodatabase_videos as d JOIN '.$CFG->prefix.'videofile as f where d.videofileid = f.id';
+        $res = $DB->get_records_sql($sql);
         $transaction->allow_commit();
+
         return array(
             'data' => json_encode($res),
             'username' => $USER->username,
@@ -143,9 +144,8 @@ class mod_videodatabase_external extends external_api {
                 'data' => 
                     new external_single_structure(
                         array(
-                            'nu' => new external_value(PARAM_INT, 'is it a new video', VALUE_OPTIONAL),
-                            'id' => new external_value(PARAM_INT, 'id of course', VALUE_OPTIONAL),
-                            'data' => new external_value(PARAM_RAW, 'video data', VALUE_OPTIONAL)
+                            'courseid' => new external_value(PARAM_INT, 'course id', VALUE_OPTIONAL),
+                            'videos' => new external_value(PARAM_TEXT, 'video ids', VALUE_OPTIONAL)
                         )
                 )
             )
@@ -158,18 +158,26 @@ class mod_videodatabase_external extends external_api {
     }
     public static function set_video($data) {
         global $CFG, $DB;
-        $transaction = $DB->start_delegated_transaction(); //If an exception is thrown in the below code, all DB queries in this code will be rollback.
         $table = "videodatabase_videos";
-        if($data['nu'] == 1 ){
-            $res = $DB->insert_record($table, (object)json_decode($data['data']));
-        }else{
-            $res = $DB->update_record($table,  json_decode($data['data']));
+        $sql = 'DELETE FROM '.$CFG->prefix.'videodatabase_videos WHERE courseid='.(int)$data['courseid'];
+        $res = $DB->execute($sql);
+        $t = array();
+        foreach( $videos = explode(',', $data['videos']) as $video){
+            $r = new stdClass();
+            $r->courseid = (int)$data['courseid'];
+            $r->videofileid = (int)$video;
+            array_push($t, $r);
         }
+        $transaction = $DB->start_delegated_transaction(); 
+        $res = $DB->insert_records($table, $t);
         $transaction->allow_commit();
-        return array('data'=> '{ "status":"ok", "msg":"Successfully saved meta data of video with id '.'."}');
+        
+        $transaction = $DB->start_delegated_transaction(); 
+        $sql='SELECT * FROM '.$CFG->prefix.'videodatabase_videos as d JOIN '.$CFG->prefix.'videofile as f where d.videofileid = f.id';
+        $res = $DB->get_records_sql($sql);
+        $transaction->allow_commit();
+        return array('data'=> json_encode($res));//'{ "status":"ok", "msg": "Successfully saved video id from the videofile pool.'.'."}');
     }
-    //public static function set_video_is_allowed_from_ajax() { return true; }
-
 
     /**
      * Takes video player log data form the client
