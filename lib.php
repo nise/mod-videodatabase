@@ -90,32 +90,22 @@ function videodatabase_add_instance($data, $mform = null) {
     require_once("$CFG->libdir/resourcelib.php");
 
     $cmid = $data->coursemodule;
-
     $data->timemodified = time();
-    $displayoptions = array();
-    if ($data->display == RESOURCELIB_DISPLAY_POPUP) {
-        $displayoptions['popupwidth']  = $data->popupwidth;
-        $displayoptions['popupheight'] = $data->popupheight;
+    
+    if ($mform && isset($data->videodatabase)) {
+        if(is_array($data->videodatabase)){
+            $data->content       = $data->videodatabase['text'];
+            $data->contentformat = $data->videodatabase['format'];
+        }
+    }else{
+        $data->contentformat = 0;
     }
-    $displayoptions['printintro']   = $data->printintro;
-    $data->displayoptions = serialize($displayoptions);
-
-    if ($mform && is_array($data->videodatabase)) {
-        $data->content       = $data->videodatabase['text'];
-        $data->contentformat = $data->videodatabase['format'];
-    }
-
+    
     $data->id = $DB->insert_record('videodatabase', $data);
-
+    
     // we need to use context now, so we need to make sure all needed info is already in db
     $DB->set_field('course_modules', 'instance', $data->id, array('id'=>$cmid));
     $context = context_module::instance($cmid);
-
-    if ($mform and !empty($data->videodatabase['itemid'])) {
-        $draftitemid = $data->videodatabase['itemid'];
-        $data->content = file_save_draft_area_files($draftitemid, $context->id, 'mod_videodatabase', 'content', 0, videodatabase_get_editor_options($context), $data->content);
-        $DB->update_record('videodatabase', $data);
-    }
 
     return $data->id;
 }
@@ -130,31 +120,11 @@ function videodatabase_update_instance($data, $mform) {
     global $CFG, $DB;
     require_once("$CFG->libdir/resourcelib.php");
 
-    $cmid        = $data->coursemodule;
-    $draftitemid = $data->videodatabase['itemid'];
-
+    $cmid = $data->coursemodule;
     $data->timemodified = time();
-    $data->id           = $data->instance;
+    $data->id = $data->instance;
     $data->revision++;
-
-    $displayoptions = array();
-    if ($data->display == RESOURCELIB_DISPLAY_POPUP) {
-        $displayoptions['popupwidth']  = $data->popupwidth;
-        $displayoptions['popupheight'] = $data->popupheight;
-    }
-    $displayoptions['printintro']   = $data->printintro;
-    $data->displayoptions = serialize($displayoptions);
-
-    $data->content       = $data->videodatabase['text'];
-    $data->contentformat = $data->videodatabase['format'];
-
     $DB->update_record('videodatabase', $data);
-
-    $context = context_module::instance($cmid);
-    if ($draftitemid) {
-        $data->content = file_save_draft_area_files($draftitemid, $context->id, 'mod_videodatabase', 'content', 0, videodatabase_get_editor_options($context), $data->content);
-        $DB->update_record('videodatabase', $data);
-    }
 
     return true;
 }
