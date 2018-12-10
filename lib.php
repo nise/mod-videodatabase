@@ -100,7 +100,7 @@ function videodatabase_add_instance($data, $mform = null) {
     $displayoptions['printintro']   = $data->printintro;
     $data->displayoptions = serialize($displayoptions);
 
-    if ($mform) {
+    if ($mform && is_array($data->videodatabase)) {
         $data->content       = $data->videodatabase['text'];
         $data->contentformat = $data->videodatabase['format'];
     }
