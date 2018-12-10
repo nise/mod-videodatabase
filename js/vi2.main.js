@@ -85,12 +85,12 @@ define([
 			});
 			vi2.observer.init(0);
 			var viLog = new Vi2.Log({
-				output_type: -1, // 0: console log: 1: server log
-				logger_service_url: '/moodle/webservice/rest/server.php',
+				output_type: 1, // 0: console log: 1: server log
+				//logger_service_url: '/moodle/webservice/rest/server.php',
 				logger_service_params: {
-					wstoken: Vi2.token,
+					/*wstoken: Vi2.token,
 					moodlewsrestformat: 'json',
-					wsfunction: 'videodatabase_logging',
+					wsfunction: 'videodatabase_logging',*/
 					data: { courseid: Vi2.courseid }
 				}
 			}, vi2.observer);
