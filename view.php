@@ -215,11 +215,11 @@ echo '
 										</div>
 										<div>
 											<label>Kompetenzen:</label>
-											<span>{{ video.competencies}}</span>
+											<span v-for="competence in video.compentencies.split(\',\')">{{ $t("message."+competence) }},</span>
 										</div>
 										<div>
 											<label>Sportart:</label>
-											<span>{{ video.sports }}</span>
+											<span v-for="course in video.courselevel.split(\',\')">{{ $t("message."+course) }}, </span>
 										</div>
 										<div>
 											<label>Bewegungsfelder:</label>
@@ -227,11 +227,11 @@ echo '
 										</div>
 										<div>
 											<label>Aktivitäten:</label>
-											<span>{{ video.activities }}</span>
+											<span v-for="activity in video.activities.split(\',\')">{{ $t("message."+activity) }}, </span>
 										</div>
 										<div>
 											<label>Perspektiven:</label>
-											<span>{{ video.perspectives }}</span>
+											<span v-for="perspective in video.perspectives.split(\',\')">{{ $t("message."+perspective) }}, </span>
 										</div>
 										<div>
 											<label>Ort:</label>
@@ -563,12 +563,12 @@ echo '
 										</router-link>	
 									</td>
 									<td>{{ $t("message."+video.sports) }}</td>
-									<td><span v-for="course in video.courselevel.split(\',\')">{{ $t("message."+course) }}, </td>
-									<td><span v-for="competence in video.compentencies.split(\',\')">{{ $t("message."+competence) }}, </td>
+									<td><span v-for="course in video.courselevel.split(\',\')">{{ $t("message."+course) }}, </span></td>
+									<td><span v-for="competence in video.compentencies.split(\',\')">{{ $t("message."+competence) }}, </span></td>
 									<td>{{ $t("message."+video.movements) }}</td>
-									<td><span v-for="activity in video.activities.split(\',\')">{{ $t("message."+activity) }}, </td>
+									<td><span v-for="activity in video.activities.split(\',\')">{{ $t("message."+activity) }}, </span></td>
 									<td>{{ $t("message."+video.actors)  }}</td>
-									<td><span v-for="perspective in video.perspectives.split(\',\')">{{ $t("message."+perspective) }}, </td>
+									<td><span v-for="perspective in video.perspectives.split(\',\')">{{ $t("message."+perspective) }}, </span></td>
 									<td>{{ $t("message."+video.location) }}</td>
 								</tr>
 							</tbody>	
