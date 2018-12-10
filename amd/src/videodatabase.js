@@ -12,20 +12,22 @@ define([
     'jquery',
     'amd/src/lib/vue.js',
     'amd/src/lib/vue-router.js',
+    'amd/src/lib/vue-i18n.js',
     'amd/src/datamodel.js',
     'amd/src/components/Store.js',
     'amd/src/components/Form.js',
     'amd/src/components/Video.js',
     'amd/src/components/Comments.js',
     'amd/src/components/Utils.js'
-     // 'amd/src/vuejs-paginator.js',
-       //'amd/src/lib/vfg.js',
+    // 'amd/src/vuejs-paginator.js',
+    //'amd/src/lib/vfg.js',
     //'amd/src/lib/axios.min.js',
 ],
     function (
         $,
         Vue,
         VueRouter,
+        VueI18n,
         Datamodel,
         Store,
         Form,
@@ -34,9 +36,9 @@ define([
         Utils
         // VuePaginator,
         //  VueFormGenerator,
-       // Axios,
+        // Axios,
     ) {
-        
+
         var datamodel = new Datamodel();
 
         var course = {
@@ -64,16 +66,17 @@ define([
 
             // setup vue
             Vue.use(VueRouter);
-            
+            Vue.use(VueI18n);
+
             const utils = new Utils();
             const vuestore = new Store(data, course);
-            const store = vuestore.store; 
+            const store = vuestore.store;
             const videovue = new Video(store, course, user, $('#token').text());
             const video = videovue.video;
             const commentsvue = new Comments(store, course, user, $('#token').text(), utils);
             const comments = commentsvue.comments;
             const form = new Form(store, course, datamodel, utils);
-            
+
             // init router
             router = new VueRouter({
                 routes: [
@@ -88,11 +91,170 @@ define([
                 }
             });
 
-            
+            const messages = {
+                en: {
+                    message: {
+                        video_db_title: 'Videos',
+                        'teacher': "Teacher",
+                        'pupil': "Pupils",
+                        'ccby': "Creative Commons CC-BY",
+                        'pd': "Public Domain",
+                        'r': "Rights Reserved",
+                        'football': "Fußball",
+                        'handball': "Handball",
+                        'barren': "Barren",
+                        'judo': "Judo",
+                        'volleyball': "Volleyball",
+                        'athletics': "Leichtathletik",
+                        'movement': "Bewegen und Handeln",
+                        'reflexion': "Reflektieren und Urteilen",
+                        'interaction': "Interagieren",
+                        'methods': "Methoden anwenden",
+                        'eingangsstufe': "Eingangsstufe",
+                        'unterstufe': "Unterstufe",
+                        'mittelstufe': "Mittelstufe",
+                        'werkstufe': "Werkstufe",
+                        'k1': "Klassenstufe 1",
+                        'k2': "Klassenstufe 2",
+                        'k3': "Klassenstufe 3",
+                        'k4': "Klassenstufe 4",
+                        'k5': "Klassenstufe 5",
+                        'k6': "Klassenstufe 6",
+                        'k7': "Klassenstufe 7",
+                        'k8': "Klassenstufe 8",
+                        'k9': "Klassenstufe 9",
+                        'k10': "Klassenstufe 10",
+                        'k11': "Klassenstufe 11",
+                        'k12': "Klassenstufe 12",
+                        'k13': "Klassenstufe 13",
+                        'lsws': "Laufen, Springen, Werfen, Stoßen",
+                        'games': "Spiele",
+                        'ass': "Bewegung an Geräten",
+                        'fight': "Kämpfen nach Regeln",
+                        'moves': "Bewegungsfolgen gestalten und darstellen",
+                        'water': "Bewegen im Wasser",
+                        'cycling': "Fahren, Rollen, Gleiten",
+                        'action1': "Abbauen",
+                        'action2': "Aufbauen",
+                        'action3': "Begründen",
+                        'action4': "Beraten",
+                        'action5': "Beschreiben",
+                        'action6': "Besprechen",
+                        'action7': "Beurteilen",
+                        'action8': "Demonstrieren",
+                        'action9': "Disziplinieren",
+                        'action10': "Erklären",
+                        'action11': "Feedback, Korrektur",
+                        'action12': "Gesprächsrunde",
+                        'action13': "Gruppenbildung",
+                        'action14': "Helfen",
+                        'action15': "Kooperieren",
+                        'action16': "Medieneinsatz",
+                        'action17': "Motivieren",
+                        'action18': "Organisieren",
+                        'action19': "Präsentieren",
+                        'action20': "Sichern",
+                        'action21': "Störung",
+                        'action22': "Üben",
+                        'persp1': "Leistung",
+                        'persp2': "Wagnis",
+                        'persp3': "Gestaltung",
+                        'persp4': "Körpererfahrung",
+                        'persp5': "Kooperation",
+                        'persp6': "Gesundheit",
+                        'hall': "Sporthalle",
+                        'pool': "Schwimmhalle",
+                        'outdoor': "Outdoor"
+                    }
+                },
+                de: {
+                    message: {
+                        video_db_title: 'Videos',
+                        'teacher': "Lehrer/in",
+                        'pupil': "Schüler/in",
+                        'ccby': "Creative Commons CC-BY",
+                        'pd': "Public Domain",
+                        'r': "Rights Reserved",
+                        'football': "Fußball",
+                        'handball': "Handball",
+                        'barren': "Barren",
+                        'judo': "Judo",
+                        'volleyball': "Volleyball",
+                        'athletics': "Leichtathletik",
+                        'movement': "Bewegen und Handeln",
+                        'reflexion': "Reflektieren und Urteilen",
+                        'interaction': "Interagieren",
+                        'methods': "Methoden anwenden",
+                        'eingangsstufe': "Eingangsstufe",
+                        'unterstufe': "Unterstufe",
+                        'mittelstufe': "Mittelstufe",
+                        'werkstufe': "Werkstufe",
+                        'k1': "Klassenstufe 1",
+                        'k2': "Klassenstufe 2",
+                        'k3': "Klassenstufe 3",
+                        'k4': "Klassenstufe 4",
+                        'k5': "Klassenstufe 5",
+                        'k6': "Klassenstufe 6",
+                        'k7': "Klassenstufe 7",
+                        'k8': "Klassenstufe 8",
+                        'k9': "Klassenstufe 9",
+                        'k10': "Klassenstufe 10",
+                        'k11': "Klassenstufe 11",
+                        'k12': "Klassenstufe 12",
+                        'k13': "Klassenstufe 13",
+                        'lsws': "Laufen, Springen, Werfen, Stoßen",
+                        'games': "Spiele",
+                        'ass': "Bewegung an Geräten",
+                        'fight': "Kämpfen nach Regeln",
+                        'moves': "Bewegungsfolgen gestalten und darstellen",
+                        'water': "Bewegen im Wasser",
+                        'cycling': "Fahren, Rollen, Gleiten",
+                        'action1': "Abbauen",
+                        'action2': "Aufbauen",
+                        'action3': "Begründen",
+                        'action4': "Beraten",
+                        'action5': "Beschreiben",
+                        'action6': "Besprechen",
+                        'action7': "Beurteilen",
+                        'action8': "Demonstrieren",
+                        'action9': "Disziplinieren",
+                        'action10': "Erklären",
+                        'action11': "Feedback, Korrektur",
+                        'action12': "Gesprächsrunde",
+                        'action13': "Gruppenbildung",
+                        'action14': "Helfen",
+                        'action15': "Kooperieren",
+                        'action16': "Medieneinsatz",
+                        'action17': "Motivieren",
+                        'action18': "Organisieren",
+                        'action19': "Präsentieren",
+                        'action20': "Sichern",
+                        'action21': "Störung",
+                        'action22': "Üben",
+                        'persp1': "Leistung",
+                        'persp2': "Wagnis",
+                        'persp3': "Gestaltung",
+                        'persp4': "Körpererfahrung",
+                        'persp5': "Kooperation",
+                        'persp6': "Gesundheit",
+                        'hall': "Sporthalle",
+                        'pool': "Schwimmhalle",
+                        'outdoor': "Outdoor"
+                    }
+                }
+            };
+
+            const i18n = new VueI18n({
+                locale: 'de', // set locale
+                messages, // set locale messages
+            });
+
+
 
             var Main = new Vue({
                 el: '#app-videomanager',
                 router,
+                i18n,
                 data: {
                     //  paginate: ['videolist'],
                     mouseOverCheck: '',
@@ -229,11 +391,6 @@ define([
 
         utils.get_ws('videos', { 'courseid': course.id }, connection_handler);
 
-        /*utils.get_ws('mod_videofiles_video_pool', function(data){
-            console.log(data.data);
-        }, true);*/
-
-       
 
 
         /**
@@ -249,7 +406,7 @@ define([
                         innerValue = row[j].toLocaleString();
                     };
                     var result = innerValue.replace(/"/g, '""');
-                    if (result.search(/("|,|\n)/g) >= 0){
+                    if (result.search(/("|,|\n)/g) >= 0) {
                         result = '"' + result + '"';
                     }
                     if (j > 0) {

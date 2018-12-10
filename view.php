@@ -523,7 +523,7 @@ echo '
 			<span @click="setTableView()" title="Tabellenansicht" class="fa fa-th large right link"></span>
 			<span @click="setListView()" title="Kachelansicht" class="fa fa-list large right link"></span>
 		</div>
-		<h1>Videos</h1>
+		<h1>{{ $t("message.video_db_title") }}</h1>
 		<div class="search-wrapper">
     		<input type="text" v-model="search" placeholder="Suche"/>
         </div>
@@ -562,14 +562,14 @@ echo '
 											{{ video.title }}
 										</router-link>	
 									</td>
-									<td>{{ video.sports }}</td>
-									<td>{{ video.courselevel }}</td>
-									<td>{{ video.competencies }}</td>
-									<td>{{ video.movements }}</td>
-									<td>{{ video.activities }}</td>
-									<td>{{ video.actors }}</td>
-									<td>{{ video.perspectives }}</td>
-									<td>{{ video.location }}</td>
+									<td>{{ $t("message."+video.sports) }}</td>
+									<td><span v-for="course in video.courselevel.split(\',\')">{{ $t("message."+course) }}, </td>
+									<td><span v-for="competence in video.compentencies.split(\',\')">{{ $t("message."+competence) }}, </td>
+									<td>{{ $t("message."+video.movements) }}</td>
+									<td><span v-for="activity in video.activities.split(\',\')">{{ $t("message."+activity) }}, </td>
+									<td>{{ $t("message."+video.actors)  }}</td>
+									<td><span v-for="perspective in video.perspectives.split(\',\')">{{ $t("message."+perspective) }}, </td>
+									<td>{{ $t("message."+video.location) }}</td>
 								</tr>
 							</tbody>	
 						</table>
