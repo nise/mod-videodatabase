@@ -48,12 +48,18 @@ Helpful tools for moodle development:
 * adminer
 * moodle plugin upgradedb (https://moodle.org/plugins/local_upgradedb)
     Unzip it into local/ folder in your Moodle.
-
+* grunt is the official moodle task runner used her for maintanance and deployment tasks
+  - cd to the plugin folder
+  - install grunt: `npm install --save-dev grunt-contrib-less grunt-contrib-watch grunt-contrib-clean grunt-contrib-jshint grunt-contrib-uglify grunt-contrib-cssmin grunt-contrib-watch grunt-contrib-concat grunt-concat-css`
+  - run grunt: grunt 
 
 ## Update from github
 * cd to moodle/mod/videodatabase
 * Update the code: `git fetch --all && git reset --hard origin/master`
 
+## Known issues
+* Browser console error: "no define call ...": The amd/dist folder is empty or not up to date. In development mode javascript should be loaded from amd/src. Therefore, open config.php in the moodle root and add the line `$CFG->cachejs = false;` before `require_once(__DIR__ . '/lib/setup.php');`
+* `grunt uglify` fails, because it doesn't support ES6. A replacement is needed.
 
 # Related Moodle plugins
 * https://moodle.org/plugins/mod_videofile
