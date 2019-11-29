@@ -63,8 +63,10 @@ class mod_videodatabase_mod_form extends moodleform_mod {
           
         //-------------------------------------------------------
         //$mform->addElement('header', 'contentsection', get_string('contentheader', 'videodatabase'));
-        $mform->addElement('text', 'videodatabase', get_string('content', 'videodatabase'));//, null, videodatabase_get_editor_options($this->context));
-        $mform->setType('videodatabase', PARAM_TEXT);
+        
+        //$mform->addElement('text', 'videodatabase', get_string('content', 'videodatabase'));//, null, videodatabase_get_editor_options($this->context));
+        //$mform->setType('videodatabase', PARAM_TEXT);
+        
         //$mform->addRule('videodatabase', get_string('required'), 'required', null, 'client');
 
         //-------------------------------------------------------
@@ -122,17 +124,28 @@ class mod_videodatabase_mod_form extends moodleform_mod {
         $mform->addElement('hidden', 'revision');
         $mform->setType('revision', PARAM_INT);
         $mform->setDefault('revision', 1);
+
+        $mform->addElement('hidden', 'format');
+        $mform->setType('format', PARAM_INT);
+        $mform->setDefault('format', 0);
+
+
     }
 
     function data_preprocessing(&$default_values) {
+      return;
+        
         if ($this->current->instance) {
+            file_put_contents('php://stderr', 'aaaaaaaaaaa');
             $draftitemid = file_get_submitted_draft_itemid('videodatabase');
             $default_values['videodatabase']['format'] = $default_values['contentformat'];
             $default_values['videodatabase']['text']   = file_prepare_draft_area($draftitemid, $this->context->id, 'mod_videodatabase', 'content', 0, videodatabase_get_editor_options($this->context), $default_values['content']);
             $default_values['videodatabase']['itemid'] = $draftitemid;
         }
         if (!empty($default_values['displayoptions'])) {
+            file_put_contents('php://stderr', 'bbbbbbbbbbbb');
             $displayoptions = unserialize($default_values['displayoptions']);
+            $default_values['videodatabase']['format'] = 0;
             if (isset($displayoptions['printintro'])) {
                 $default_values['printintro'] = $displayoptions['printintro'];
             }

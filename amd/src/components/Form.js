@@ -10,10 +10,10 @@
  */
 define([
     'jquery',
-    'amd/src/lib/vue.js',
-    'amd/src/lib/vfg.js',
-    'amd/src/lib/axios.min.js',
-    'amd/src/components/Utils.js'
+    M.cfg.wwwroot + '/mod/videodatabase/amd/src/lib/vue.js',
+    M.cfg.wwwroot + '/mod/videodatabase/amd/src/lib/vfg.js',
+    M.cfg.wwwroot + '/mod/videodatabase/amd/src/lib/axios.min.js',
+    M.cfg.wwwroot + '/mod/videodatabase/amd/src/components/Utils.js'
 ],
     function (
         $,
@@ -440,12 +440,13 @@ define([
                                 courseid: course.id,
                                 videos: this.selectedVideos.toString()
                         }, function (res) {
+                            console.log(res.data)
                             //if (nu) {
                                 //store.commit('addVideo', data); // videofileid, courseid
                                 //store.commit('setCurrentVideo', id);
                             //}
                             store.commit('updateVideos', JSON.parse(res.data));
-                            
+                            //_this.$forceUpdate();
                             _this.$router.push({ path: '/videos' });
                         });
                         

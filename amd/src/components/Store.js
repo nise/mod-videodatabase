@@ -9,8 +9,8 @@
  * @since      3.1
  */
 define([
-    'amd/src/lib/vue.js',
-    'amd/src/lib/vuex.js'
+    M.cfg.wwwroot + '/mod/videodatabase/amd/src/lib/vue.js',
+    M.cfg.wwwroot + '/mod/videodatabase/amd/src/lib/vuex.js'
 ],
     function (
         Vue,
@@ -18,7 +18,7 @@ define([
     ) {
 
         function Store(data, course) {
-            this.data = data;
+            this.data = data; 
             this.course = course;
             Vue.use(Vuex);
             // see best practice: id as keys: https://forum.vuejs.org/t/vuex-best-practices-for-complex-objects/10143/2
@@ -103,17 +103,23 @@ define([
                     updateVideos(state, videos){
                         // add new videos
                         for (var v in videos) {
-                            if (state.videos[v] === undefined){ console.log(videos[v])
+                            if (state.videos[v] === undefined){ //
+                                console.log(222); //console.log(videos[v])
+                               // state.videos.push(videos[v]);
+                                var o = {}; o[v] = videos[v];
+                                //Object.assign(o, state.videos);
                                 state.videos[v] = videos[v];
                             }
                         }
+                        console.log(state.videos);
                         var ids = Object.values(state.videos);
                         // remove deleted videos from store
-                        for(var v in state.videos){ 
-                            if(ids.indexOf(v) === -1){
-                                state.videos[v] = null;
-                                delete state.videos[v];
-                            }
+                        for(var vv in state.videos){ 
+                            console.log(vv+'__'+typeof (state.videos[vv]));
+                            /*if(ids.indexOf(vv) === -1){
+                                state.videos[vv] = null;
+                                delete state.videos[vv];
+                            }*/
                         }
                     },
                     removeVideo(state, video_id) {

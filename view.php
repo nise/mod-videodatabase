@@ -215,11 +215,11 @@ echo '
 										</div>
 										<div>
 											<label>Kompetenzen:</label>
-											<span>{{ video.competencies}}</span>
+											<span v-for="competence in video.compentencies.split(\',\')">{{ $t("message."+competence) }},</span>
 										</div>
 										<div>
 											<label>Sportart:</label>
-											<span>{{ video.sports }}</span>
+											<span v-for="course in video.courselevel.split(\',\')">{{ $t("message."+course) }}, </span>
 										</div>
 										<div>
 											<label>Bewegungsfelder:</label>
@@ -227,11 +227,11 @@ echo '
 										</div>
 										<div>
 											<label>Aktivitäten:</label>
-											<span>{{ video.activities }}</span>
+											<span v-for="activity in video.activities.split(\',\')">{{ $t("message."+activity) }}, </span>
 										</div>
 										<div>
 											<label>Perspektiven:</label>
-											<span>{{ video.perspectives }}</span>
+											<span v-for="perspective in video.perspectives.split(\',\')">{{ $t("message."+perspective) }}, </span>
 										</div>
 										<div>
 											<label>Ort:</label>
@@ -523,7 +523,7 @@ echo '
 			<span @click="setTableView()" title="Tabellenansicht" class="fa fa-th large right link"></span>
 			<span @click="setListView()" title="Kachelansicht" class="fa fa-list large right link"></span>
 		</div>
-		<h1>Videos</h1>
+		<h1>{{ $t("message.video_db_title") }}</h1>
 		<div class="search-wrapper">
     		<input type="text" v-model="search" placeholder="Suche"/>
         </div>
@@ -562,14 +562,14 @@ echo '
 											{{ video.title }}
 										</router-link>	
 									</td>
-									<td>{{ video.sports }}</td>
-									<td>{{ video.courselevel }}</td>
-									<td>{{ video.competencies }}</td>
-									<td>{{ video.movements }}</td>
-									<td>{{ video.activities }}</td>
-									<td>{{ video.actors }}</td>
-									<td>{{ video.perspectives }}</td>
-									<td>{{ video.location }}</td>
+									<td>{{ $t("message."+video.sports) }}</td>
+									<td><span v-for="course in video.courselevel.split(\',\')">{{ $t("message."+course) }}, </span></td>
+									<td><span v-for="competence in video.compentencies.split(\',\')">{{ $t("message."+competence) }}, </span></td>
+									<td>{{ $t("message."+video.movements) }}</td>
+									<td><span v-for="activity in video.activities.split(\',\')">{{ $t("message."+activity) }}, </span></td>
+									<td>{{ $t("message."+video.actors)  }}</td>
+									<td><span v-for="perspective in video.perspectives.split(\',\')">{{ $t("message."+perspective) }}, </span></td>
+									<td>{{ $t("message."+video.location) }}</td>
 								</tr>
 							</tbody>	
 						</table>
@@ -597,7 +597,9 @@ echo '
 									v-on:mouseout="mouseOverCheck = \'\'" 
 									class="still-images"
 									@error="imageLoadError(video.id)" 
-									v-bind:src="mouseOverCheck === video.id ? \'images/stills/still-\'+video.filename.replace(\'.mp4\',\'_comp.gif\') : \'images/stills/still-\'+video.filename.replace(\'.mp4\',\'_comp.jpg\') " />    
+									v-bind:srcbuggy="mouseOverCheck === video.id ? \'images/stills/still-\'+video.filename.replace(\'.mp4\',\'_comp.gif\') : video.poster "     
+									v-bind:src="video.poster === null ? \'images/stills/default.jpg\' : video.poster"
+									/>
 							</router-link>	
 							<div class="meta">
 								<router-link class="title" :to="{ path: \'/videos/\' + video.id + \'/view\'}">{{video.title}}</router-link>

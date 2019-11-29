@@ -11,7 +11,7 @@
  */
 
 
-define(['jquery'], function ($) {
+define(['jquery', 'core/ajax'], function ($, ajax) {
 
     function Log(options, observer) { 
         this.options = Object.assign(this.options, options);
@@ -136,7 +136,21 @@ define(['jquery'], function ($) {
          * Makes an AJAX call to send the log data set to the server
          */
         sendLog: function (entry) {
-            this.options.logger_service_params.data.entry = JSON.stringify(entry); 
+            //console.log(entry)
+            ajax.call([{
+                methodname: 'mod_videodatabase_logging',
+                args: { data: {
+                    courseid: this.options.logger_service_params.data.courseid,
+                    entry: JSON.stringify(entry)
+                } },
+                done: function (msg) {
+                    //console.log(msg);
+                },
+                fail: function (e) {
+                    //console.log(e);
+                }
+            }]);
+            /* this.options.logger_service_params.data.entry = JSON.stringify(entry); 
             $.ajax({
                 method: 'POST',
                 url: this.options.logger_service_url,
@@ -144,11 +158,11 @@ define(['jquery'], function ($) {
                 dataType: "json"
             })
             .done(function (msg) {
-                //console.log(msg);
+                console.log(msg);
             })
             .fail(function (msg) {
-                //console.log(msg);
-            });
+                console.log(msg);
+            });*/
         }
 
     };

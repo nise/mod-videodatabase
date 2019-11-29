@@ -12,10 +12,10 @@
  */
 
 define([
-    'amd/src/lib/vue.js',
-    'js/vi2.main.js',
-    'amd/src/components/Ratings.js',
-    'amd/src/components/Utils.js'
+    M.cfg.wwwroot + '/mod/videodatabase/amd/src/lib/vue.js',
+    M.cfg.wwwroot + '/mod/videodatabase/js/vi2.main.js',
+    M.cfg.wwwroot + '/mod/videodatabase/amd/src/components/Ratings.js',
+    M.cfg.wwwroot + '/mod/videodatabase/amd/src/components/Utils.js'
 ], function (Vue, Vi2, Ratings, Utils) {
 
     function Video(store, course, user, token) {

@@ -16,6 +16,11 @@ Tested with Moodle v3.5
 ## Install depenencies
 [Moodle Video Pool](https://github.com/nise/moodle-video-pool)
 
+## Geting started
+1. After installing both plugin you can add the videodatabase as a activity to your course. 
+2. Before loading videos into the database you need to create a video pool by using the [Moodle Video Pool](https://github.com/nise/moodle-video-pool) plugin. Therefore, stay in the edit mode and add as many videos to your pool as you want. For each video you are ask to define comprehensive meta data. This metadata is important in order to make use of the database.
+3. Once you have uploaded at least one video in your course you can add it to your video database. Open the videodatabase an click on the little cog on the top right corner. The uploaded videos should appear. Selecte the ones you like and refresh the page.
+ 
 
 ## Configure the webserver
 **Apache2**

@@ -8,7 +8,7 @@
  * @license    MIT
  * @since      3.3
  */
-define(['/moodle/mod/videodatabase/amd/src/lib/vfg.js'], function (VueFormGenerator) {
+define([M.cfg.wwwroot + '/mod/videodatabase/amd/src/lib/vfg.js'], function (VueFormGenerator) {
     return function () {
         return {
             "language": "de",

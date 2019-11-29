@@ -14,9 +14,9 @@
  */
 
 define([
-    'amd/src/lib/vue.js',
-    'amd/src/components/Utils.js',
-    'js/moment-with-locales.min.js'
+    M.cfg.wwwroot + '/mod/videodatabase/amd/src/lib/vue.js',
+    M.cfg.wwwroot + '/mod/videodatabase/amd/src/components/Utils.js',
+    M.cfg.wwwroot + '/mod/videodatabase/js/moment-with-locales.min.js'
 ], function (Vue, Utils, moment) {
     
   
