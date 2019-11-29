@@ -1,4 +1,4 @@
-Vi-Moodle is a database, player, and annotation tool for video-based learning resources in moodle.
+mod-videodatabase is a database, player, and annotation tool for video-based learning resources in moodle.
 
 **System Features:**
 * Select video files from a pool of videos
@@ -37,8 +37,9 @@ In order to support the file workflow the permissions of the moodledata folder n
 
 ## Install the plugin
 * Change directory to the moodle plugin folder: `cd to the moodle/mod`
-* Clone the repository: `git clone https://github.com/nise/vi-moodle`
-* Rename the plugin folder: `mv vi-moodle videodatabase`
+* Clone the repository: `git clone https://github.com/nise/mod-videodatabase`
+* Rename the plugin folder: `mv mod-videodatabase videodatabase`
+* Open the Notification page in the Moodle Admin Panel and update the plugins
 
 ---
 # Development
