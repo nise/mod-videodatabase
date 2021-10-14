@@ -41,7 +41,7 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
             allowReplies: false, // not implemented
             allowEditing: false, // not implemented
             allowCreation: true,
-            allowDeletions: true, 
+            allowDeletions: true,
             timelineSelector: '.vi2-timeline-top',
             path: '/'//,
             //annotation_service_url: {},
@@ -49,21 +49,19 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
         },
         currentUser: null,
 
-        /**
-         * Initializes the plugin
-         */
-        init: function (ann) { 
+        // Initializes the plugin
+        init: function (ann) {
             if (ann === null) {
                 ann = {};
             }
             var _this = this;
             var events = [];
-            
+
             this.options.annotation_service_params.data.videoid = parseInt(localStorage.getItem('videoid'), 10);
             this.options.annotation_service_params2 = this.options.annotation_service_params;
             this.options.annotation_service_params.data.operation = 'read';
             //delete this.options.annotation_service_params.data.operation;
-            
+
             $.ajax({
                 method: 'POST',
                 url: this.options.annotation_service_url,
@@ -72,13 +70,13 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
             })
                 .done(function (msg) {
                     try {
-                        var d = JSON.parse(msg.data); 
-                        var data = Object.keys(d).map(function(o){ return d[o]; }); 
+                        var d = JSON.parse(msg.data);
+                        var data = Object.keys(d).map(function (o) { return d[o]; });
                         //console.log(data)
                         //console.log(_this.options.annotation_service_params.data)
                         for (var i in data) {
                             if (data.hasOwnProperty(i)) {
-                                if (data[i].type === 'comment') { 
+                                if (data[i].type === 'comment') {
                                     events.push({
                                         id: data[i].id,
                                         name: data[i].content,
@@ -100,10 +98,10 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
                             vi2.observer.player.timeline.addTimelineMarkers('comments', events, _this.options.timelineSelector);
                         }
 
-                        if(_this.options.allowCreation){
+                        if (_this.options.allowCreation) {
                             _this.addComment();
                         }
-                        
+
                     } catch (e) {
                         console.log('Could not parse comments from database');
                         console.log(msg);
@@ -111,16 +109,16 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
                 })
                 .fail(function (msg) {
                     console.log(msg);
-                }); 
+                });
         },
 
         /**
          * 
          */
-        addComment: function(){
+        addComment: function () {
             var _this = this;
             //$('#video1').click(function(){
-              //  console.log(_this.createAnnotationForm());
+            //  console.log(_this.createAnnotationForm());
             //});
         },
 
@@ -183,7 +181,7 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
                     // re-comments could be sorted desc by date. Solution needed
                     //comments.find('.t'+val.time).tsort({ attr:"date", order:'asc'}); 
                 }
-                
+
                 // edit
                 if (_this.options.allowEditing && val.author === _this.currentUser) {
                     var edit_btn = $('<a></a>')
@@ -216,14 +214,14 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
                 if (_this.options.allowDeletions) {
                     var reply_btn = $('<a></a>')
                         .addClass('tiny-edit-btn fa fa-remove right')
-                        .click(function(){
+                        .click(function () {
                             _this.removeComment(val.id);
                         })
                         //.attr('data-annotationtype', 'comments')
                         //.data('annotationdata', { content: '', time: val.time, date: (new Date().getTime()) })
                         .appendTo(header)
                         ;
-                    
+
                 }
                 tmp_t = val.time;
             }); // end each
@@ -232,7 +230,8 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
         /**
          * Removes a single comment
          */
-        removeComment:function(id){ console.log(id)
+        removeComment: function (id) {
+            console.log(id)
             var up = {
                 courseid: this.options.annotation_service_params.data.courseid,//bad fix
                 id: id,
@@ -241,20 +240,20 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
             };
             var _this = this;
             this.options.annotation_service_params2.data = up;
-            
+
             $.ajax({
                 method: 'POST',
                 url: this.options.annotation_service_url,
                 data: this.options.annotation_service_params2,
                 dataType: "json"
             })
-            .done(function (msg) {
-                console.log(msg);
-                _this.init();
-            })
-            .fail(function (msg) {
-                console.log(msg);
-            }); 
+                .done(function (msg) {
+                    console.log(msg);
+                    _this.init();
+                })
+                .fail(function (msg) {
+                    console.log(msg);
+                });
         },
 
         /* -- */
@@ -294,7 +293,7 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
         /*
         * { type: type, date: new Date().getTime(), time: formData.time, content: formData.content); 
         **/
-        addDOMElement: function (obj) { 
+        addDOMElement: function (obj) {
             $('<div></div>')
                 .attr('type', obj.type)
                 .attr('author', this.currentUser)
@@ -331,11 +330,11 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
         createAnnotationForm: function (data) {
             /*jshint multistr: true */
             var str = "\
-			<textarea name='comments-entry' data-datatype='string' placeholder='' aria-describedby='comments-form1'>"+data.content+"</textarea>\
+			<textarea name='comments-entry' data-datatype='string' placeholder='' aria-describedby='comments-form1'>"+ data.content + "</textarea>\
 			<br>\
 			<div class='input-group'>\
 				<span class='input-group-addon' id='comments-form1'>Zeitpunkt (s)</span>\
-				<input type='text' class='form-control' value='"+ vi2.observer.player.currentTime()+"' name='comments-entry-time' data-datatype='decimal-time' placeholder='' aria-describedby='comments-form1'>\
+				<input type='text' class='form-control' value='"+ vi2.observer.player.currentTime() + "' name='comments-entry-time' data-datatype='decimal-time' placeholder='' aria-describedby='comments-form1'>\
 			</div>\
 			";
             if (data) {
@@ -351,9 +350,11 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
         },
 
 
-        /*
-        *
-        **/
+        /**
+         * 
+         * @param {*} selector 
+         * @returns {*} obj
+         */
         getAnnotationFormData: function (selector) {
             var obj = {};
             obj.content = $(selector).find('[name="comments-entry"]').val();
@@ -363,4 +364,4 @@ define(['jquery', 'js/vi2.core.utils.js', 'js/moment-with-locales.min.js'], func
     };
 
     return Comments;
-}); 
+});

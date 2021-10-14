@@ -25,12 +25,12 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2017064243;       // The current module version (Date: YYYYMMDDXX)
-$plugin->requires  = 2014062500;    // Requires this Moodle version
-$plugin->component = 'mod_videodatabase';       // Full name of the plugin (used for diagnostics)
+$plugin->version   = 2018064243;
+$plugin->requires  = 2018062500;
+$plugin->component = 'mod_videodatabase';
 $plugin->cron      = 0;
 $plugin->dependencies = array(
-    //'mod_videofile' => ANY_VERSION//,   // The Foo activity must be present (any version).
+    'mod_videofile' => ANY_VERSION//,   // The Foo activity must be present (any version).
     //'enrol_bar' => 2014020300, // The Bar enrolment plugin version 2014020300 or higher must be present.
 );
 

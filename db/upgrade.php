@@ -44,12 +44,15 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
+defined('MOODLE_INTERNAL') || die();
 
-function xmldb_videodatabase_upgrade($oldversion) {
-    global $CFG, $DB;
+require_once(__DIR__.'/upgradelib.php');
 
+function xmldb_mod_videodatabase_upgrade($oldversion) {
+    global $CFG, $DB; 
     $dbman = $DB->get_manager();
+    return true;
+}
 
 
     //if ($oldversion < 2017064102) {
@@ -167,5 +170,4 @@ function xmldb_videodatabase_upgrade($oldversion) {
     }
    */
 
-    return true;
-}
+
