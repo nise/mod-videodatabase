@@ -1,3 +1,5 @@
+This plugin is not actively maintained anymore.
+
 mod-videodatabase is a database, player, and annotation tool for video-based learning resources in moodle.
 
 **System Features:**
