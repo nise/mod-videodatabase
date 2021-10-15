@@ -8,10 +8,10 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require('../../config.php');
-require_once($CFG->dirroot.'/mod/videodatabase/locallib.php');
-require_once($CFG->libdir.'/completionlib.php');
-require_once('lib.php');
+require '../../config.php';
+require_once $CFG->dirroot.'/mod/videodatabase/locallib.php';
+require_once $CFG->libdir.'/completionlib.php';
+require_once 'lib.php';
 
 $id      = optional_param('id', 0, PARAM_INT); // Course Module ID
 $p       = optional_param('p', 0, PARAM_INT);  // videodatabase instance ID
@@ -66,12 +66,12 @@ if ($inpopup and $videodatabase->display == RESOURCELIB_DISPLAY_POPUP) {
 
 $context = context_module::instance($cm->id);
 $PAGE->set_context($context);
-	
+
 // custome CSS
-$PAGE->requires->css( '/mod/videodatabase/css/bootstrap.min.css');
-$PAGE->requires->css( '/mod/videodatabase/styles.css', true );
-$PAGE->requires->css( '/mod/videodatabase/css/vfg.css', true );
-$PAGE->requires->css( '/mod/videodatabase/css/vi-two.css', true );
+$PAGE->requires->css('/mod/videodatabase/css/bootstrap.min.css');
+$PAGE->requires->css('/mod/videodatabase/styles.css', true);
+$PAGE->requires->css('/mod/videodatabase/css/vfg.css', true);
+$PAGE->requires->css('/mod/videodatabase/css/vi-two.css', true);
 echo $OUTPUT->header();
 /* end header */
 
@@ -299,8 +299,8 @@ echo '
 </div>
 ';
 
-//echo '<button id="show-modal" class="btn btn-primary" @click="showModal = true">Kommentar hinzufügen</button>';
-//echo '<modal v-if="showModal" @close="showModal = false">';
+// echo '<button id="show-modal" class="btn btn-primary" @click="showModal = true">Kommentar hinzufügen</button>';
+// echo '<modal v-if="showModal" @close="showModal = false">';
 echo '<script type="text/x-template" id="modal-template"><!-- Modal -->
 		<transition name="modal">
 			<div class="modal-mask">
@@ -334,7 +334,7 @@ echo '<script type="text/x-template" id="modal-template"><!-- Modal -->
 	</script>';
 
 
-	// file upload and preprocessing
+// file upload and preprocessing
 echo '
 <div v-cloak id="pool">
 	<div>
