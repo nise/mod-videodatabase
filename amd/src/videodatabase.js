@@ -38,7 +38,6 @@ define([
         //  VueFormGenerator,
         // Axios,
     ) {
-        console.log(M.cfg.wwwroot + '/mod/videodatabase/amd/src/lib/vue.js');
         var datamodel = new Datamodel();
 
         var course = {
@@ -278,6 +277,7 @@ define([
                     }
                 },
                 created: function () {
+                    console.log(11);
                     var _this = this;
                     utils.get_ws('ratings', {
                         'courseid': course.id,
@@ -294,7 +294,7 @@ define([
                                     data[d[obj].videoid].push(d[obj].rating);
                                 }
                             }
-
+                            console.log(data);
                             for (var video in data) {
                                 if (data.hasOwnProperty(video) && data[video].length > 0) {
                                     var positiveRatings = data[video].filter(function (obj) {

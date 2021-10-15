@@ -629,7 +629,7 @@ echo ""; // end fluid container
 
 
 // load the main Javascript including vue.js and vi-two.js
-//$PAGE->requires->js_amd_inline("require(['jquery', 'jqueryui', 'mod_videodatabase/videodatabase']);");
+// $PAGE->requires->js_amd_inline("require(['jquery', 'jqueryui', 'mod_videodatabase/videodatabase']);");
 
 $PAGE->requires->js_amd_inline("require(['jquery', 'jqueryui', 'mod_videodatabase/videodatabase']);");
 //$PAGE->requires->js_call_amd('mod_videodatabase/videodatabase', 'init');
