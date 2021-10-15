@@ -52,6 +52,8 @@ Helpful tools for moodle development:
   - cd to the plugin folder
   - install grunt: `npm install`
   - run grunt: `grunt` 
+* php compose
+* install ffmpeg on server
 
 ## Update from github
 * cd to moodle/mod/videodatabase
