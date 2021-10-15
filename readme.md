@@ -50,8 +50,8 @@ Helpful tools for moodle development:
     Unzip it into local/ folder in your Moodle.
 * grunt is the official moodle task runner used her for maintanance and deployment tasks
   - cd to the plugin folder
-  - install grunt: `npm install --save-dev grunt-contrib-less grunt-contrib-watch grunt-contrib-clean grunt-contrib-jshint grunt-contrib-uglify grunt-contrib-cssmin grunt-contrib-watch grunt-contrib-concat grunt-concat-css`
-  - run grunt: grunt 
+  - install grunt: `npm install`
+  - run grunt: `grunt` 
 
 ## Update from github
 * cd to moodle/mod/videodatabase
