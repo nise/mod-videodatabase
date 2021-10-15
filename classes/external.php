@@ -74,9 +74,10 @@ class mod_videodatabase_external extends external_api
         $transaction = $DB->start_delegated_transaction(); 
         $sql='
             SELECT * 
-            FROM '.$CFG->prefix.'videodatabase_videos as d 
-            JOIN '.$CFG->prefix.'videofile as f 
-            WHERE d.videofileid = f.id';
+            FROM ' . $CFG->prefix . 'videodatabase_videos as d 
+            JOIN ' . $CFG->prefix . 'videofile as f 
+            ON d.videofileid = f.id
+            ;';
         $res = $DB->get_records_sql($sql);
         $transaction->allow_commit();
 
@@ -197,7 +198,7 @@ class mod_videodatabase_external extends external_api
             SELECT * 
             FROM '.$CFG->prefix.'videodatabase_videos as d 
             JOIN '.$CFG->prefix.'videofile as f 
-            WHERE d.videofileid = f.id;';
+            ON d.videofileid = f.id;';
         $res = $DB->get_records_sql($sql);
         $transaction->allow_commit();
         return array('data'=> json_encode($res));//'{ "status":"ok", "msg": "Successfully saved video id from the videofile pool.'.'."}');
