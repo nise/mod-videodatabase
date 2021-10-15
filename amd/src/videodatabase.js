@@ -18,8 +18,8 @@ define([
     'amd/src/components/Video.js',
     'amd/src/components/Comments.js',
     'amd/src/components/Utils.js'
-     // 'amd/src/vuejs-paginator.js',
-       //'amd/src/lib/vfg.js',
+    // 'amd/src/vuejs-paginator.js',
+    //'amd/src/lib/vfg.js',
     //'amd/src/lib/axios.min.js',
 ],
     function (
@@ -34,9 +34,9 @@ define([
         Utils
         // VuePaginator,
         //  VueFormGenerator,
-       // Axios,
+        // Axios,
     ) {
-        
+
         var datamodel = new Datamodel();
 
         var course = {
@@ -64,16 +64,16 @@ define([
 
             // setup vue
             Vue.use(VueRouter);
-            
+
             const utils = new Utils();
             const vuestore = new Store(data, course);
-            const store = vuestore.store; 
+            const store = vuestore.store;
             const videovue = new Video(store, course, user, $('#token').text());
             const video = videovue.video;
             const commentsvue = new Comments(store, course, user, $('#token').text(), utils);
             const comments = commentsvue.comments;
             const form = new Form(store, course, datamodel, utils);
-            
+
             // init router
             router = new VueRouter({
                 routes: [
@@ -88,7 +88,7 @@ define([
                 }
             });
 
-            
+
 
             var Main = new Vue({
                 el: '#app-videomanager',
@@ -233,7 +233,7 @@ define([
             console.log(data.data);
         }, true);*/
 
-       
+
 
 
         /**
@@ -249,7 +249,7 @@ define([
                         innerValue = row[j].toLocaleString();
                     };
                     var result = innerValue.replace(/"/g, '""');
-                    if (result.search(/("|,|\n)/g) >= 0){
+                    if (result.search(/("|,|\n)/g) >= 0) {
                         result = '"' + result + '"';
                     }
                     if (j > 0) {
@@ -383,4 +383,4 @@ define([
             }
         });
 
-    }); 
+    });

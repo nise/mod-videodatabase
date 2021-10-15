@@ -68,10 +68,10 @@ $context = context_module::instance($cm->id);
 $PAGE->set_context($context);
 	
 // custome CSS
-$PAGE->requires->css( '/mod/videodatabase/css/bootstrap.min.css');
+//$PAGE->requires->css( '/mod/videodatabase/css/bootstrap.min.css');
 $PAGE->requires->css( '/mod/videodatabase/styles.css', true );
-$PAGE->requires->css( '/mod/videodatabase/css/vfg.css', true );
-$PAGE->requires->css( '/mod/videodatabase/css/vi-two.css', true );
+//$PAGE->requires->css( '/mod/videodatabase/css/vfg.css', true );
+//$PAGE->requires->css( '/mod/videodatabase/css/vi-two.css', true );
 echo $OUTPUT->header();
 /* end header */
 
