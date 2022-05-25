@@ -23,7 +23,7 @@
   "author": "niels seidel",
   "license": "MIT",
   "dependencies": {
-    "grunt": "^1.4.1"
+    "grunt": "^1.5.3"
   },
   "devDependencies": {
     "grunt-concat-css": "^0.3.2",
